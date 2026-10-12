@@ -1,0 +1,42 @@
+{
+ "weights": {
+  "hp": 1.6883476007369063,
+  "meter": 0,
+  "meterFull": 238.49055533086354,
+  "range": 0,
+  "commit": 7.2962631397355375,
+  "whiff": 305.78946499871364,
+  "corner": 218.4573707967381,
+  "knockdown": 117.08539122850519,
+  "threat": 0.6368171304880739,
+  "ko": 3000
+ },
+ "fitness": 0.9824166666666666,
+ "generation": 6,
+ "config": {
+  "pop": 16,
+  "gens": 15,
+  "matches": 4,
+  "seed": 7,
+  "nodes": 300,
+  "workers": 2,
+  "panel": [
+   "minimax",
+   "mcts",
+   "fuzzy"
+  ],
+  "fitnessMatch": "single 1,800-frame round, reaction 9, fitness = score + 0.25 HP margin, Minimax nodes:300, MCTS rollouts:60"
+ },
+ "defaults": {
+  "hp": 1,
+  "meter": 1.2,
+  "meterFull": 80,
+  "range": 0.06,
+  "commit": 3,
+  "whiff": 160,
+  "corner": 90,
+  "knockdown": 60,
+  "threat": 0.35,
+  "ko": 3000
+ }
+}

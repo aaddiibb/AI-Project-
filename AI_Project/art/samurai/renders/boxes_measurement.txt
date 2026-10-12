@@ -1,0 +1,18 @@
+light: frames 7..12
+  f 7 iai_slash                          tip fwd 996 up 789 | guard fwd 527 up 756
+  f 8 iai_slash                          tip fwd 996 up 789 | guard fwd 527 up 756
+  f 9 iai_slash>iai_recover 0.13         tip fwd 989 up 730 | guard fwd 518 up 723
+  f10 iai_slash>iai_recover 0.50         tip fwd 940 up 558 | guard fwd 475 up 631
+  f11 iai_slash>iai_recover 0.88         tip fwd 856 up 400 | guard fwd 410 up 550
+  f12 iai_recover                        tip fwd 820 up 351 | guard fwd 384 up 527
+  blade extent  fwd 493..996  up 351..789  -> box (+40) {"x0":140,"x1":1036,"y0":311,"y1":829}  | samurai.moves.js has {"x0":140,"x1":1036,"y0":311,"y1":829}
+heavy: frames 15..22
+  f15 heavy_windup>heavy_cleave 0.56     tip fwd 607 up 1570 | guard fwd 420 up 1139
+  f16 heavy_cleave                       tip fwd 896 up 184 | guard fwd 546 up 498
+  f17 heavy_cleave                       tip fwd 896 up 184 | guard fwd 546 up 498
+  f18 heavy_cleave                       tip fwd 896 up 184 | guard fwd 546 up 498
+  f19 heavy_cleave>heavy_follow 0.13     tip fwd 882 up 160 | guard fwd 526 up 466
+  f20 heavy_cleave>heavy_follow 0.50     tip fwd 825 up 103 | guard fwd 449 up 385
+  f21 heavy_cleave>heavy_follow 0.88     tip fwd 748 up 73 | guard fwd 354 up 330
+  f22 heavy_follow                       tip fwd 719 up 69 | guard fwd 320 up 318
+  blade extent  fwd 420..896  up 69..1570  -> box (+40) {"x0":140,"x1":936,"y0":29,"y1":1610}  | samurai.moves.js has {"x0":140,"x1":936,"y0":29,"y1":1610}

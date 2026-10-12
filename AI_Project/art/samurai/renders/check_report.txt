@@ -1,0 +1,64 @@
+PASS  default rig: every part file exists under parts/  -- 48 parts
+PASS  p2 rig: every part file exists under parts/p2/  -- 48 parts
+PASS  rig_p2.json matches rig.json except files
+PASS  Shinobi bone names kept
+PASS  required anchors present
+PASS  rig.springs present and used by the shared runtime  -- 17 spring bones
+PASS  rig.stress present and used by the shared runtime  -- 16 joints
+PASS  sword rests in the saya by default
+PASS  recommendedScale ~0.38  -- 0.3797 -> 448 px tall
+PASS  every contract pose exists  -- 33 required
+PASS  no poses outside the contract list
+PASS  no jump / crouch / run / kick / air / throw poses
+PASS  no airborne (ground:false) poses
+PASS  back-dash is grounded
+PASS  sword drawn exactly in the attack poses (sheathed elsewhere)  -- iai_slash,iai_recover,heavy_windup,heavy_cleave,heavy_follow,ult_windup,ult_release,ult_follow,ult_flourish
+PASS  heavy: far hand on the hilt (two-handed grip)  -- heavy_windup 0.3u, heavy_cleave 0.6u, heavy_follow 0.2u
+PASS  faces: intense on strikes, hurt on hit / KO
+PASS  no sole below the floor in any standing pose  -- lowest contact 0.00 units
+PASS  both soles planted in every grounded pose (except intended lifts)
+PASS  ko_down lies on the floor line (groundBy parts)  -- deepest body point 0.0 below
+PASS  walk.steps match the generated keys (animator order)  -- 55.7, 54.3, 56.2, 62.1, 56.1, 55.2, 56.1, 61.6
+PASS  walk.poses = walk_1..walk_8
+PASS  walk: planted-foot slide during key blends  -- max 0.4 units (0.1 px at game size)
+PASS  every pose name used in samurai.moves.js exists in poses.json  -- 33 names
+PASS  can: no jump / crouch / run
+PASS  dash / backdash animation lengths match phys totals  -- 28 / 22
+PASS  light: 29 frames, active 7-12, 90 dmg, mid
+PASS  heavy: 46 frames, active 16-22, 210 dmg, overhead, knockdown, chip 0.25
+PASS  ultimate: 500 unblocked, 150-200 blocked, no invulnerability  -- chip 175
+PASS  light box equals the anchor measurement (tools/measure_boxes.mjs)  -- {"x0":140,"x1":1036,"y0":311,"y1":829}
+PASS  heavy box equals the anchor measurement (tools/measure_boxes.mjs)  -- {"x0":140,"x1":936,"y0":29,"y1":1610}
+
+sole contact per standing pose (units above the floor, min..max per foot):
+stance: foot_near 0.0..0.0  foot_far 0.0..0.0
+stance_b: foot_near 0.3..0.3  foot_far 0.0..0.3
+walk_1: foot_far 28.0..62.1  foot_near_side 0.0..56.2  (one foot up: intended)
+walk_2: foot_far 34.0..34.0  foot_near_side 0.0..91.9  (one foot up: intended)
+walk_3: foot_far 0.0..0.0  foot_near_side 23.5..63.2  (one foot up: intended)
+walk_4: foot_far 0.0..28.5  foot_near_side 42.9..60.0  (one foot up: intended)
+walk_5: foot_far 0.0..56.4  foot_near_side 28.0..62.4  (one foot up: intended)
+walk_6: foot_far 0.0..91.9  foot_near_side 33.8..33.8  (one foot up: intended)
+walk_7: foot_far 23.7..63.4  foot_near_side 0.0..0.0  (one foot up: intended)
+walk_8: foot_far 42.7..59.8  foot_near_side 0.0..28.2  (one foot up: intended)
+dash_start: foot_far 0.0..0.0  foot_near_side 0.1..0.1
+dash: foot_far 0.0..28.8  foot_near_side 9.0..91.2  (one foot up: intended)
+dash_end: foot_far 15.6..60.7  foot_near_side 0.0..34.1  (one foot up: intended)
+backdash_start: foot_far 0.0..0.3  foot_near_side 0.2..0.2
+backdash: foot_far 3.2..54.1  foot_near_side 0.0..17.1
+backdash_end: foot_far 0.2..0.2  foot_near_side 0.0..0.3
+guard: foot_near 0.1..0.1  foot_far 0.0..0.0
+iai_windup: foot_near 0.0..0.0  foot_far 0.0..0.3
+iai_slash: foot_near 0.1..0.1  foot_far 0.0..0.0
+iai_recover: foot_near 0.2..0.5  foot_far 0.0..0.0
+heavy_windup: foot_near 0.0..0.0  foot_far 13.3..41.8  (one foot up: intended)
+heavy_cleave: foot_near 0.0..0.0  foot_far 0.3..0.3
+heavy_follow: foot_near 0.3..0.6  foot_far 0.0..0.0
+ult_charge: foot_near 0.0..0.0  foot_far 0.0..0.0
+ult_windup: foot_near 0.2..0.5  foot_far 0.0..0.3
+ult_release: foot_near 0.0..0.0  foot_far 0.2..0.2
+ult_follow: foot_near 0.0..0.0  foot_far 0.1..0.3
+ult_flourish: foot_near 0.2..0.5  foot_far 0.0..0.3
+hit: foot_near 0.0..0.0  foot_far 0.0..0.0
+ko_stagger: foot_near 0.2..0.2  foot_far 0.0..0.3
+wakeup: foot_near 0.1..0.1  foot_far 0.0..0.3

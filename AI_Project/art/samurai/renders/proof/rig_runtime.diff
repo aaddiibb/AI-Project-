@@ -1,0 +1,19 @@
+21a22,27
+> // Data-driven override (other characters): rig.springs = { id: { hang, k, c, g, wind? } }, rig.stress = { id: [min, max] }.
+> // A rig without them uses the Shinobi tables below, so the Shinobi's behaviour is unchanged.
+> export const springsOf = (rig) => rig.springs || SPRINGS;
+> export const stressOf = (rig) => rig.stress || STRESS;
+> const windOf = (rig, id) => (rig.springs ? rig.springs[id]?.wind ?? 0.5 : WIND[id] || 0.5);
+> 
+89c95
+<   if (stress) for (const [id, [lo, hi]] of Object.entries(STRESS)) {
+---
+>   if (stress) for (const [id, [lo, hi]] of Object.entries(stressOf(rig))) {
+102c108
+<     const sp = SPRINGS[p.id];
+---
+>     const sp = springsOf(rig)[p.id];
+114c120
+<       const target = -rel * sp.hang * (pose.springHang ?? 1) + (idle ? (WIND[p.id] || 0.5) * Math.sin(time * 1.7 + p.zIndex) : 0);
+---
+>       const target = -rel * sp.hang * (pose.springHang ?? 1) + (idle ? windOf(rig, p.id) * Math.sin(time * 1.7 + p.zIndex) : 0);
