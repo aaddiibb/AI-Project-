@@ -1,0 +1,22 @@
+{
+  "name": "samurai",
+  "version": "1.0.0",
+  "description": "Samurai fighter art pipeline (vector parts, rig, poses, move data, preview)",
+  "scripts": {
+    "build": "node tools/build.mjs && node tools/build.mjs --palette p2",
+    "split": "node tools/split.mjs && node tools/split.mjs --palette p2",
+    "poses": "node tools/author_poses.mjs && node tools/measure_boxes.mjs --write",
+    "render": "node tools/pose_render.mjs && node tools/anim_render.mjs",
+    "check": "node tools/joint_check.mjs && node tools/check_package.mjs",
+    "all": "npm run build && npm run split && npm run poses && npm run render && npm run check",
+    "anchors": "node tools/render_extra.mjs --anchors iai_slash iai_recover heavy_windup heavy_cleave heavy_follow ult_release",
+    "proof": "node tools/shinobi_proof.mjs after && node tools/shinobi_proof.mjs compare"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}

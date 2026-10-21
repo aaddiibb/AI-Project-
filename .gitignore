@@ -1,0 +1,36 @@
+# ---- Dependencies and caches
+node_modules/
+__pycache__/
+.ruff_cache/
+.pytest_cache/
+
+# ---- Tooling / local editor and agent folders
+.claude/
+.freebuff/
+.vscode/
+.idea/
+
+# ---- Documentation and planning (not part of the playable game)
+docs/
+references/
+prompts/
+PROJECT_PROPOSAL_AND_COURSE_OUTLINE.md
+game/AI_PLAN.md
+game/AUDIO_PLAN.md
+*.md
+!game/README.md
+
+# ---- Development-only tools and generated renders
+game/tools/
+game/renders/
+art/*/tools/
+art/*/renders/
+art/cyborg/
+
+# ---- Office lock files and presentations
+~$*
+*.pptx
+
+# ---- OS files
+Thumbs.db
+desktop.ini

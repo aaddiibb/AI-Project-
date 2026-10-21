@@ -1,0 +1,488 @@
+{
+ "_conventions": "Frames run at 60 fps. Each frame holds a pose from poses.json for `hold` game frames (stepped / held anime timing, no tweening). `dx` = root motion in master units per game frame while that frame is held (+ = forward). Events fire when their frame starts: hitbox {anchor, radius} is active for the frame; slashArc {anchor, inner, from, to, samples, life} draws a blade trail along the anchor path between two poses; spawn {item, anchor, velocity[x,y] units/frame, life}; flash {frames}. `step` = root motion applied once when the frame starts (used by walks so the planted foot stays put). `startX` = initial root x for one-shot sequences.",
+ "idle": {
+  "loop": true,
+  "frames": [
+   {
+    "pose": "stance",
+    "hold": 20
+   },
+   {
+    "pose": "stance_b",
+    "hold": 20
+   }
+  ]
+ },
+ "walk_forward": {
+  "loop": true,
+  "frames": [
+   {
+    "pose": "walk_1",
+    "hold": 6,
+    "step": 65.1
+   },
+   {
+    "pose": "walk_2",
+    "hold": 6,
+    "step": 63.3
+   },
+   {
+    "pose": "walk_3",
+    "hold": 6,
+    "step": 67
+   },
+   {
+    "pose": "walk_4",
+    "hold": 6,
+    "step": 74.1
+   },
+   {
+    "pose": "walk_5",
+    "hold": 6,
+    "step": 60.8
+   },
+   {
+    "pose": "walk_6",
+    "hold": 6,
+    "step": 69.3
+   },
+   {
+    "pose": "walk_7",
+    "hold": 6,
+    "step": 65.8
+   },
+   {
+    "pose": "walk_8",
+    "hold": 6,
+    "step": 80.8
+   }
+  ]
+ },
+ "walk_back": {
+  "loop": true,
+  "frames": [
+   {
+    "pose": "walk_8",
+    "hold": 7,
+    "step": -65.1
+   },
+   {
+    "pose": "walk_7",
+    "hold": 7,
+    "step": -80.8
+   },
+   {
+    "pose": "walk_6",
+    "hold": 7,
+    "step": -65.8
+   },
+   {
+    "pose": "walk_5",
+    "hold": 7,
+    "step": -69.3
+   },
+   {
+    "pose": "walk_4",
+    "hold": 7,
+    "step": -60.8
+   },
+   {
+    "pose": "walk_3",
+    "hold": 7,
+    "step": -74.1
+   },
+   {
+    "pose": "walk_2",
+    "hold": 7,
+    "step": -67
+   },
+   {
+    "pose": "walk_1",
+    "hold": 7,
+    "step": -63.3
+   }
+  ]
+ },
+ "dash": {
+  "loop": false,
+  "frames": [
+   {
+    "pose": "stance_b",
+    "hold": 3
+   },
+   {
+    "pose": "dash",
+    "hold": 14,
+    "dx": 22
+   },
+   {
+    "pose": "stance",
+    "hold": 8,
+    "dx": 2
+   }
+  ]
+ },
+ "light_attack": {
+  "loop": false,
+  "frames": [
+   {
+    "pose": "light_windup",
+    "hold": 5
+   },
+   {
+    "pose": "kunai_strike",
+    "hold": 6,
+    "events": [
+     {
+      "type": "hitbox",
+      "anchor": "kunai_tip",
+      "radius": 34
+     }
+    ]
+   },
+   {
+    "pose": "light_recover",
+    "hold": 7
+   },
+   {
+    "pose": "stance",
+    "hold": 4
+   }
+  ]
+ },
+ "heavy_attack": {
+  "loop": false,
+  "frames": [
+   {
+    "pose": "sword_windup",
+    "hold": 10
+   },
+   {
+    "pose": "sword_slash",
+    "hold": 5,
+    "events": [
+     {
+      "type": "slashArc",
+      "anchor": "sword_tip",
+      "inner": "sword_guard",
+      "from": "sword_windup",
+      "to": "sword_slash",
+      "samples": 8,
+      "life": 14
+     },
+     {
+      "type": "hitbox",
+      "anchor": "sword_tip",
+      "radius": 48
+     }
+    ]
+   },
+   {
+    "pose": "heavy_follow",
+    "hold": 10
+   },
+   {
+    "pose": "stance",
+    "hold": 6
+   }
+  ]
+ },
+ "guard": {
+  "loop": true,
+  "frames": [
+   {
+    "pose": "guard",
+    "hold": 30
+   }
+  ]
+ },
+ "hit": {
+  "loop": false,
+  "frames": [
+   {
+    "pose": "hit",
+    "hold": 12,
+    "dx": -3,
+    "events": [
+     {
+      "type": "flash",
+      "frames": 4
+     }
+    ]
+   },
+   {
+    "pose": "stance",
+    "hold": 6
+   }
+  ]
+ },
+ "ko": {
+  "loop": false,
+  "frames": [
+   {
+    "pose": "ko_stagger",
+    "hold": 10,
+    "dx": -4,
+    "events": [
+     {
+      "type": "flash",
+      "frames": 5
+     }
+    ]
+   },
+   {
+    "pose": "ko_fall",
+    "hold": 8,
+    "dx": -6
+   },
+   {
+    "pose": "ko_down",
+    "hold": 90
+   }
+  ]
+ },
+ "throw": {
+  "loop": false,
+  "frames": [
+   {
+    "pose": "throw_windup",
+    "hold": 8
+   },
+   {
+    "pose": "throw_release",
+    "hold": 4,
+    "events": [
+     {
+      "type": "spawn",
+      "item": "kunai",
+      "anchor": "hand_near",
+      "velocity": [
+       30,
+       -1
+      ],
+      "life": 50
+     }
+    ]
+   },
+   {
+    "pose": "throw_follow",
+    "hold": 10
+   },
+   {
+    "pose": "stance",
+    "hold": 6
+   }
+  ]
+ },
+ "showcase": {
+  "loop": false,
+  "startX": -420,
+  "frames": [
+   {
+    "pose": "stance",
+    "hold": 18
+   },
+   {
+    "pose": "stance_b",
+    "hold": 10
+   },
+   {
+    "pose": "stance_b",
+    "hold": 3
+   },
+   {
+    "pose": "dash",
+    "hold": 12,
+    "dx": 20
+   },
+   {
+    "pose": "light_windup",
+    "hold": 4
+   },
+   {
+    "pose": "kunai_strike",
+    "hold": 5,
+    "dx": 2,
+    "events": [
+     {
+      "type": "hitbox",
+      "anchor": "kunai_tip",
+      "radius": 34
+     }
+    ]
+   },
+   {
+    "pose": "light_recover",
+    "hold": 3
+   },
+   {
+    "pose": "light_windup",
+    "hold": 3
+   },
+   {
+    "pose": "kunai_strike",
+    "hold": 5,
+    "dx": 2,
+    "events": [
+     {
+      "type": "hitbox",
+      "anchor": "kunai_tip",
+      "radius": 34
+     }
+    ]
+   },
+   {
+    "pose": "light_recover",
+    "hold": 4
+   },
+   {
+    "pose": "kick_chamber",
+    "hold": 5
+   },
+   {
+    "pose": "kick_extend",
+    "hold": 7,
+    "dx": 2,
+    "events": [
+     {
+      "type": "hitbox",
+      "anchor": "foot_far_toe",
+      "radius": 42
+     }
+    ]
+   },
+   {
+    "pose": "kick_recover",
+    "hold": 5
+   },
+   {
+    "pose": "sword_windup",
+    "hold": 9
+   },
+   {
+    "pose": "sword_slash",
+    "hold": 6,
+    "dx": 3,
+    "events": [
+     {
+      "type": "slashArc",
+      "anchor": "sword_tip",
+      "inner": "sword_guard",
+      "from": "sword_windup",
+      "to": "sword_slash",
+      "samples": 8,
+      "life": 14
+     },
+     {
+      "type": "hitbox",
+      "anchor": "sword_tip",
+      "radius": 48
+     }
+    ]
+   },
+   {
+    "pose": "heavy_follow",
+    "hold": 8
+   },
+   {
+    "pose": "backstep",
+    "hold": 10,
+    "dx": -14
+   },
+   {
+    "pose": "stance",
+    "hold": 4
+   },
+   {
+    "pose": "throw_windup",
+    "hold": 7
+   },
+   {
+    "pose": "throw_release",
+    "hold": 4,
+    "events": [
+     {
+      "type": "spawn",
+      "item": "kunai",
+      "anchor": "hand_near",
+      "velocity": [
+       30,
+       -1
+      ],
+      "life": 50
+     }
+    ]
+   },
+   {
+    "pose": "throw_follow",
+    "hold": 8
+   },
+   {
+    "pose": "stance_b",
+    "hold": 3
+   },
+   {
+    "pose": "dash",
+    "hold": 10,
+    "dx": 20
+   },
+   {
+    "pose": "kick_chamber",
+    "hold": 4
+   },
+   {
+    "pose": "kick_extend",
+    "hold": 6,
+    "dx": 2,
+    "events": [
+     {
+      "type": "hitbox",
+      "anchor": "foot_far_toe",
+      "radius": 42
+     }
+    ]
+   },
+   {
+    "pose": "kick_recover",
+    "hold": 4
+   },
+   {
+    "pose": "sword_windup",
+    "hold": 8
+   },
+   {
+    "pose": "sword_slash",
+    "hold": 7,
+    "dx": 3,
+    "events": [
+     {
+      "type": "slashArc",
+      "anchor": "sword_tip",
+      "inner": "sword_guard",
+      "from": "sword_windup",
+      "to": "sword_slash",
+      "samples": 8,
+      "life": 14
+     },
+     {
+      "type": "hitbox",
+      "anchor": "sword_tip",
+      "radius": 48
+     }
+    ]
+   },
+   {
+    "pose": "heavy_follow",
+    "hold": 12
+   },
+   {
+    "pose": "stance",
+    "hold": 10
+   },
+   {
+    "pose": "finisher",
+    "hold": 75
+   }
+  ]
+ }
+}

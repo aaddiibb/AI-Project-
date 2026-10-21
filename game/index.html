@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Algo Fighter</title>
+<style>
+  :root { --ink: #1b1a22; --paper: #f6f0e0; --crimson: #c8283a; --gold: #e2b857; --line: rgba(246, 240, 224, .28); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #14121c; overflow: hidden; color: var(--paper); user-select: none;
+    font-family: Georgia, "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif; }
+  #app { position: fixed; inset: 0; }
+  #app canvas { display: block; }
+  #hudbox { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; pointer-events: none; }
+
+  /* health bars */
+  .bar { position: absolute; top: 44px; width: 760px; height: 44px; }
+  .bar.p1 { left: 70px; } .bar.p2 { right: 70px; }
+  .bar .frame { position: absolute; inset: 0; background: rgba(27, 26, 34, .88); border: 3px solid var(--paper); box-shadow: 0 6px 18px rgba(0, 0, 0, .35); transform: skewX(-18deg); overflow: hidden; }
+  .bar.p2 .frame { transform: skewX(18deg); }
+  .bar .ghost, .bar .fill { position: absolute; top: 0; bottom: 0; }
+  .bar .ghost { background: #fff; opacity: .85; }
+  .bar .fill { background: linear-gradient(180deg, #ff6a5b 0%, var(--crimson) 55%, #8e1626 100%); }
+  .bar.p1 .ghost, .bar.p1 .fill { left: 0; } .bar.p2 .ghost, .bar.p2 .fill { right: 0; }
+  .bar .shine { position: absolute; left: 0; right: 0; top: 0; height: 40%; background: linear-gradient(rgba(255, 255, 255, .35), transparent); }
+  .name { position: absolute; top: 4px; font-size: 25px; letter-spacing: 7px; font-weight: 700; text-shadow: 0 2px 6px #000a; }
+  .p1n { left: 78px; } .p2n { right: 78px; text-align: right; }
+  .name small { font-size: 15px; letter-spacing: 3px; opacity: .75; margin: 0 8px; }
+  .meter { position: absolute; top: 100px; width: 420px; height: 16px; background: rgba(27, 26, 34, .88); border: 2px solid var(--paper); transform: skewX(-18deg); overflow: hidden; }
+  .meter.p1 { left: 110px; } .meter.p2 { right: 110px; transform: skewX(18deg); }
+  .meter i { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, #ffb340, #ff6a1a); }
+  .meter.p1 i { left: 0; } .meter.p2 i { right: 0; }
+  .meter.full { border-color: var(--gold); box-shadow: 0 0 14px #ffb340, 0 0 4px #fff inset; }
+  .gmeter { position: absolute; top: 122px; width: 300px; height: 7px; background: rgba(27, 26, 34, .88); border: 1px solid rgba(246,240,224,.7); transform: skewX(-18deg); overflow: hidden; }
+  .gmeter.p1 { left: 110px; } .gmeter.p2 { right: 110px; transform: skewX(18deg); }
+  .gmeter i { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, #9fd3ff, #4f8fd6); }
+  .gmeter.p1 i { left: 0; } .gmeter.p2 i { right: 0; }
+  .gmeter.warn i { background: linear-gradient(90deg, #ffd27a, #ff4a3a); }
+  .gmeter.broken { border-color: #ff4a3a; box-shadow: 0 0 10px #ff4a3a; }
+  .meter.full i { background: linear-gradient(90deg, #ffe27a, #ff8a1e, #ffe27a); background-size: 200% 100%; animation: shine 1s linear infinite; }
+  @keyframes shine { from { background-position: 0 0; } to { background-position: 200% 0; } }
+  .hpnum { position: absolute; top: 124px; font-size: 18px; letter-spacing: 2px; opacity: .85; text-shadow: 0 2px 4px #000a; }
+  .p1h { left: 90px; } .p2h { right: 90px; }
+  #plaque { position: absolute; left: 50%; top: 36px; transform: translateX(-50%); width: 200px; text-align: center; background: rgba(27, 26, 34, .9); border: 3px solid var(--gold); padding: 6px 0 4px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+  #plaque b { display: block; font-size: 26px; letter-spacing: 8px; color: var(--gold); }
+  #plaque span { font-size: 13px; letter-spacing: 3px; opacity: .8; }
+
+  /* combo */
+  .combo { position: absolute; top: 150px; text-shadow: 0 3px 0 #000a; opacity: 0; transition: opacity .18s; }
+  .combo.on { opacity: 1; }
+  .combo.l { left: 80px; } .combo.r { right: 80px; text-align: right; }
+  .combo .n { font-size: 96px; font-weight: 900; line-height: 1; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; }
+  .combo .n i { font-style: normal; color: var(--gold); }
+  .combo .t { font-size: 26px; letter-spacing: 6px; }
+  .combo .d { font-size: 20px; letter-spacing: 3px; color: var(--gold); }
+
+  /* bottom: inputs + readout */
+  #inputs { position: absolute; left: 60px; bottom: 44px; display: flex; gap: 26px; align-items: flex-end; }
+  .pad { display: grid; grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(2, 46px); gap: 5px; }
+  .k { display: flex; align-items: center; justify-content: center; border: 2px solid var(--line); background: rgba(27, 26, 34, .72); border-radius: 8px; font-size: 20px; color: var(--line); transition: background .04s, color .04s, transform .04s; }
+  .k.on { background: var(--gold); color: var(--ink); border-color: var(--gold); transform: translateY(2px); }
+  .btns { display: flex; gap: 6px; flex-wrap: wrap; width: 330px; }
+  .btns .k { width: 74px; height: 46px; font-size: 15px; flex-direction: column; line-height: 1; letter-spacing: 1px; }
+  .btns .k small { font-size: 11px; opacity: .85; margin-top: 3px; }
+  #readout { position: absolute; left: 50%; bottom: 40px; transform: translateX(-50%); text-align: center; font-size: 18px; letter-spacing: 2px; text-shadow: 0 2px 5px #000b; }
+  #readout b { color: var(--gold); font-weight: 700; }
+  #readout .sm { font-size: 14px; opacity: .8; }
+
+  /* training panel */
+  #panel { position: absolute; right: 40px; bottom: 36px; width: 360px; padding: 14px 16px 12px; background: rgba(27, 26, 34, .86); border: 2px solid var(--line); border-radius: 6px; font-size: 15px; pointer-events: auto; }
+  #panel h3 { margin: 0 0 8px; font-size: 16px; letter-spacing: 4px; color: var(--gold); font-weight: 700; }
+  #panel label { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; gap: 10px; }
+  #panel input[type=range] { width: 170px; accent-color: var(--gold); }
+  #panel select { background: #26242f; color: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; font: inherit; max-width: 200px; }
+  #panel .hot { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); opacity: .85; line-height: 1.55; font-size: 13.5px; }
+  #panel kbd { background: #3a3745; border-radius: 4px; padding: 1px 6px; font: 600 12.5px ui-monospace, Consolas, monospace; }
+  #panel table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
+  #panel td, #panel th { padding: 2px 4px; text-align: right; border-bottom: 1px solid rgba(246, 240, 224, .12); }
+  #panel td:first-child, #panel th:first-child { text-align: left; }
+  #panel th { color: var(--gold); font-weight: 600; }
+  #panel.min { width: auto; } #panel.min .body { display: none; }
+  #toggle { float: right; cursor: pointer; opacity: .8; letter-spacing: 1px; font-size: 13px; }
+
+  #help { position: absolute; left: 60px; top: 330px; width: 400px; padding: 16px 20px; background: rgba(27, 26, 34, .88); border: 2px solid var(--line); border-radius: 6px; font-size: 15px; line-height: 1.7; transition: opacity .5s; }
+  #help h3 { margin: 0 0 6px; font-size: 16px; letter-spacing: 4px; color: var(--gold); }
+  #help kbd { background: #3a3745; border-radius: 4px; padding: 1px 7px; font: 600 13px ui-monospace, Consolas, monospace; }
+  #help.hide { opacity: 0; }
+  #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #14121c; font-size: 28px; letter-spacing: 10px; color: var(--gold); transition: opacity .6s; z-index: 5; }
+  #loading.done { opacity: 0; pointer-events: none; }
+  #banner { position: absolute; left: 50%; top: 300px; transform: translateX(-50%); font-size: 150px; font-weight: 900; letter-spacing: 12px; color: #fff; -webkit-text-stroke: 6px var(--ink); paint-order: stroke fill; text-shadow: 0 8px 0 #0008; opacity: 0; transition: opacity .2s; }
+  #banner.on { opacity: 1; }
+
+  .k.na { opacity: .22; }
+  #inputs.hide { display: none; }
+  #plaque #timer { display: block; font-size: 54px; line-height: 1; color: var(--paper); letter-spacing: 2px; font-weight: 900; }
+  #plaque #timer:empty { display: none; }
+  .pips { position: absolute; top: 150px; display: flex; gap: 8px; } .pips.p1 { left: 92px; } .pips.p2 { right: 92px; }
+  .pips i { width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--paper); background: rgba(27,26,34,.8); transform: rotate(45deg); border-radius: 3px; }
+  .pips i.won { background: var(--gold); box-shadow: 0 0 10px #ffb340; }
+
+  /* AI thinking overlay */
+  #think.hide .tpanel, #think.hide .intent { display: none; }
+  .tpanel { position: absolute; top: 330px; width: 440px; padding: 10px 14px 10px; background: rgba(20, 18, 28, .84); border: 2px solid var(--pc); border-radius: 6px; font-size: 14.5px; line-height: 1.35; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+  .tpanel.off { display: none; }
+  #think0 { left: 40px; --pc: #d6263a; --pf: linear-gradient(90deg, #8e1626, #ff6a5b); }
+  #think1 { right: 40px; --pc: #e2b857; --pf: linear-gradient(90deg, #2f3f8f, #e2b857); }
+  .tpanel h4 { margin: 0 0 6px; font-size: 15px; letter-spacing: 3px; color: var(--pc); }
+  .tpanel .ts { margin: 3px 0; } .tpanel .ts b { color: var(--gold); }
+  .tpanel .tcap { font-size: 12px; letter-spacing: 1px; opacity: .65; margin: 6px 0 2px; }
+  .tb { display: grid; grid-template-columns: 92px 1fr 92px; align-items: center; gap: 8px; margin: 2px 0; font-size: 13.5px; }
+  .tb .tbar { height: 11px; background: rgba(246,240,224,.08); border-radius: 2px; overflow: hidden; }
+  .tb .tbar i { display: block; height: 100%; background: var(--pf); opacity: .55; }
+  .tb.on { color: #fff; font-weight: 700; } .tb.on .tbar i { opacity: 1; box-shadow: 0 0 8px var(--pc); }
+  .tb .tv { text-align: right; font: 12.5px ui-monospace, Consolas, monospace; opacity: .85; }
+  .pv { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+  .pv .tcap { width: 100%; }
+  .pvs { display: inline-flex; border: 1px solid var(--pc); border-radius: 4px; overflow: hidden; font-size: 15px; }
+  .pvs b, .pvs i { padding: 1px 6px; font-style: normal; } .pvs b { background: var(--pc); color: var(--ink); } .pvs i { opacity: .85; }
+  .pv .arr { opacity: .6; }
+  .mrow { display: grid; grid-template-columns: 70px repeat(3, 1fr); gap: 6px; align-items: center; font-size: 12.5px; margin: 2px 0; }
+  .mrow .ml { opacity: .75; } .mset { display: flex; flex-direction: column; } .mset b { font-weight: 400; font-size: 11px; opacity: .8; }
+  .mbar, .agg { display: block; height: 7px; background: rgba(246,240,224,.1); border-radius: 2px; overflow: hidden; }
+  .mbar i, .agg i { display: block; height: 100%; background: var(--pf); }
+  .agg { display: inline-block; width: 110px; vertical-align: middle; }
+  .rule { font-size: 12.5px; margin: 1px 0; } .rule b { color: var(--gold); font: 12px ui-monospace, Consolas, monospace; margin-right: 4px; }
+  .mist { color: #ff6a5b; font-weight: 700; margin-top: 4px; }
+  .intent { position: absolute; left: 0; top: 0; padding: 4px 12px; font-size: 21px; letter-spacing: 2px; font-weight: 700; white-space: nowrap; background: rgba(20,18,28,.85); border: 2px solid var(--pc); border-radius: 14px; opacity: 0; transition: opacity .12s; color: #fff; }
+  .intent.on { opacity: 1; } #intent0 { --pc: #d6263a; } #intent1 { --pc: #e2b857; }
+
+  /* ================================================================ touch controls (touch.js, mobile only) */
+  /* NOTE: these selectors are scoped under #touchUI on purpose: .tb / .tcap are also used by the desktop AI
+     thinking overlay, which must keep its grid layout. */
+  #touchUI { position: fixed; inset: 0; z-index: 6; pointer-events: none; --tu: 1; --tw: 120px; }
+  #touchUI.hide { display: none; }
+  #touchUI .tcWrap { position: absolute; bottom: max(2vh, 10px); top: auto; width: var(--tw); height: calc(100% - max(2vh, 10px)); pointer-events: auto; touch-action: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 12px; }
+  #tcL { left: max(0px, env(safe-area-inset-left)) } #tcR { right: max(0px, env(safe-area-inset-right)) }
+  #tpad { position: relative; width: calc(var(--tu) * 150px); height: calc(var(--tu) * 150px); touch-action: none; }
+  #touchUI .tp { position: absolute; width: calc(var(--tu) * 52px); height: calc(var(--tu) * 52px); display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(246, 240, 224, .55); background: rgba(20, 18, 28, .62); border-radius: 12px; font-size: calc(var(--tu) * 26px);
+    color: rgba(246, 240, 224, .92); text-shadow: 0 1px 3px #000; font-family: ui-monospace, Consolas, monospace; }
+  #touchUI .tp.on { background: var(--gold); color: var(--ink); border-color: var(--gold); box-shadow: 0 0 12px rgba(226, 184, 87, .5); text-shadow: none; }
+  .tpU { left: 50%; top: 0; transform: translateX(-50%) } .tpD { left: 50%; bottom: 0; transform: translateX(-50%) }
+  .tpL { left: 0; top: 50%; transform: translateY(-50%) } .tpR { right: 0; top: 50%; transform: translateY(-50%) }
+  #touchUI .tcap { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(100% + 6px); width: calc(var(--tu) * 150px); font-size: calc(var(--tu) * 10px); letter-spacing: 1px;
+    color: rgba(246, 240, 224, .7); text-align: center; text-shadow: 0 1px 3px #000; }
+  #touchUI .tcap span { font-size: calc(var(--tu) * 9px); opacity: .85 }
+  #tbtns { display: grid; grid-template-columns: repeat(2, calc(var(--tu) * 66px)); grid-template-rows: repeat(4, calc(var(--tu) * 60px)); gap: calc(var(--tu) * 9px);
+    grid-template-areas: "ult sp" "s dash" "k t" "p b"; touch-action: none; }
+  #touchUI .tb { display: flex; align-items: center; justify-content: center; border: 2px solid rgba(246, 240, 224, .55); background: rgba(20, 18, 28, .62);
+    border-radius: 999px; font-size: calc(var(--tu) * 13px); letter-spacing: 1px; color: rgba(246, 240, 224, .92); text-shadow: 0 1px 3px #000;
+    font-family: ui-monospace, Consolas, monospace; transition: transform .06s, background .06s; }
+  #touchUI .tb.on { background: var(--gold); color: var(--ink); border-color: var(--gold); transform: scale(.94); text-shadow: none; }
+  .t-ult { grid-area: ult } .t-sp { grid-area: sp } .t-s { grid-area: s } .t-dash { grid-area: dash } .t-k { grid-area: k } .t-t { grid-area: t } .t-p { grid-area: p } .t-b { grid-area: b }
+  .t-sp.rdy { box-shadow: 0 0 10px rgba(226, 184, 87, .55); border-color: var(--gold); }
+  .t-sp.on { background: var(--gold); color: var(--ink); }
+  /* samurai: no kunai, no jump/crouch */
+  #touchUI.s-samurai .t-t { visibility: hidden; }
+  #touchUI.s-samurai .tpU, #touchUI.s-samurai .tpD { visibility: hidden; }
+  #touchFS, #touchMenuBtn { position: absolute; pointer-events: auto; display: flex; align-items: center; justify-content: center; width: calc(var(--tu) * 42px); height: calc(var(--tu) * 42px);
+    font-size: calc(var(--tu) * 22px); line-height: 1; border: 2px solid rgba(246, 240, 224, .5); background: rgba(20, 18, 28, .6); border-radius: 10px; color: rgba(246, 240, 224, .9); }
+  #touchFS.on, #touchMenuBtn.on { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .t-ult.rdy, .t-sp.rdy { border-color: var(--gold); }
+  #touchMenuBtn { left: max(10px, env(safe-area-inset-left)); top: max(10px, env(safe-area-inset-top)); }
+  #touchFS { left: calc(14px + env(safe-area-inset-left) + var(--tu) * 44px); top: max(10px, env(safe-area-inset-top)); }
+  #touchRotate { position: fixed; inset: 0; z-index: 8; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    background: rgba(20, 18, 28, .97); color: var(--paper); text-align: center; pointer-events: auto; }
+  #touchRotate b { font-size: 30px; letter-spacing: 8px; font-style: italic; font-weight: 900; -webkit-text-stroke: 2px #120c14; }
+  #touchRotate span { font-size: 16px; letter-spacing: 3px; opacity: .75; }
+  /* the gate also covers the front end: a portrait phone would otherwise show a tiny letterboxed menu */
+  @media (orientation: portrait) and (pointer: coarse) { body.touchDevice #touchRotate { display: flex; } }
+  /* touch mode: the side clusters overlay the game corners, so the PC-only chrome gets out of the way */
+  body.touchOn #panel, body.touchOn #inputs, body.touchOn #help, body.touchOn #readout { display: none !important; }
+  /* paused / VS / result: the clusters step aside (the rotate gate stays usable) */
+  #touchUI.paused .tcWrap, #touchUI.paused #touchFS, #touchUI.paused #touchMenuBtn, #touchUI.paused #touchEditBar { display: none !important; }
+  /* edit mode (MOVE BUTTONS in OPTIONS): clusters get a dashed frame; drag them anywhere, positions persist */
+  #touchUI.edit { z-index: 7; } /* above the menu (3), below the portrait rotate gate (8) */
+  #touchUI.edit .tcWrap { height: auto; outline: 2px dashed rgba(226, 184, 87, .85); outline-offset: 5px; border-radius: 14px; background: rgba(20, 18, 28, .22); touch-action: none; }
+  #touchUI.edit .tp, #touchUI.edit .tb { opacity: .92; cursor: move; }
+  #touchUI.edit .tcap { display: none; } /* the DRAG ME label replaces the play caption while editing */
+  #touchUI.edit .tcWrap::after { content: 'DRAG ME'; position: absolute; left: 50%; top: -22px; transform: translateX(-50%); font: 700 11px ui-monospace, Consolas, monospace; letter-spacing: 2px; color: var(--gold); }
+  #touchEditBar { position: absolute; left: 50%; top: max(10px, env(safe-area-inset-top)); transform: translateX(-50%); display: none; gap: 10px; pointer-events: none; }
+  #touchUI.edit #touchEditBar { display: flex; }
+  #touchEditBar .tchip { pointer-events: auto; padding: 10px 26px; font: 700 15px ui-monospace, Consolas, monospace; letter-spacing: 3px;
+    border: 2px solid var(--line); border-radius: 999px; box-shadow: 0 4px 18px #0008; }
+  #touchReset { color: var(--paper); background: rgba(20, 18, 28, .82); }
+  #touchDone { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+  /* while editing over the menu the clusters must stay readable */
+  body.inmenu #touchUI { opacity: .25; }
+  body.inmenu #touchUI.edit { opacity: 1; }
+  /* touch devices: the front end is authored at 1920x1080 and scaled down to the phone, so every clickable row
+     needs to be authored much taller than on a desktop to stay a real ~40 px tap target in landscape */
+  body.touchDevice .mlist li { height: 80px; }
+  body.touchDevice .lscreen.opts .mlist li { height: 74px; font-size: 30px; }
+  body.touchDevice .mlist .val { font-size: 26px; }
+  body.touchDevice .mlist .arr, body.touchDevice .sside .arr { padding: 14px 16px; font-size: 28px; }
+  /* the big name plate is decorative: the same info is in the side panel, so give the panel the space */
+  body.touchDevice .plate { display: none; }
+  body.touchDevice .srow { height: 104px; font-size: 26px; gap: 10px; }
+  body.touchDevice .srow .k { width: 190px; font-size: 20px; }
+  body.touchDevice .srow .v { gap: 8px; }
+  body.touchDevice .srow .v em { min-width: 250px; }
+  body.touchDevice .srow.ok .okb { flex: 1; text-align: center; padding: 12px 0; font-size: 30px; }
+  body.touchDevice .chip { width: 60px; height: 32px; }
+  body.touchDevice .sdesc { font-size: 19px; }
+  /* ================================================================ front end (menu.js) */
+  body.inmenu #hudbox > :not(#menu) { display: none !important; }
+  #menu { position: absolute; inset: 0; pointer-events: auto; z-index: 3; color: var(--paper); }
+  #menu.hide { display: none; }
+  #menu kbd { display: inline-block; min-width: 30px; padding: 2px 8px; margin: 0 2px; border: 1px solid rgba(246,240,224,.5); border-bottom-width: 3px; border-radius: 5px; font: 700 15px ui-monospace, Consolas, monospace; text-align: center; }
+  .q { display: flex; align-items: center; justify-content: center; font-size: 90px; font-weight: 900; color: var(--gold); background: radial-gradient(circle, #3a2232, #120d16); }
+
+  /* logo */
+  .logo { position: relative; text-align: center; }
+  .logo .lk { position: absolute; left: 50%; top: -120px; transform: translateX(-50%); font: 900 420px "Yu Mincho", "MS Mincho", serif; color: #b3142a; opacity: .22; line-height: 1; pointer-events: none; }
+  .logo h1 { position: relative; margin: 0; font-size: 170px; line-height: .95; font-weight: 900; letter-spacing: 18px; color: #fff; font-style: italic;
+    -webkit-text-stroke: 5px #120c14; paint-order: stroke fill; text-shadow: 0 10px 0 #0009, 0 0 40px rgba(200,40,58,.55); }
+  .logo h1 span { display: block; font-size: 120px; letter-spacing: 30px; color: var(--gold); margin-top: -6px; }
+  .logo h1::after { content: ''; position: absolute; left: 50%; top: 52%; width: 980px; height: 9px; transform: translate(-50%, -50%) rotate(-7deg); background: linear-gradient(90deg, transparent, #ff3b4e 18%, #fff 50%, #ff3b4e 82%, transparent); box-shadow: 0 0 22px #ff2a40; animation: slash 3.4s ease-in-out infinite; }
+  @keyframes slash { 0%, 62% { clip-path: inset(0 100% 0 0); opacity: 1; } 70% { clip-path: inset(0 0 0 0); opacity: 1; } 92%, 100% { clip-path: inset(0 0 0 0); opacity: 0; } }
+  .logo h2 { position: relative; margin: 18px 0 0; font-size: 30px; letter-spacing: 22px; font-weight: 400; color: var(--paper); text-shadow: 0 2px 8px #000; }
+  .logo.small .lk { font-size: 250px; top: -70px; }
+  .logo.small h1 { font-size: 92px; letter-spacing: 10px; -webkit-text-stroke-width: 3px; }
+  .logo.small h1 span { font-size: 64px; letter-spacing: 18px; }
+  .logo.small h1::after { width: 560px; height: 5px; }
+  .logo.small h2 { font-size: 19px; letter-spacing: 14px; margin-top: 8px; }
+
+  /* title */
+  .tscreen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
+    background: radial-gradient(ellipse at 50% 45%, rgba(20,14,26,.2), rgba(10,8,14,.8) 70%); }
+  .tscreen .logo { margin-top: -60px; }
+  .press { margin-top: 120px; font-size: 34px; letter-spacing: 14px; color: #fff; text-shadow: 0 0 18px #ff3b4e, 0 2px 4px #000; animation: blink 1.3s steps(2, start) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+  .tscreen .foot { position: absolute; bottom: 40px; font-size: 17px; letter-spacing: 8px; opacity: .6; }
+  .tscreen.bye .press { animation: none; }
+
+  /* list screens: main, pause, result, options, replay, exit */
+  .lscreen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 50%, rgba(20,14,26,.45), rgba(8,6,12,.9) 72%); }
+  .lscreen.pause { background: rgba(8, 6, 12, .74); }
+  .lscreen .logo { margin-bottom: 60px; }
+  .ltitle { margin: 0 0 14px; font-size: 76px; letter-spacing: 16px; font-weight: 900; font-style: italic; color: #fff; -webkit-text-stroke: 3px #120c14; paint-order: stroke fill; text-shadow: 0 6px 0 #0009, 0 0 26px rgba(200,40,58,.5); }
+  .result .ltitle { color: var(--gold); }
+  .lsub { margin: 0 0 26px; font-size: 18px; letter-spacing: 4px; opacity: .7; }
+  .mlist { list-style: none; margin: 0; padding: 0; width: 760px; }
+  .mlist li { position: relative; display: flex; align-items: center; justify-content: space-between; height: 62px; margin: 6px 0; padding: 0 34px; cursor: pointer;
+    font-size: 30px; font-weight: 700; letter-spacing: 8px; color: rgba(246,240,224,.62); clip-path: polygon(22px 0, 100% 0, calc(100% - 22px) 100%, 0 100%); transition: color .12s, background .12s; }
+  .mlist li.on { color: #fff; background: linear-gradient(90deg, rgba(200,40,58,.95), rgba(200,40,58,.55) 70%, rgba(226,184,87,.35)); text-shadow: 0 2px 4px #0008; }
+  .mlist li.on::before { content: '▶'; position: absolute; left: 6px; font-size: 18px; color: var(--gold); }
+  .mlist .val { display: flex; align-items: center; gap: 14px; font-size: 22px; letter-spacing: 3px; }
+  .mlist .val em { font-style: normal; min-width: 130px; text-align: center; }
+  .mlist .arr, .sside .arr { cursor: pointer; color: var(--gold); font-size: 20px; padding: 4px; }
+  .vbar { display: inline-block; width: 160px; height: 10px; background: rgba(246,240,224,.15); border-radius: 2px; overflow: hidden; }
+  .vbar i { display: block; height: 100%; background: linear-gradient(90deg, #ffb340, #ff6a1a); }
+  .mdesc { margin-top: 30px; min-height: 30px; width: 900px; text-align: center; font-size: 21px; letter-spacing: 1px; opacity: .78; }
+  .lscreen.opts .mlist { width: 900px; } .lscreen.opts .mlist li { font-size: 25px; letter-spacing: 5px; }
+
+  /* character select */
+  .sscreen, .stscreen, .vsscreen { position: absolute; inset: 0; }
+  .shead { position: absolute; left: 0; right: 0; top: 18px; text-align: center; }
+  .shead b { display: block; font-size: 54px; letter-spacing: 14px; font-style: italic; color: #fff; -webkit-text-stroke: 2px #120c14; paint-order: stroke fill; text-shadow: 0 4px 0 #0009, 0 0 22px rgba(200,40,58,.5); }
+  .shead span { font-size: 17px; letter-spacing: 8px; color: var(--gold); }
+  .grid { position: absolute; left: 50%; top: 150px; transform: translateX(-50%); display: flex; gap: 14px; }
+  .cell { position: relative; width: 122px; height: 150px; border: 3px solid rgba(246,240,224,.35); background: #120d16; cursor: pointer; transform: skewX(-6deg); transition: transform .1s, border-color .1s; }
+  .cell .cimg, .cell .q { position: absolute; inset: 0 0 26px 0; background-size: 200%; background-position: 50% 22%; }
+  .cell .q { font-size: 70px; }
+  .cell span { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; line-height: 26px; text-align: center; font-size: 13px; letter-spacing: 3px; background: #0b0910; }
+  .cell.hot { border-color: var(--gold); transform: skewX(-6deg) scale(1.08); box-shadow: 0 0 22px rgba(226,184,87,.6); z-index: 1; }
+  .cell .cur { position: absolute; top: -16px; display: none; padding: 1px 7px; font: 700 15px ui-monospace, Consolas, monospace; font-style: normal; color: #fff; border-radius: 3px; }
+  .cell .cur.show { display: block; }
+  .cell .c0 { left: -8px; background: #c8283a; } .cell .c1 { right: -8px; background: #2f63c8; }
+  .svs { position: absolute; left: 50%; top: 360px; transform: translateX(-50%); font-size: 180px; font-weight: 900; font-style: italic; color: rgba(246,240,224,.08); letter-spacing: -6px; }
+  .plate { position: absolute; top: 620px; width: 400px; }
+  .plate.p0 { left: 44px; } .plate.p1 { right: 44px; text-align: right; }
+  .plate .pk { position: absolute; top: -150px; font: 900 190px "Yu Mincho", "MS Mincho", serif; color: rgba(200,40,58,.35); line-height: 1; }
+  .plate.p0 .pk { left: -10px; } .plate.p1 .pk { right: -10px; color: rgba(60,110,220,.35); }
+  .plate .who { position: relative; display: inline-block; padding: 2px 14px; font-size: 17px; letter-spacing: 5px; font-weight: 700; background: #c8283a; }
+  .plate.p1 .who { background: #2f63c8; }
+  .plate .nm { position: relative; font-size: 64px; font-weight: 900; font-style: italic; letter-spacing: 6px; line-height: 1.05; color: #fff; -webkit-text-stroke: 3px #120c14; paint-order: stroke fill; text-shadow: 0 5px 0 #0009; }
+  .plate .tt { position: relative; font-size: 16px; letter-spacing: 4px; color: var(--gold); text-shadow: 0 2px 4px #000; }
+  .stats { position: relative; margin-top: 10px; display: grid; gap: 3px; }
+  .stats div { display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 2px; text-shadow: 0 1px 3px #000; }
+  .plate.p1 .stats div { flex-direction: row-reverse; }
+  .stats span { width: 84px; } .stats i { display: flex; gap: 3px; }
+  .stats b, .stats u { width: 22px; height: 8px; transform: skewX(-20deg); background: var(--gold); } .stats u { background: rgba(246,240,224,.18); }
+  .sside { position: absolute; bottom: 52px; width: 760px; padding: 10px 18px; background: rgba(12, 9, 16, .88); border: 2px solid rgba(246,240,224,.2); transition: opacity .15s, border-color .15s; }
+  .sside.s0 { left: 30px; border-left: 6px solid #c8283a; } .sside.s1 { right: 30px; border-right: 6px solid #2f63c8; }
+  .sside.wait { opacity: .45; } .sside.active { border-color: rgba(226,184,87,.7); box-shadow: 0 0 26px rgba(226,184,87,.18); }
+  .srow { display: flex; align-items: center; gap: 16px; height: 34px; padding: 0 10px; cursor: pointer; font-size: 19px; letter-spacing: 2px; }
+  .srow .k { width: 150px; font-size: 14px; letter-spacing: 4px; opacity: .7; }
+  .srow .v { display: flex; align-items: center; gap: 10px; } .srow .v em { font-style: normal; min-width: 210px; text-align: center; font-weight: 700; }
+  .srow.on { background: linear-gradient(90deg, rgba(200,40,58,.55), transparent); }
+  .sside.s1 .srow.on { background: linear-gradient(90deg, rgba(47,99,200,.6), transparent); }
+  .pals { gap: 10px !important; }
+  .chip { display: inline-block; width: 46px; height: 24px; border: 2px solid rgba(246,240,224,.35); cursor: pointer; transform: skewX(-12deg);
+    background: linear-gradient(90deg, var(--a) 0 50%, var(--b) 50% 75%, var(--c) 75%); }
+  .chip.on { border-color: #fff; box-shadow: 0 0 0 2px var(--gold), 0 0 12px var(--gold); }
+  .chip.taken { opacity: .25; cursor: not-allowed; }
+  .srow .pl { font-style: normal; font-size: 15px; letter-spacing: 3px; color: var(--gold); }
+  .srow.ok { justify-content: center; margin-top: 4px; }
+  .okb { padding: 2px 46px; font-size: 21px; font-weight: 900; letter-spacing: 8px; border: 2px solid rgba(246,240,224,.4); }
+  .srow.ok.on .okb { background: var(--crimson); border-color: var(--gold); }
+  .sside.ready .okb { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .sdesc { margin-top: 6px; min-height: 44px; font-size: 15px; line-height: 1.45; opacity: .78; padding: 0 10px; }
+  .sscreen .hints, .stscreen .hints { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 16px; letter-spacing: 2px; opacity: .7; }
+
+  /* stage select */
+  .sbig { position: absolute; left: 50%; top: 140px; width: 1180px; height: 664px; transform: translateX(-50%); border: 4px solid var(--gold); box-shadow: 0 16px 50px #000c; overflow: hidden; background: #120d16; }
+  .sbig img { width: 100%; height: 100%; object-fit: cover; display: block; animation: kenburns 9s ease-in-out infinite alternate; }
+  @keyframes kenburns { from { transform: scale(1.02); } to { transform: scale(1.1) translateX(-2%); } }
+  .sbig .q { width: 100%; height: 100%; font-size: 220px; }
+  .sname { position: absolute; left: 0; bottom: 0; padding: 10px 40px 10px 28px; font-size: 44px; font-weight: 900; font-style: italic; letter-spacing: 8px; background: linear-gradient(90deg, rgba(200,40,58,.95), rgba(200,40,58,.6) 80%, transparent); text-shadow: 0 3px 0 #0008; }
+  .sthumbs { position: absolute; left: 50%; top: 840px; transform: translateX(-50%); display: flex; gap: 22px; }
+  .th { width: 240px; cursor: pointer; border: 3px solid rgba(246,240,224,.3); background: #120d16; opacity: .7; transition: transform .1s, opacity .1s; }
+  .th img { display: block; width: 100%; height: 135px; object-fit: cover; } .th .q { width: 100%; height: 135px; font-size: 60px; }
+  .th span { display: block; padding: 4px 0; text-align: center; font-size: 14px; letter-spacing: 3px; }
+  .th.on { opacity: 1; border-color: var(--gold); transform: translateY(-6px); box-shadow: 0 0 20px rgba(226,184,87,.5); }
+
+  /* VS */
+  .vsscreen { cursor: pointer; overflow: hidden; }
+  .vsbig { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -54%); font-size: 330px; font-weight: 900; font-style: italic; letter-spacing: -14px; color: #fff;
+    -webkit-text-stroke: 8px #b3142a; paint-order: stroke fill; text-shadow: 0 0 60px #ff2a40, 0 12px 0 #000; animation: vsin .45s cubic-bezier(.2, 1.6, .4, 1) both .25s; }
+  @keyframes vsin { from { transform: translate(-50%, -54%) scale(3.2); opacity: 0; } to { transform: translate(-50%, -54%) scale(1); opacity: 1; } }
+  .vsn { position: absolute; top: 60px; animation: vsname .5s ease-out both .35s; }
+  .vsn.l { left: 70px; } .vsn.r { right: 70px; text-align: right; }
+  @keyframes vsname { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: none; } }
+  .vsn b { display: block; font-size: 96px; font-weight: 900; font-style: italic; letter-spacing: 6px; color: #fff; -webkit-text-stroke: 4px #120c14; paint-order: stroke fill; text-shadow: 0 6px 0 #0009; }
+  .vsn span { display: inline-block; margin-top: 6px; padding: 3px 16px; font-size: 22px; letter-spacing: 4px; font-weight: 700; background: #c8283a; }
+  .vsn.r span { background: #2f63c8; }
+  .vsn small { display: block; margin-top: 8px; font-size: 16px; letter-spacing: 5px; color: var(--gold); }
+  .vsstage { position: absolute; left: 0; right: 0; bottom: 40px; text-align: center; font-size: 24px; letter-spacing: 10px; text-shadow: 0 2px 6px #000; animation: vsname .5s ease-out both .6s; }
+  .hide { display: none !important; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="hudbox">
+  <div class="name p1n" id="n0">SHINOBI<small>P1</small></div>
+  <div class="bar p1"><div class="frame"><div class="ghost" id="g0"></div><div class="fill" id="f0"></div><div class="shine"></div></div></div>
+  <div class="meter p1" id="m0"><i id="mf0"></i></div>
+  <div class="gmeter p1" id="g0" title="guard gauge"><i id="gf0"></i></div>
+  <div class="hpnum p1h" id="hp0"></div>
+  <div id="plaque"><span id="timer"></span><b id="plaqueTitle">TRAINING</b><span id="plaqueSub">SHINOBI · TEST ARENA</span></div>
+  <div class="pips p1" id="pips0"></div><div class="pips p2" id="pips1"></div>
+  <div class="name p2n" id="n1"><small>DUMMY</small>SHINOBI</div>
+  <div class="bar p2"><div class="frame"><div class="ghost" id="g1"></div><div class="fill" id="f1"></div><div class="shine"></div></div></div>
+  <div class="meter p2" id="m1"><i id="mf1"></i></div>
+  <div class="gmeter p2" id="g1" title="guard gauge"><i id="gf1"></i></div>
+  <div class="hpnum p2h" id="hp1"></div>
+
+  <div class="combo l" id="combo0"><div class="n"><i id="cn0">0</i></div><div class="t">HITS</div><div class="d" id="cd0"></div></div>
+  <div class="combo r" id="combo1"><div class="n"><i id="cn1">0</i></div><div class="t">HITS</div><div class="d" id="cd1"></div></div>
+
+  <div id="think"><div class="tpanel off" id="think0"></div><div class="tpanel off" id="think1"></div><div class="intent" id="intent0"></div><div class="intent" id="intent1"></div></div>
+
+  <div id="help" class="hide">
+    <h3>CONTROLS</h3><div style="opacity:.85;margin-bottom:4px"><b>Ultimate bar</b> fills when you attack <i>and</i> when you get hit or block: the harder you are hit, the more you gain. <b>Guard gauge</b> (thin bar below): blocked hits fill it, it drains when you stop blocking; full = GUARD BREAK (long stun).</div><div id="helpSamurai" class="hide"><b>SAMURAI</b> (P1): <kbd>A</kbd> <kbd>D</kbd> walk · <kbd>Shift</kbd> dash (+back = grounded back-dash, also double-tap back)<br>
+    <kbd>J</kbd> iai cut (mid) · <kbd>K</kbd> stepping thrust (gap closer) · <kbd>L</kbd> overhead cleave (chip, knockdown) · <kbd>U</kbd> Crimson Tempest (full meter) · <kbd>Space</kbd> block (standing only)<br>
+    <b>Repel:</b> hold <kbd>Space</kbd> + tap <kbd>J</kbd> — ANYTIME (even knocked down or in a combo): a blade shockwave shoves her away. 25 meter, short cooldown.<br>
+    <b>Parry:</b> tap <kbd>Space</kbd> just as a kunai arrives to deflect it (no damage), then <kbd>K</kbd> to thrust in. Chains: iai cut → thrust → cleave.<br>
+    <b>Crimson Tempest:</b> three waves (high, low, tall). A clean hit starts the punishment cinematic. Ultimates that meet cancel each other.<br>
+    He cannot jump, crouch, run or throw: those keys do nothing.<br></div><div id="helpShinobi">
+    <kbd>A</kbd> <kbd>D</kbd> walk / <b>double-tap forward</b> run / <b>double-tap back</b> hop back<br>
+    <kbd>W</kbd> jump (tap = light, hold = high) · <kbd>S</kbd> crouch<br>
+    <kbd>J</kbd> light sword · <kbd>K</kbd> kick · <kbd>L</kbd> heavy slash · <kbd>I</kbd> kunai throw · <kbd>U</kbd> ultimate (full meter)<br>
+    <kbd>Space</kbd> block (hold) · <kbd>Shift</kbd> dash (+back = hop)<br>
+    <b>Kawarimi:</b> hold <kbd>Space</kbd> + tap <kbd>J</kbd> — if a sword hits the seal she leaves a log and strikes from behind. Costs 25 meter; whiff = open; short cooldown; melee only. <b>Escape:</b> the same input while being hit, blocking, knocked down or getting up = instant substitution that puts distance between you (25 meter).<br>
+    <kbd>S</kbd>+<kbd>J</kbd> crouch light sword · <kbd>S</kbd>+<kbd>K</kbd> sweep · in the air: <kbd>J</kbd> dive stab, <kbd>K</kbd> flying kick<br>
+    Normals chain upward after they connect: <b>light sword → kick → slash → kunai</b>. Meter fills when your attacks connect.<br>
+    </div><span style="opacity:.7">Arrow keys also work. <kbd>Esc</kbd> menu · <kbd>H</kbd> AI thinking overlay · <kbd>G</kbd> hit boxes · <kbd>F1</kbd> show/hide this.</span>
+  </div>
+
+  <div id="inputs">
+    <div class="pad">
+      <div class="k" style="grid-column:2" data-b="U">W</div>
+      <div class="k" style="grid-row:2;grid-column:1" data-b="L">A</div>
+      <div class="k" style="grid-row:2;grid-column:2" data-b="D">S</div>
+      <div class="k" style="grid-row:2;grid-column:3" data-b="R">D</div>
+    </div>
+    <div class="btns">
+      <div class="k" data-b="P">J<small>sword</small></div><div class="k" data-b="K">K<small>kick</small></div><div class="k" data-b="S">L<small>slash</small></div><div class="k" data-b="T">I<small>kunai</small></div><div class="k" data-b="ULT">U<small>ult</small></div>
+      <div class="k" data-b="B" style="width:152px">SPACE<small>block</small></div><div class="k" data-b="DASH" style="width:152px">SHIFT<small>dash</small></div>
+    </div>
+  </div>
+  <div id="readout"></div>
+
+  <div id="panel">
+    <span id="toggle">[ hide ]</span>
+    <h3 id="panelTitle">TRAINING</h3>
+    <div class="body">
+      <label id="dummyRow">Dummy <select id="dummy"></select></label>
+      <label>Stepped look <select id="step"><option value="1" selected>off (smooth)</option><option value="2">on 2s</option><option value="3">on 3s</option></select></label>
+      <label id="meterRow">Meter <select id="meter"><option value="normal">normal</option><option value="inf">always full</option></select></label>
+      <label>Volume <input type="range" id="vol_master" min="0" max="100"></label>
+      <label>Music <input type="range" id="vol_music" min="0" max="100"></label>
+      <label>Effects <input type="range" id="vol_sfx" min="0" max="100"></label>
+      <label>Mute (M) <input type="checkbox" id="mute"></label>
+      <label>Speed <select id="speed"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1× (normal)</option><option value="2">2×</option><option value="4">4×</option></select></label>
+      <div class="hot" id="hotTraining">
+        <kbd>R</kbd> reset positions · <kbd>T</kbd> refill health + meter<br>
+        <kbd>H</kbd>/<kbd>G</kbd> hit/hurt boxes · <kbd>P</kbd> pause · <kbd>N</kbd> step 1 frame<br>
+        <kbd>Tab</kbd> next dummy mode · <kbd>F1</kbd> controls · <kbd>M</kbd> sound · <kbd>Esc</kbd> menu
+      </div>
+      <div class="hot hide" id="hotMatch">
+        <kbd>H</kbd> AI thinking · <kbd>G</kbd> hit boxes · <kbd>P</kbd> pause · <kbd>N</kbd> step 1 frame<br>
+        <kbd>R</kbd> restart match · <kbd>M</kbd> sound · <kbd>Esc</kbd> menu
+        <div id="matchInfo" style="margin-top:6px"></div>
+      </div>
+      <table id="frames"></table>
+    </div>
+  </div>
+  <div id="banner"></div>
+  <div id="menu" class="hide"></div>
+  <input type="file" id="replayFile" accept=".json" hidden>
+</div>
+<div id="touchUI" class="hide">
+  <div class="tcWrap tcL" id="tcL">
+    <div id="tpad">
+      <div class="tp tpU" data-b="U">↑</div>
+      <div class="tp tpL" data-b="L">←</div>
+      <div class="tp tpR" data-b="R">→</div>
+      <div class="tp tpD" data-b="D">↓</div>
+      <div class="tcap">JUMP · WALK · CROUCH<br><span>double-tap ▶ = run</span></div>
+    </div>
+  </div>
+  <div class="tcWrap tcR" id="tcR">
+    <div id="tbtns">
+      <div class="tb t-ult" data-b="ULT">ULT</div>
+      <div class="tb t-sp" id="tSpecial">SPECIAL</div>
+      <div class="tb t-s" data-b="S">SLASH</div>
+      <div class="tb t-dash" data-b="DASH">DASH</div>
+      <div class="tb t-k" data-b="K">KICK</div>
+      <div class="tb t-t" data-b="T">KUNAI</div>
+      <div class="tb t-p" data-b="P">SWORD</div>
+      <div class="tb t-b" data-b="B">BLOCK</div>
+    </div>
+  </div>
+  <div id="touchMenuBtn" aria-label="pause menu">☰</div>
+  <div id="touchFS" aria-label="fullscreen">⛶</div>
+  <div id="touchEditBar"><div class="tchip" id="touchReset">RESET ↺</div><div class="tchip" id="touchDone">DONE ✓</div></div>
+</div>
+<div id="touchRotate"><b>↻ ROTATE YOUR PHONE</b><span>this game plays in landscape</span></div>
+<div id="loading">LOADING…</div>
+<script src="vendor/pixi.min.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
