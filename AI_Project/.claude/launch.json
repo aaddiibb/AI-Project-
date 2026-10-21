@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "shinobi-preview",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "F:/__Projects/AI/AI_Project/art/shinobi"],
+      "port": 8765
+    },
+    {
+      "name": "shinobi-game",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8766", "--directory", "F:/__Projects/AI/AI_Project"],
+      "port": 8766
+    }
+  ]
+}

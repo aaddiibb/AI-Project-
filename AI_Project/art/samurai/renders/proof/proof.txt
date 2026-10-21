@@ -1,0 +1,3 @@
+poses_sheet PNG bytes identical: true  (sha256 babfb4c3ad84d341 vs babfb4c3ad84d341)
+decoded pixel channels differing: 0 of 18432000
+240-frame dynamic sim (idle + springs + wind + stress) world matrices identical: true  (sha256 948fefa9796fb6c8 vs 948fefa9796fb6c8)

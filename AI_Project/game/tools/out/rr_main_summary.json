@@ -1,0 +1,1213 @@
+{
+ "args": {
+  "matches": 200,
+  "seed": 2026,
+  "out": "/sessions/rcw-01vjpq3ccw4gvujshddg6cms/mnt/AI/AI_Project/game/tools/out",
+  "char": "samurai",
+  "react": 9,
+  "roundrobin": "minimax,mcts,fuzzy,scripted,random",
+  "budget": "minimax=nodes:600,mcts=rollouts:250",
+  "tag": "rr_main",
+  "chars": [
+   "samurai",
+   "samurai"
+  ],
+  "note": "minimax vs minimax ran in the cloud container (rr_mirror_minimax_*), the other 14 pairings on the user PC (rr_main_rest_*); same code, seed and budgets"
+ },
+ "summaries": [
+  {
+   "a": "minimax",
+   "b": "minimax",
+   "n": 200,
+   "winsA": 0,
+   "winsB": 0,
+   "draws": 200,
+   "winRateA": 0,
+   "ciA": [
+    0,
+    0.018846005918320894
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 1,
+   "hpMarginA": 0,
+   "timeoutRate": 1,
+   "rounds": 3,
+   "frames": 17820,
+   "asP1": {
+    "n": 100,
+    "wins": 0,
+    "rate": 0,
+    "ci": [
+     0,
+     0.03699480747600191
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 0,
+    "rate": 0,
+    "ci": [
+     0,
+     0.03699480747600191
+    ]
+   },
+   "A": {
+    "dmg": 0,
+    "hits": 0,
+    "blocked": 0,
+    "hitRatio": 0,
+    "chip": 0,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0,
+    "lights": 0,
+    "heavies": 0,
+    "decisions": 2229,
+    "msMean": 10.709493319869816,
+    "msP95": 21.854139000177383,
+    "work": 600
+   },
+   "B": {
+    "dmg": 0,
+    "hits": 0,
+    "blocked": 0,
+    "hitRatio": 0,
+    "chip": 0,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0,
+    "lights": 0,
+    "heavies": 0,
+    "decisions": 2229,
+    "msMean": 10.700753943553014,
+    "msP95": 21.815544999204576,
+    "work": 600
+   },
+   "wallSec": 4796.687619413,
+   "budgets": [
+    {
+     "nodes": 600
+    },
+    {
+     "nodes": 600
+    }
+   ]
+  },
+  {
+   "a": "minimax",
+   "b": "mcts",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.823785,
+   "timeoutRate": 0.0025,
+   "rounds": 2.03,
+   "frames": 2353.855,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2234.755,
+    "hits": 18.53,
+    "blocked": 0.435,
+    "hitRatio": 0.9770630108093857,
+    "chip": 42.37,
+    "ults": 0.995,
+    "ultHits": 0.095,
+    "heavyWhiffs": 0.01,
+    "lights": 18.11,
+    "heavies": 1.235,
+    "decisions": 165.055,
+    "msMean": 7.096272094288718,
+    "msP95": 12.388234000000011,
+    "work": 600
+   },
+   "B": {
+    "dmg": 356.35,
+    "hits": 2.79,
+    "blocked": 19.39,
+    "hitRatio": 0.12578899909828675,
+    "chip": 41.64,
+    "ults": 0.605,
+    "ultHits": 0.045,
+    "heavyWhiffs": 0.005,
+    "lights": 32.905,
+    "heavies": 3.37,
+    "decisions": 92.05,
+    "msMean": 7.626163025499607,
+    "msP95": 12.938518999999815,
+    "work": 250
+   },
+   "wallSec": 0.013128399000000002,
+   "budgets": [
+    {
+     "nodes": 600
+    },
+    {
+     "rollouts": 250
+    }
+   ]
+  },
+  {
+   "a": "minimax",
+   "b": "fuzzy",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.8470274999999999,
+   "timeoutRate": 0,
+   "rounds": 2,
+   "frames": 1548.11,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2151.69,
+    "hits": 16.415,
+    "blocked": 0.025,
+    "hitRatio": 0.9984793187347932,
+    "chip": 1.325,
+    "ults": 1,
+    "ultHits": 0.985,
+    "heavyWhiffs": 0.005,
+    "lights": 15.47,
+    "heavies": 0.485,
+    "decisions": 89.83,
+    "msMean": 7.410247385638948,
+    "msP95": 12.225269999995362,
+    "work": 600
+   },
+   "B": {
+    "dmg": 305.945,
+    "hits": 3.025,
+    "blocked": 13,
+    "hitRatio": 0.18876755070202808,
+    "chip": 2.385,
+    "ults": 0.41,
+    "ultHits": 0.01,
+    "heavyWhiffs": 0.005,
+    "lights": 23.635,
+    "heavies": 0.305,
+    "decisions": 52.055,
+    "msMean": 0.058270154224867754,
+    "msP95": 0.14992199999687728,
+    "work": 0
+   },
+   "wallSec": 0.01048275000000001,
+   "budgets": [
+    {
+     "nodes": 600
+    },
+    null
+   ]
+  },
+  {
+   "a": "minimax",
+   "b": "scripted",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 1,
+   "timeoutRate": 0,
+   "rounds": 2,
+   "frames": 1707,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2144,
+    "hits": 18,
+    "blocked": 0,
+    "hitRatio": 1,
+    "chip": 0,
+    "ults": 1,
+    "ultHits": 1,
+    "heavyWhiffs": 0,
+    "lights": 17,
+    "heavies": 0,
+    "decisions": 101,
+    "msMean": 7.557100428019746,
+    "msP95": 12.574603999993997,
+    "work": 600
+   },
+   "B": {
+    "dmg": 0,
+    "hits": 0,
+    "blocked": 25,
+    "hitRatio": 0,
+    "chip": 0,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0,
+    "lights": 25,
+    "heavies": 1,
+    "decisions": 66,
+    "msMean": 0.00258883113630435,
+    "msP95": 0.0074539999914122745,
+    "work": 0
+   },
+   "wallSec": 0.011487988999999971,
+   "budgets": [
+    {
+     "nodes": 600
+    },
+    null
+   ]
+  },
+  {
+   "a": "minimax",
+   "b": "random",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.8844850000000015,
+   "timeoutRate": 0,
+   "rounds": 2,
+   "frames": 1614.455,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2178.57,
+    "hits": 16.875,
+    "blocked": 0.05,
+    "hitRatio": 0.9970457902511078,
+    "chip": 4.03,
+    "ults": 0.995,
+    "ultHits": 0.825,
+    "heavyWhiffs": 0.025,
+    "lights": 15.285,
+    "heavies": 1.34,
+    "decisions": 109.91,
+    "msMean": 7.841464075452468,
+    "msP95": 13.332552000007126,
+    "work": 599.9744761904763
+   },
+   "B": {
+    "dmg": 231.03,
+    "hits": 0.46,
+    "blocked": 7.435,
+    "hitRatio": 0.058264724509183026,
+    "chip": 167.745,
+    "ults": 0.005,
+    "ultHits": 0,
+    "heavyWhiffs": 0.01,
+    "lights": 6.305,
+    "heavies": 6.46,
+    "decisions": 58.245,
+    "msMean": 0.004566726654233345,
+    "msP95": 0.013784000002488028,
+    "work": 0
+   },
+   "wallSec": 0.0112828209999999,
+   "budgets": [
+    {
+     "nodes": 600
+    },
+    null
+   ]
+  },
+  {
+   "a": "mcts",
+   "b": "mcts",
+   "n": 200,
+   "winsA": 103,
+   "winsB": 92,
+   "draws": 5,
+   "winRateA": 0.515,
+   "ciA": [
+    0.44610724474630287,
+    0.5833273750761475
+   ],
+   "winRateB": 0.46,
+   "ciB": [
+    0.3923293114096125,
+    0.5291783690638533
+   ],
+   "drawRate": 0.025,
+   "hpMarginA": 0.04185333333333333,
+   "timeoutRate": 0,
+   "rounds": 2.48,
+   "frames": 2821.175,
+   "asP1": {
+    "n": 100,
+    "wins": 55,
+    "rate": 0.55,
+    "ci": [
+     0.4524442703164345,
+     0.6438562489359655
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 48,
+    "rate": 0.48,
+    "ci": [
+     0.38464384320080547,
+     0.5768359490982345
+    ]
+   },
+   "A": {
+    "dmg": 2145.785,
+    "hits": 15.735,
+    "blocked": 2.455,
+    "hitRatio": 0.8650357339197361,
+    "chip": 125.14,
+    "ults": 0.975,
+    "ultHits": 0.23,
+    "heavyWhiffs": 1.43,
+    "lights": 32.985,
+    "heavies": 5.885,
+    "decisions": 118.67,
+    "msMean": 7.519143097923568,
+    "msP95": 11.115069999999832,
+    "work": 250
+   },
+   "B": {
+    "dmg": 2039.06,
+    "hits": 15.19,
+    "blocked": 2.435,
+    "hitRatio": 0.8618439716312056,
+    "chip": 105.015,
+    "ults": 0.89,
+    "ultHits": 0.24,
+    "heavyWhiffs": 1.76,
+    "lights": 33.185,
+    "heavies": 5.95,
+    "decisions": 116.32,
+    "msMean": 7.558892214823491,
+    "msP95": 11.153852999996161,
+    "work": 250
+   },
+   "wallSec": 0.012286523999999986,
+   "budgets": [
+    {
+     "rollouts": 250
+    },
+    {
+     "rollouts": 250
+    }
+   ]
+  },
+  {
+   "a": "mcts",
+   "b": "fuzzy",
+   "n": 200,
+   "winsA": 198,
+   "winsB": 2,
+   "draws": 0,
+   "winRateA": 0.99,
+   "ciA": [
+    0.9642775148038205,
+    0.9972533993962251
+   ],
+   "winRateB": 0.01,
+   "ciB": [
+    0.0027466006037749346,
+    0.03572248519617954
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.5876883333333334,
+   "timeoutRate": 0,
+   "rounds": 2.075,
+   "frames": 1324.045,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 98,
+    "rate": 0.98,
+    "ci": [
+     0.9299868370580062,
+     0.9944981477650318
+    ]
+   },
+   "A": {
+    "dmg": 2173.48,
+    "hits": 15.005,
+    "blocked": 0.49,
+    "hitRatio": 0.9683768957728299,
+    "chip": 25.97,
+    "ults": 1.015,
+    "ultHits": 0.975,
+    "heavyWhiffs": 0.755,
+    "lights": 17.63,
+    "heavies": 3.805,
+    "decisions": 49.53,
+    "msMean": 7.697533094392399,
+    "msP95": 14.13035699998727,
+    "work": 250
+   },
+   "B": {
+    "dmg": 866.15,
+    "hits": 7.35,
+    "blocked": 1.185,
+    "hitRatio": 0.8611599297012302,
+    "chip": 13.625,
+    "ults": 0.13,
+    "ultHits": 0.03,
+    "heavyWhiffs": 0.015,
+    "lights": 15.72,
+    "heavies": 1.035,
+    "decisions": 52.91,
+    "msMean": 0.05021618551859553,
+    "msP95": 0.15130499999213498,
+    "work": 0
+   },
+   "wallSec": 0.012241117999999915,
+   "budgets": [
+    {
+     "rollouts": 250
+    },
+    null
+   ]
+  },
+  {
+   "a": "mcts",
+   "b": "scripted",
+   "n": 200,
+   "winsA": 190,
+   "winsB": 7,
+   "draws": 3,
+   "winRateA": 0.95,
+   "ciA": [
+    0.9104209437021562,
+    0.972617650971355
+   ],
+   "winRateB": 0.035,
+   "ciB": [
+    0.017055324637357108,
+    0.07047146086668134
+   ],
+   "drawRate": 0.015,
+   "hpMarginA": 0.5585983333333334,
+   "timeoutRate": 0,
+   "rounds": 2.105,
+   "frames": 1273.905,
+   "asP1": {
+    "n": 100,
+    "wins": 93,
+    "rate": 0.93,
+    "ci": [
+     0.8625032899347025,
+     0.9656811756359358
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 97,
+    "rate": 0.97,
+    "ci": [
+     0.915479219195973,
+     0.9897456617765852
+    ]
+   },
+   "A": {
+    "dmg": 2203.31,
+    "hits": 18.21,
+    "blocked": 0.355,
+    "hitRatio": 0.980877996229464,
+    "chip": 16.96,
+    "ults": 1.035,
+    "ultHits": 0.725,
+    "heavyWhiffs": 0.15,
+    "lights": 19.52,
+    "heavies": 1.79,
+    "decisions": 46.425,
+    "msMean": 8.008144837707743,
+    "msP95": 17.60125999999991,
+    "work": 250
+   },
+   "B": {
+    "dmg": 964.48,
+    "hits": 8.385,
+    "blocked": 2.325,
+    "hitRatio": 0.7829131652661064,
+    "chip": 14.575,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0.005,
+    "lights": 14.34,
+    "heavies": 1.18,
+    "decisions": 58.31,
+    "msMean": 0.003525449685707457,
+    "msP95": 0.00858600000037768,
+    "work": 0
+   },
+   "wallSec": 15.382988181,
+   "budgets": [
+    {
+     "rollouts": 250
+    },
+    null
+   ]
+  },
+  {
+   "a": "mcts",
+   "b": "random",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.9155850000000005,
+   "timeoutRate": 0,
+   "rounds": 2,
+   "frames": 1176.175,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2141.065,
+    "hits": 13.775,
+    "blocked": 1.01,
+    "hitRatio": 0.9316875211362867,
+    "chip": 12.565,
+    "ults": 0.995,
+    "ultHits": 0.955,
+    "heavyWhiffs": 1.215,
+    "lights": 14.235,
+    "heavies": 4.96,
+    "decisions": 44.82,
+    "msMean": 7.66251659319006,
+    "msP95": 13.882032999998046,
+    "work": 250
+   },
+   "B": {
+    "dmg": 168.83,
+    "hits": 1.335,
+    "blocked": 0.145,
+    "hitRatio": 0.902027027027027,
+    "chip": 2.12,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0.455,
+    "lights": 3.395,
+    "heavies": 3.375,
+    "decisions": 41.84,
+    "msMean": 0.0037454102734941676,
+    "msP95": 0.012047999996866565,
+    "work": 0
+   },
+   "wallSec": 36.427416864,
+   "budgets": [
+    {
+     "rollouts": 250
+    },
+    null
+   ]
+  },
+  {
+   "a": "fuzzy",
+   "b": "fuzzy",
+   "n": 200,
+   "winsA": 60,
+   "winsB": 69,
+   "draws": 71,
+   "winRateA": 0.3,
+   "ciA": [
+    0.24074644243406387,
+    0.3667919599332645
+   ],
+   "winRateB": 0.345,
+   "ciB": [
+    0.28259686901390296,
+    0.41324539282077655
+   ],
+   "drawRate": 0.355,
+   "hpMarginA": 0.009904999999999999,
+   "timeoutRate": 0.03666666666666665,
+   "rounds": 2.765,
+   "frames": 2050.97,
+   "asP1": {
+    "n": 100,
+    "wins": 36,
+    "rate": 0.36,
+    "ci": [
+     0.2727107459049014,
+     0.4576478001883791
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 24,
+    "rate": 0.24,
+    "ci": [
+     0.16691211265459965,
+     0.3323251872329213
+    ]
+   },
+   "A": {
+    "dmg": 2681.26,
+    "hits": 21.245,
+    "blocked": 0.05,
+    "hitRatio": 0.9976520309931909,
+    "chip": 2.12,
+    "ults": 0.975,
+    "ultHits": 0.745,
+    "heavyWhiffs": 0,
+    "lights": 24.595,
+    "heavies": 1.005,
+    "decisions": 126.3,
+    "msMean": 0.018242717153964784,
+    "msP95": 0.06970600000204286,
+    "work": 0
+   },
+   "B": {
+    "dmg": 2651.615,
+    "hits": 21.185,
+    "blocked": 0.05,
+    "hitRatio": 0.9976453967506476,
+    "chip": 2.65,
+    "ults": 0.935,
+    "ultHits": 0.68,
+    "heavyWhiffs": 0,
+    "lights": 24.58,
+    "heavies": 1.025,
+    "decisions": 126.71,
+    "msMean": 0.016618240731981274,
+    "msP95": 0.0644220000031055,
+    "work": 0
+   },
+   "wallSec": 2.920659553999998,
+   "budgets": [
+    null,
+    null
+   ]
+  },
+  {
+   "a": "fuzzy",
+   "b": "scripted",
+   "n": 200,
+   "winsA": 93,
+   "winsB": 60,
+   "draws": 47,
+   "winRateA": 0.465,
+   "ciA": [
+    0.39718443070423204,
+    0.5341347897100506
+   ],
+   "winRateB": 0.3,
+   "ciB": [
+    0.24074644243406387,
+    0.3667919599332645
+   ],
+   "drawRate": 0.235,
+   "hpMarginA": 0.017301666666666674,
+   "timeoutRate": 0,
+   "rounds": 2.8,
+   "frames": 1563.43,
+   "asP1": {
+    "n": 100,
+    "wins": 48,
+    "rate": 0.48,
+    "ci": [
+     0.38464384320080547,
+     0.5768359490982345
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 45,
+    "rate": 0.45,
+    "ci": [
+     0.3561437510640347,
+     0.5475557296835656
+    ]
+   },
+   "A": {
+    "dmg": 2723,
+    "hits": 25.225,
+    "blocked": 0,
+    "hitRatio": 1,
+    "chip": 0,
+    "ults": 1.525,
+    "ultHits": 0.055,
+    "heavyWhiffs": 0,
+    "lights": 28.735,
+    "heavies": 0.705,
+    "decisions": 55.685,
+    "msMean": 0.02286243516618451,
+    "msP95": 0.09574099999736063,
+    "work": 0
+   },
+   "B": {
+    "dmg": 2668.635,
+    "hits": 24.005,
+    "blocked": 0,
+    "hitRatio": 1,
+    "chip": 0,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0,
+    "lights": 27.015,
+    "heavies": 0.02,
+    "decisions": 62.87,
+    "msMean": 0.00189655455431662,
+    "msP95": 0.011696000001393259,
+    "work": 0
+   },
+   "wallSec": 2.506960718999995,
+   "budgets": [
+    null,
+    null
+   ]
+  },
+  {
+   "a": "fuzzy",
+   "b": "random",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.7811441666666669,
+   "timeoutRate": 0,
+   "rounds": 2.01,
+   "frames": 1159.58,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2139.425,
+    "hits": 17.025,
+    "blocked": 1.64,
+    "hitRatio": 0.9121350120546478,
+    "chip": 12.14,
+    "ults": 1.01,
+    "ultHits": 0.685,
+    "heavyWhiffs": 0.19,
+    "lights": 21.3,
+    "heavies": 1.905,
+    "decisions": 40.115,
+    "msMean": 0.03059099596550592,
+    "msP95": 0.20454899999458576,
+    "work": 0
+   },
+   "B": {
+    "dmg": 440.795,
+    "hits": 3.47,
+    "blocked": 0.26,
+    "hitRatio": 0.9302949061662198,
+    "chip": 13.515,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0.565,
+    "lights": 4.425,
+    "heavies": 4.39,
+    "decisions": 40.81,
+    "msMean": 0.002421494607739458,
+    "msP95": 0.010399999999208376,
+    "work": 0
+   },
+   "wallSec": 2.1703312650000006,
+   "budgets": [
+    null,
+    null
+   ]
+  },
+  {
+   "a": "scripted",
+   "b": "scripted",
+   "n": 200,
+   "winsA": 0,
+   "winsB": 0,
+   "draws": 200,
+   "winRateA": 0,
+   "ciA": [
+    0,
+    0.018846005918320894
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 1,
+   "hpMarginA": 0,
+   "timeoutRate": 0,
+   "rounds": 3,
+   "frames": 1320,
+   "asP1": {
+    "n": 100,
+    "wins": 0,
+    "rate": 0,
+    "ci": [
+     0,
+     0.03699480747600191
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 0,
+    "rate": 0,
+    "ci": [
+     0,
+     0.03699480747600191
+    ]
+   },
+   "A": {
+    "dmg": 3051,
+    "hits": 27,
+    "blocked": 0,
+    "hitRatio": 1,
+    "chip": 0,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0,
+    "lights": 27,
+    "heavies": 0,
+    "decisions": 51,
+    "msMean": 0.0011416006862975125,
+    "msP95": 0.010112999996636063,
+    "work": 0
+   },
+   "B": {
+    "dmg": 3051,
+    "hits": 27,
+    "blocked": 0,
+    "hitRatio": 1,
+    "chip": 0,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0,
+    "lights": 27,
+    "heavies": 0,
+    "decisions": 51,
+    "msMean": 0.0014409330392171646,
+    "msP95": 0.010180999997828621,
+    "work": 0
+   },
+   "wallSec": 2.176041971000006,
+   "budgets": [
+    null,
+    null
+   ]
+  },
+  {
+   "a": "scripted",
+   "b": "random",
+   "n": 200,
+   "winsA": 200,
+   "winsB": 0,
+   "draws": 0,
+   "winRateA": 1,
+   "ciA": [
+    0.9811539940816792,
+    1
+   ],
+   "winRateB": 0,
+   "ciB": [
+    0,
+    0.018846005918320894
+   ],
+   "drawRate": 0,
+   "hpMarginA": 0.7796050000000002,
+   "timeoutRate": 0,
+   "rounds": 2,
+   "frames": 1190.145,
+   "asP1": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 100,
+    "rate": 1,
+    "ci": [
+     0.963005192523998,
+     0.9999999999999998
+    ]
+   },
+   "A": {
+    "dmg": 2114.76,
+    "hits": 20.795,
+    "blocked": 2.35,
+    "hitRatio": 0.8984661914020307,
+    "chip": 3.18,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0.035,
+    "lights": 24.23,
+    "heavies": 0.79,
+    "decisions": 48.905,
+    "msMean": 0.0035441427303470317,
+    "msP95": 0.016864000004716218,
+    "work": 0
+   },
+   "B": {
+    "dmg": 440.79,
+    "hits": 3.715,
+    "blocked": 0.64,
+    "hitRatio": 0.8530424799081515,
+    "chip": 33.92,
+    "ults": 0,
+    "ultHits": 0,
+    "heavyWhiffs": 0.09,
+    "lights": 4.52,
+    "heavies": 4.675,
+    "decisions": 44.3,
+    "msMean": 0.0025581168679963016,
+    "msP95": 0.012955000005604234,
+    "work": 0
+   },
+   "wallSec": 2.040943613000003,
+   "budgets": [
+    null,
+    null
+   ]
+  },
+  {
+   "a": "random",
+   "b": "random",
+   "n": 200,
+   "winsA": 101,
+   "winsB": 95,
+   "draws": 4,
+   "winRateA": 0.505,
+   "ciA": [
+    0.4362687594824017,
+    0.5735427804584151
+   ],
+   "winRateB": 0.475,
+   "ciB": [
+    0.40691500740098613,
+    0.54402729289493
+   ],
+   "drawRate": 0.02,
+   "hpMarginA": 0.005061666666666703,
+   "timeoutRate": 0.0016666666666666666,
+   "rounds": 2.395,
+   "frames": 2839.995,
+   "asP1": {
+    "n": 100,
+    "wins": 54,
+    "rate": 0.54,
+    "ci": [
+     0.4426468539352385,
+     0.6343935614666814
+    ]
+   },
+   "asP2": {
+    "n": 100,
+    "wins": 47,
+    "rate": 0.47,
+    "ci": [
+     0.3751065198210374,
+     0.5671131686275227
+    ]
+   },
+   "A": {
+    "dmg": 1996.69,
+    "hits": 11.725,
+    "blocked": 0.795,
+    "hitRatio": 0.9365015974440895,
+    "chip": 15.105,
+    "ults": 0.74,
+    "ultHits": 0.44,
+    "heavyWhiffs": 2.7,
+    "lights": 10.41,
+    "heavies": 9.79,
+    "decisions": 124.88,
+    "msMean": 0.000590585934762105,
+    "msP95": 0.003788000001804903,
+    "work": 0
+   },
+   "B": {
+    "dmg": 1986.515,
+    "hits": 11.63,
+    "blocked": 0.815,
+    "hitRatio": 0.9345118521494576,
+    "chip": 22.105,
+    "ults": 0.71,
+    "ultHits": 0.405,
+    "heavyWhiffs": 2.565,
+    "lights": 10.235,
+    "heavies": 10.175,
+    "decisions": 124.6,
+    "msMean": 0.0007003613278187777,
+    "msP95": 0.003577999996196013,
+    "work": 0
+   },
+   "wallSec": 2.616811576,
+   "budgets": [
+    null,
+    null
+   ]
+  }
+ ]
+}

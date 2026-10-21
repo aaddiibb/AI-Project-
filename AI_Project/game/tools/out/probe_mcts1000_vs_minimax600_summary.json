@@ -1,0 +1,103 @@
+{
+ "args": {
+  "matches": 40,
+  "seed": 31,
+  "out": "/sessions/rcw-01vjpq3ccw4gvujshddg6cms/mnt/AI/AI_Project/game/tools/out",
+  "char": "samurai",
+  "react": 9,
+  "p1": "mcts",
+  "p2": "minimax",
+  "b1": "rollouts:1000",
+  "b2": "nodes:600",
+  "tag": "probe_mcts1000_vs_minimax600",
+  "resume": true,
+  "chars": [
+   "samurai",
+   "samurai"
+  ]
+ },
+ "summaries": [
+  {
+   "a": "mcts",
+   "b": "minimax",
+   "n": 40,
+   "winsA": 0,
+   "winsB": 40,
+   "draws": 0,
+   "winRateA": 0,
+   "ciA": [
+    0,
+    0.08762453925039232
+   ],
+   "winRateB": 1,
+   "ciB": [
+    0.9123754607496077,
+    1
+   ],
+   "drawRate": 0,
+   "hpMarginA": -0.7663708333333334,
+   "timeoutRate": 0.15833333333333335,
+   "rounds": 2.025,
+   "frames": 4697.25,
+   "asP1": {
+    "n": 20,
+    "wins": 0,
+    "rate": 0,
+    "ci": [
+     0,
+     0.1611301254949332
+    ]
+   },
+   "asP2": {
+    "n": 20,
+    "wins": 0,
+    "rate": 0,
+    "ci": [
+     0,
+     0.1611301254949332
+    ]
+   },
+   "A": {
+    "dmg": 455.025,
+    "hits": 4.025,
+    "blocked": 23.225,
+    "hitRatio": 0.14770642201834863,
+    "chip": 37.65,
+    "ults": 0.8,
+    "ultHits": 0.025,
+    "heavyWhiffs": 0,
+    "lights": 40.725,
+    "heavies": 0.85,
+    "decisions": 363.15,
+    "msMean": 33.17991528804765,
+    "msP95": 58.63899900000001,
+    "work": 1000
+   },
+   "B": {
+    "dmg": 2161.225,
+    "hits": 19.2,
+    "blocked": 0.725,
+    "hitRatio": 0.9636135508155583,
+    "chip": 31.95,
+    "ults": 1,
+    "ultHits": 0,
+    "heavyWhiffs": 0.025,
+    "lights": 21.05,
+    "heavies": 0.7,
+    "decisions": 441.375,
+    "msMean": 8.584732838340155,
+    "msP95": 18.04928000000018,
+    "work": 600
+   },
+   "wallSec": 123.976972634,
+   "budgets": [
+    {
+     "rollouts": 1000
+    },
+    {
+     "nodes": 600
+    }
+   ]
+  }
+ ]
+}

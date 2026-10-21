@@ -1,0 +1,837 @@
+{
+ "_conventions": "Degrees, clockwise positive. Hanging limbs: negative = swing forward (+x), positive = swing back. Upright parts (waist/torso/neck/head): positive = lean/nod forward. Elbow flex = negative, knee flex = positive. root = pelvis offset in master units. attachRot rotates a held item about the grip. springHang scales how strongly hair/cloth hang under gravity (1 default; lying poses use ~0.1). groundBy grounds a lying pose on the listed parts instead of the feet. Slot 'foot_near' swaps the camera-facing near foot for a side-on one (walk/dash).",
+ "neutral": {},
+ "walk_contact": {
+  "root": {
+   "x": 6,
+   "y": 0
+  },
+  "rot": {
+   "thigh_far": -26,
+   "shin_boot_far": 4,
+   "foot_far": 12,
+   "thigh_near": 12,
+   "shin_boot_near": 0,
+   "foot_near": -12,
+   "waist": 1,
+   "torso_upper": 3,
+   "head_base": -2,
+   "upper_arm_near": -18,
+   "forearm_near": -16,
+   "upper_arm_far": 14,
+   "forearm_far": -6
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open"
+  }
+ },
+ "kunai_strike": {
+  "root": {
+   "x": 34,
+   "y": 0
+  },
+  "rot": {
+   "thigh_far": -48,
+   "shin_boot_far": 56,
+   "foot_far": -6,
+   "thigh_near": 16,
+   "shin_boot_near": 14,
+   "foot_near": -30,
+   "waist": 6,
+   "torso_upper": 12,
+   "neck": -4,
+   "head_base": -8,
+   "upper_arm_near": -84,
+   "forearm_near": -10,
+   "upper_arm_far": 26,
+   "forearm_far": -50
+  },
+  "slots": {
+   "hand_near": "hand_near_grip_kunai",
+   "hand_far": "hand_far_fist",
+   "face": "face_intense"
+  },
+  "attach": {
+   "kunai": "hand_near_grip_kunai"
+  },
+  "attachRot": {
+   "kunai": 90
+  }
+ },
+ "sword_windup": {
+  "root": {
+   "x": -8,
+   "y": 0
+  },
+  "rot": {
+   "thigh_far": -20,
+   "shin_boot_far": 24,
+   "foot_far": -2,
+   "thigh_near": 0,
+   "shin_boot_near": 10,
+   "foot_near": -10,
+   "waist": -6,
+   "torso_upper": -10,
+   "head_base": 2,
+   "upper_arm_near": -210,
+   "forearm_near": -60,
+   "upper_arm_far": -40,
+   "forearm_far": -70
+  },
+  "slots": {
+   "hand_near": "hand_near_grip_sword",
+   "hand_far": "hand_far_fist",
+   "face": "face_intense"
+  },
+  "attach": {
+   "sword": "hand_near_grip_sword"
+  },
+  "attachRot": {
+   "sword": 116
+  }
+ },
+ "sword_slash": {
+  "root": {
+   "x": 30,
+   "y": 0
+  },
+  "rot": {
+   "thigh_far": -48,
+   "shin_boot_far": 58,
+   "foot_far": -8,
+   "thigh_near": 16,
+   "shin_boot_near": 14,
+   "foot_near": -30,
+   "waist": 8,
+   "torso_upper": 16,
+   "neck": -4,
+   "head_base": -8,
+   "upper_arm_near": -64,
+   "forearm_near": -18,
+   "upper_arm_far": 30,
+   "forearm_far": -46
+  },
+  "slots": {
+   "hand_near": "hand_near_grip_sword",
+   "hand_far": "hand_far_fist",
+   "face": "face_intense"
+  },
+  "attach": {
+   "sword": "hand_near_grip_sword"
+  },
+  "attachRot": {
+   "sword": 30
+  }
+ },
+ "guard": {
+  "root": {
+   "x": 0,
+   "y": 0
+  },
+  "rot": {
+   "thigh_far": -20,
+   "shin_boot_far": 32,
+   "foot_far": -12,
+   "thigh_near": -10,
+   "shin_boot_near": 28,
+   "foot_near": -18,
+   "waist": 4,
+   "torso_upper": 8,
+   "neck": -2,
+   "head_base": -6,
+   "upper_arm_near": -40,
+   "forearm_near": -112,
+   "upper_arm_far": -28,
+   "forearm_far": -116
+  },
+  "slots": {
+   "hand_near": "hand_near_fist",
+   "hand_far": "hand_far_fist"
+  }
+ },
+ "hit": {
+  "root": {
+   "x": -18,
+   "y": 0
+  },
+  "rot": {
+   "thigh_far": -8,
+   "shin_boot_far": 14,
+   "foot_far": -4,
+   "thigh_near": 0,
+   "shin_boot_near": 0,
+   "foot_near": 0,
+   "waist": -8,
+   "torso_upper": -14,
+   "neck": -4,
+   "head_base": -14,
+   "upper_arm_near": 34,
+   "forearm_near": -24,
+   "upper_arm_far": 40,
+   "forearm_far": -30
+  },
+  "slots": {
+   "face": "face_hurt"
+  }
+ },
+ "stance": {
+  "rot": {
+   "thigh_far": -16,
+   "shin_boot_far": 24,
+   "foot_far": -8,
+   "thigh_near": -2,
+   "shin_boot_near": 12,
+   "foot_near": -10,
+   "waist": 3,
+   "torso_upper": 6,
+   "neck": -2,
+   "head_base": -4,
+   "upper_arm_near": -34,
+   "forearm_near": -74,
+   "upper_arm_far": -26,
+   "forearm_far": -66
+  },
+  "slots": {
+   "hand_near": "hand_near_fist",
+   "hand_far": "hand_far_fist"
+  }
+ },
+ "stance_b": {
+  "rot": {
+   "thigh_far": -17,
+   "shin_boot_far": 28,
+   "foot_far": -10,
+   "thigh_near": -1,
+   "shin_boot_near": 12,
+   "foot_near": -12,
+   "waist": 4,
+   "torso_upper": 8,
+   "neck": -2,
+   "head_base": -5,
+   "upper_arm_near": -31,
+   "forearm_near": -76,
+   "upper_arm_far": -23,
+   "forearm_far": -68
+  },
+  "slots": {
+   "hand_near": "hand_near_fist",
+   "hand_far": "hand_far_fist"
+  }
+ },
+ "walk_pass_a": {
+  "rot": {
+   "thigh_far": -8,
+   "shin_boot_far": 24,
+   "foot_far": -16,
+   "thigh_near": 2,
+   "shin_boot_near": 4,
+   "foot_near": -4,
+   "waist": 2,
+   "torso_upper": 4,
+   "head_base": -3,
+   "upper_arm_near": -4,
+   "forearm_near": -20,
+   "upper_arm_far": 2,
+   "forearm_far": -14
+  }
+ },
+ "walk_contact_b": {
+  "rot": {
+   "thigh_near": -26,
+   "shin_boot_near": 4,
+   "foot_near": 10,
+   "thigh_far": 12,
+   "shin_boot_far": -2,
+   "foot_far": -10,
+   "waist": 1,
+   "torso_upper": 3,
+   "head_base": -2,
+   "upper_arm_near": 14,
+   "forearm_near": -8,
+   "upper_arm_far": -18,
+   "forearm_far": -18
+  }
+ },
+ "walk_pass_b": {
+  "rot": {
+   "thigh_near": -16,
+   "shin_boot_near": 22,
+   "foot_near": -6,
+   "thigh_far": 2,
+   "shin_boot_far": 4,
+   "foot_far": -4,
+   "waist": 2,
+   "torso_upper": 4,
+   "head_base": -3,
+   "upper_arm_near": -2,
+   "forearm_near": -20,
+   "upper_arm_far": -4,
+   "forearm_far": -14
+  }
+ },
+ "dash": {
+  "rot": {
+   "thigh_far": -56,
+   "shin_boot_far": 44,
+   "foot_far": -10,
+   "thigh_near": 42,
+   "shin_boot_near": 44,
+   "foot_near": 14,
+   "waist": 10,
+   "torso_upper": 20,
+   "neck": -6,
+   "head_base": -14,
+   "upper_arm_near": 44,
+   "forearm_near": -28,
+   "upper_arm_far": 52,
+   "forearm_far": -20
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "light_windup": {
+  "slots": {
+   "hand_near": "hand_near_grip_kunai",
+   "hand_far": "hand_far_fist",
+   "face": "face_intense"
+  },
+  "attach": {
+   "kunai": "hand_near_grip_kunai"
+  },
+  "rot": {
+   "thigh_far": -20,
+   "shin_boot_far": 30,
+   "foot_far": -8,
+   "thigh_near": 0,
+   "shin_boot_near": 12,
+   "foot_near": -12,
+   "waist": 0,
+   "torso_upper": 0,
+   "head_base": -4,
+   "upper_arm_near": 28,
+   "forearm_near": -104,
+   "upper_arm_far": -40,
+   "forearm_far": -70
+  },
+  "attachRot": {
+   "kunai": 90
+  }
+ },
+ "light_recover": {
+  "slots": {
+   "hand_near": "hand_near_grip_kunai",
+   "hand_far": "hand_far_fist"
+  },
+  "attach": {
+   "kunai": "hand_near_grip_kunai"
+  },
+  "rot": {
+   "thigh_far": -28,
+   "shin_boot_far": 36,
+   "foot_far": -6,
+   "thigh_near": 4,
+   "shin_boot_near": 14,
+   "foot_near": -18,
+   "waist": 4,
+   "torso_upper": 8,
+   "head_base": -6,
+   "upper_arm_near": -58,
+   "forearm_near": -40,
+   "upper_arm_far": -10,
+   "forearm_far": -60
+  },
+  "attachRot": {
+   "kunai": 90
+  }
+ },
+ "heavy_follow": {
+  "rot": {
+   "thigh_far": -46,
+   "shin_boot_far": 56,
+   "foot_far": -8,
+   "thigh_near": 14,
+   "shin_boot_near": 14,
+   "foot_near": -28,
+   "waist": 10,
+   "torso_upper": 22,
+   "neck": -4,
+   "head_base": -10,
+   "upper_arm_near": -24,
+   "forearm_near": -12,
+   "upper_arm_far": 34,
+   "forearm_far": -40
+  },
+  "slots": {
+   "hand_near": "hand_near_grip_sword",
+   "hand_far": "hand_far_fist",
+   "face": "face_intense"
+  },
+  "attach": {
+   "sword": "hand_near_grip_sword"
+  },
+  "attachRot": {
+   "sword": 64
+  }
+ },
+ "throw_windup": {
+  "slots": {
+   "hand_near": "hand_near_grip_kunai",
+   "hand_far": "hand_far_open",
+   "face": "face_intense"
+  },
+  "attach": {
+   "kunai": "hand_near_grip_kunai"
+  },
+  "rot": {
+   "thigh_far": -18,
+   "shin_boot_far": 26,
+   "foot_far": -6,
+   "thigh_near": 4,
+   "shin_boot_near": 0,
+   "foot_near": -4,
+   "waist": -4,
+   "torso_upper": -8,
+   "head_base": -2,
+   "upper_arm_near": 70,
+   "forearm_near": -96,
+   "upper_arm_far": -50,
+   "forearm_far": -40
+  },
+  "attachRot": {
+   "kunai": -60
+  }
+ },
+ "throw_release": {
+  "rot": {
+   "thigh_far": -40,
+   "shin_boot_far": 44,
+   "foot_far": -6,
+   "thigh_near": 12,
+   "shin_boot_near": 14,
+   "foot_near": -26,
+   "waist": 8,
+   "torso_upper": 16,
+   "head_base": -8,
+   "upper_arm_near": -96,
+   "forearm_near": -14,
+   "upper_arm_far": 30,
+   "forearm_far": -30
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_fist",
+   "face": "face_intense"
+  }
+ },
+ "throw_follow": {
+  "rot": {
+   "thigh_far": -34,
+   "shin_boot_far": 40,
+   "foot_far": -6,
+   "thigh_near": 8,
+   "shin_boot_near": 12,
+   "foot_near": -20,
+   "waist": 8,
+   "torso_upper": 14,
+   "head_base": -6,
+   "upper_arm_near": -70,
+   "forearm_near": -30,
+   "upper_arm_far": 20,
+   "forearm_far": -40
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_fist"
+  }
+ },
+ "ko_stagger": {
+  "rot": {
+   "thigh_far": -4,
+   "shin_boot_far": 20,
+   "foot_far": -8,
+   "thigh_near": 2,
+   "shin_boot_near": -2,
+   "foot_near": -2,
+   "waist": -14,
+   "torso_upper": -22,
+   "neck": -6,
+   "head_base": -20,
+   "upper_arm_near": 50,
+   "forearm_near": -30,
+   "upper_arm_far": 60,
+   "forearm_far": -40
+  },
+  "slots": {
+   "face": "face_hurt"
+  }
+ },
+ "ko_fall": {
+  "rot": {
+   "pelvis": -40,
+   "thigh_far": -50,
+   "shin_boot_far": 40,
+   "foot_far": 10,
+   "thigh_near": -30,
+   "shin_boot_near": 60,
+   "foot_near": 10,
+   "waist": -10,
+   "torso_upper": -14,
+   "head_base": -16,
+   "upper_arm_near": 70,
+   "forearm_near": -40,
+   "upper_arm_far": 90,
+   "forearm_far": -30
+  },
+  "slots": {
+   "face": "face_hurt"
+  },
+  "groundBy": [
+   "torso_upper",
+   "pelvis",
+   "shin_boot_near",
+   "foot_far",
+   "foot_near",
+   "head_base"
+  ],
+  "springHang": 0.5
+ },
+ "ko_down": {
+  "rot": {
+   "pelvis": -88,
+   "waist": 0,
+   "torso_upper": 0,
+   "neck": 0,
+   "head_base": -6,
+   "thigh_far": 2,
+   "shin_boot_far": 6,
+   "foot_far": 30,
+   "thigh_near": -16,
+   "shin_boot_near": 6,
+   "foot_near": 30,
+   "upper_arm_near": -6,
+   "forearm_near": -14,
+   "upper_arm_far": 8,
+   "forearm_far": -10
+  },
+  "slots": {
+   "face": "face_hurt"
+  },
+  "groundBy": [
+   "torso_upper",
+   "pelvis",
+   "thigh_near",
+   "thigh_far",
+   "shin_boot_near",
+   "shin_boot_far",
+   "head_base",
+   "upper_arm_near"
+  ],
+  "springHang": 0.12
+ },
+ "walk_1": {
+  "rot": {
+   "thigh_far": -16.6,
+   "shin_boot_far": 24,
+   "foot_far": -21.4,
+   "thigh_near": -22.2,
+   "shin_boot_near": 40.5,
+   "foot_near": 5.8,
+   "waist": 1,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": -16,
+   "forearm_near": -22,
+   "upper_arm_far": 16,
+   "forearm_far": -14
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_2": {
+  "rot": {
+   "thigh_far": -18.2,
+   "shin_boot_far": 41.3,
+   "foot_far": -23.1,
+   "thigh_near": -24.3,
+   "shin_boot_near": 59.4,
+   "foot_near": 6.9,
+   "waist": 2,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": -11.2,
+   "forearm_near": -19.6,
+   "upper_arm_far": 11.2,
+   "forearm_far": -14
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_3": {
+  "rot": {
+   "thigh_far": -2.9,
+   "shin_boot_far": 19.2,
+   "foot_far": -16.2,
+   "thigh_near": -42.1,
+   "shin_boot_near": 69.2,
+   "foot_near": -7.1,
+   "waist": 1,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": -1.6,
+   "forearm_near": -14.8,
+   "upper_arm_far": 1.6,
+   "forearm_far": -14
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_4": {
+  "rot": {
+   "thigh_far": 7.3,
+   "shin_boot_far": 8.5,
+   "foot_far": -1.9,
+   "thigh_near": -45.1,
+   "shin_boot_near": 49.3,
+   "foot_near": -10.3,
+   "waist": 1,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": 9.6,
+   "forearm_near": -14,
+   "upper_arm_far": -9.6,
+   "forearm_far": -18.8
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_5": {
+  "rot": {
+   "thigh_near": -38.9,
+   "shin_boot_near": 24.2,
+   "foot_near": 0.8,
+   "thigh_far": 12.1,
+   "shin_boot_far": 9.3,
+   "foot_far": 2.6,
+   "waist": 1,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": 16,
+   "forearm_near": -14,
+   "upper_arm_far": -16,
+   "forearm_far": -22
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_6": {
+  "rot": {
+   "thigh_near": -41.4,
+   "shin_boot_near": 43.4,
+   "foot_near": -2,
+   "thigh_far": 3.9,
+   "shin_boot_far": 43.5,
+   "foot_far": -5.4,
+   "waist": 2,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": 11.2,
+   "forearm_near": -14,
+   "upper_arm_far": -11.2,
+   "forearm_far": -19.6
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_7": {
+  "rot": {
+   "thigh_near": -31,
+   "shin_boot_near": 33.8,
+   "foot_near": -2.8,
+   "thigh_far": -17.6,
+   "shin_boot_far": 64.9,
+   "foot_far": -27.3,
+   "waist": 1,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": 1.6,
+   "forearm_near": -14,
+   "upper_arm_far": -1.6,
+   "forearm_far": -14.8
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "walk_8": {
+  "rot": {
+   "thigh_near": -25.6,
+   "shin_boot_near": 35.7,
+   "foot_near": 3.9,
+   "thigh_far": -22.4,
+   "shin_boot_far": 49,
+   "foot_far": -32.6,
+   "waist": 1,
+   "torso_upper": 4,
+   "neck": -1,
+   "head_base": -3,
+   "upper_arm_near": -9.6,
+   "forearm_near": -18.8,
+   "upper_arm_far": 9.6,
+   "forearm_far": -14
+  },
+  "slots": {
+   "hand_near": "hand_near_open",
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "kick_chamber": {
+  "rot": {
+   "thigh_far": -86,
+   "shin_boot_far": 96,
+   "foot_far": 10,
+   "thigh_near": -10,
+   "shin_boot_near": 10,
+   "foot_near": 6,
+   "waist": -4,
+   "torso_upper": -6,
+   "neck": 2,
+   "head_base": -2,
+   "upper_arm_near": -40,
+   "forearm_near": -100,
+   "upper_arm_far": -10,
+   "forearm_far": -110
+  },
+  "slots": {
+   "hand_near": "hand_near_fist",
+   "hand_far": "hand_far_fist",
+   "foot_near": "foot_near_side",
+   "face": "face_intense"
+  }
+ },
+ "kick_extend": {
+  "rot": {
+   "thigh_far": -100,
+   "shin_boot_far": 8,
+   "foot_far": -16,
+   "thigh_near": -6,
+   "shin_boot_near": 6,
+   "foot_near": 8,
+   "waist": -8,
+   "torso_upper": -14,
+   "neck": 4,
+   "head_base": 4,
+   "upper_arm_near": 20,
+   "forearm_near": -60,
+   "upper_arm_far": -20,
+   "forearm_far": -100
+  },
+  "slots": {
+   "hand_near": "hand_near_fist",
+   "hand_far": "hand_far_fist",
+   "foot_near": "foot_near_side",
+   "face": "face_intense"
+  }
+ },
+ "kick_recover": {
+  "rot": {
+   "thigh_far": -52,
+   "shin_boot_far": 74,
+   "foot_far": 8,
+   "thigh_near": -8,
+   "shin_boot_near": 12,
+   "foot_near": 4,
+   "waist": 0,
+   "torso_upper": 2,
+   "head_base": -4,
+   "upper_arm_near": -34,
+   "forearm_near": -80,
+   "upper_arm_far": -20,
+   "forearm_far": -80
+  },
+  "slots": {
+   "hand_near": "hand_near_fist",
+   "hand_far": "hand_far_fist",
+   "foot_near": "foot_near_side"
+  }
+ },
+ "backstep": {
+  "rot": {
+   "thigh_far": -24,
+   "shin_boot_far": 30,
+   "foot_far": -10,
+   "thigh_near": 2,
+   "shin_boot_near": 34,
+   "foot_near": -6,
+   "waist": -6,
+   "torso_upper": -10,
+   "head_base": 4,
+   "upper_arm_near": 30,
+   "forearm_near": -40,
+   "upper_arm_far": 20,
+   "forearm_far": -50
+  },
+  "slots": {
+   "foot_near": "foot_near_side"
+  }
+ },
+ "finisher": {
+  "rot": {
+   "thigh_far": -14,
+   "shin_boot_far": 16,
+   "foot_far": -6,
+   "thigh_near": 6,
+   "shin_boot_near": 16,
+   "foot_near": -10,
+   "waist": 2,
+   "torso_upper": 2,
+   "neck": -2,
+   "head_base": -6,
+   "upper_arm_near": -18,
+   "forearm_near": -112,
+   "upper_arm_far": 10,
+   "forearm_far": -20
+  },
+  "slots": {
+   "hand_near": "hand_near_grip_kunai",
+   "hand_far": "hand_far_open"
+  },
+  "attach": {
+   "kunai": "hand_near_grip_kunai"
+  },
+  "attachRot": {
+   "kunai": 0
+  }
+ }
+}

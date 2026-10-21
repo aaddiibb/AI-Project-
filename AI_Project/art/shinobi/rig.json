@@ -1,0 +1,1232 @@
+{
+ "name": "shinobi",
+ "palette": "default",
+ "units": "master (viewBox 0 0 1000 1400); +x = facing direction (right); rotations in degrees, clockwise positive",
+ "viewBox": [
+  0,
+  0,
+  1000,
+  1400
+ ],
+ "height": 1130,
+ "groundY": 1300,
+ "root": "pelvis",
+ "recommendedScreenHeightPx": 430,
+ "recommendedScale": 0.3805,
+ "slots": {
+  "hand_far": {
+   "options": [
+    "hand_far_open",
+    "hand_far_fist",
+    "hand_far_grip_sword",
+    "hand_far_grip_kunai"
+   ],
+   "default": "hand_far_open"
+  },
+  "foot_near": {
+   "options": [
+    "foot_near",
+    "foot_near_side"
+   ],
+   "default": "foot_near"
+  },
+  "face": {
+   "options": [
+    "face_neutral",
+    "face_intense",
+    "face_hurt"
+   ],
+   "default": "face_neutral"
+  },
+  "hand_near": {
+   "options": [
+    "hand_near_open",
+    "hand_near_fist",
+    "hand_near_grip_sword",
+    "hand_near_grip_kunai"
+   ],
+   "default": "hand_near_open"
+  }
+ },
+ "contacts": {
+  "foot_near": [
+   [
+    302,
+    1314
+   ],
+   [
+    322,
+    1319
+   ],
+   [
+    341,
+    1318
+   ],
+   [
+    362,
+    1316
+   ],
+   [
+    373,
+    1306
+   ]
+  ],
+  "foot_far": [
+   [
+    538,
+    1290
+   ],
+   [
+    552,
+    1296
+   ],
+   [
+    600,
+    1298
+   ],
+   [
+    650,
+    1301
+   ],
+   [
+    686,
+    1292
+   ]
+  ],
+  "foot_near_side": [
+   [
+    305,
+    1308
+   ],
+   [
+    319,
+    1314
+   ],
+   [
+    367,
+    1316
+   ],
+   [
+    417,
+    1319
+   ],
+   [
+    453,
+    1310
+   ]
+  ]
+ },
+ "anchors": {
+  "sword_tip": {
+   "part": "sword",
+   "x": 483.3,
+   "y": 587.2
+  },
+  "sword_guard": {
+   "part": "sword",
+   "x": 362.3,
+   "y": 336.6
+  },
+  "kunai_tip": {
+   "part": "kunai",
+   "x": 860,
+   "y": 322
+  },
+  "hand_near_grip": {
+   "part": "hand_near_grip_kunai",
+   "x": 393.79,
+   "y": 748.76
+  },
+  "hand_far_grip": {
+   "part": "hand_far_grip_kunai",
+   "x": 655.84,
+   "y": 745.43
+  },
+  "fist_near": {
+   "part": "hand_near_fist",
+   "x": 396,
+   "y": 752
+  },
+  "hand_near": {
+   "part": "hand_near_open",
+   "x": 397,
+   "y": 742
+  },
+  "head": {
+   "part": "head_base",
+   "x": 528,
+   "y": 262
+  },
+  "chest": {
+   "part": "torso_upper",
+   "x": 545,
+   "y": 440
+  },
+  "foot_far_toe": {
+   "part": "foot_far",
+   "x": 684,
+   "y": 1290
+  },
+  "foot_near_toe": {
+   "part": "foot_near",
+   "x": 341,
+   "y": 1318
+  }
+ },
+ "contactNotes": "Sole points in master coords per foot. The near foot sits lower on screen (closer to camera); a pose is grounded by moving the root so the lowest contact returns to its own rest height.",
+ "attachments": {
+  "sword": {
+   "rest": "sheath_back",
+   "grips": [
+    "hand_near_grip_sword",
+    "hand_far_grip_sword"
+   ]
+  },
+  "kunai": {
+   "rest": null,
+   "grips": [
+    "hand_near_grip_kunai",
+    "hand_far_grip_kunai"
+   ]
+  }
+ },
+ "attachNotes": "An attached item is placed so its grip point lands on the hand grip point and its grip axis aligns with the hand grip axis (+x of the hand = forward); it draws just below the hand in z.",
+ "defaultPose": {
+  "root": {
+   "x": 0,
+   "y": 0
+  },
+  "rot": {
+   "sash_tail_2b": 0,
+   "sash_tail_2a": 0,
+   "skirt_back_panel": 0,
+   "foot_far": 0,
+   "shin_boot_far": 0,
+   "thigh_far": 0,
+   "sash_tail_1b": 0,
+   "sash_tail_1a": 0,
+   "upper_arm_far": 0,
+   "forearm_far": 0,
+   "hand_far_open": 0,
+   "hand_far_fist": 0,
+   "hand_far_grip_sword": 0,
+   "hand_far_grip_kunai": 0,
+   "sword": 0,
+   "sheath_back": 0,
+   "hair_back": 0,
+   "pony_4": 0,
+   "pony_3": 0,
+   "pony_2": 0,
+   "pony_1": 0,
+   "foot_near": 0,
+   "foot_near_side": 0,
+   "shin_boot_near": 0,
+   "thigh_near": 0,
+   "kunai_holster_thigh": 0,
+   "waist": 0,
+   "pelvis": 0,
+   "pouch_hip": 0,
+   "smoke_bomb_cluster": 0,
+   "neck": 0,
+   "torso_upper": 0,
+   "strand_far": 0,
+   "head_base": 0,
+   "hair_front": 0,
+   "face_neutral": 0,
+   "face_intense": 0,
+   "face_hurt": 0,
+   "skirt_front_panel": 0,
+   "sash_knot": 0,
+   "upper_arm_near": 0,
+   "forearm_near": 0,
+   "hand_near_open": 0,
+   "hand_near_fist": 0,
+   "hand_near_grip_sword": 0,
+   "hand_near_grip_kunai": 0,
+   "kunai": 0,
+   "strand_near": 0
+  },
+  "slots": {
+   "hand_far": "hand_far_open",
+   "foot_near": "foot_near",
+   "face": "face_neutral",
+   "hand_near": "hand_near_open"
+  },
+  "attach": {
+   "sword": "sheath_back",
+   "kunai": null
+  }
+ },
+ "parts": [
+  {
+   "id": "sash_tail_2b",
+   "parent": "sash_tail_2a",
+   "pivot": {
+    "x": 698,
+    "y": 772
+   },
+   "zIndex": 0,
+   "file": "parts/sash_tail_2b.svg",
+   "offset": {
+    "x": 691,
+    "y": 746
+   },
+   "size": {
+    "w": 128,
+    "h": 241
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "sash_tail_2a",
+   "parent": "sash_knot",
+   "pivot": {
+    "x": 620,
+    "y": 560
+   },
+   "zIndex": 1,
+   "file": "parts/sash_tail_2a.svg",
+   "offset": {
+    "x": 593,
+    "y": 538
+   },
+   "size": {
+    "w": 160,
+    "h": 265
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "skirt_back_panel",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 500,
+    "y": 545
+   },
+   "zIndex": 2,
+   "file": "parts/skirt_back_panel.svg",
+   "offset": {
+    "x": 292,
+    "y": 526
+   },
+   "size": {
+    "w": 259,
+    "h": 473
+   },
+   "notes": "cloth: secondary motion"
+  },
+  {
+   "id": "foot_far",
+   "parent": "shin_boot_far",
+   "pivot": {
+    "x": 574,
+    "y": 1246
+   },
+   "zIndex": 3,
+   "file": "parts/foot_far.svg",
+   "offset": {
+    "x": 525,
+    "y": 1211
+   },
+   "size": {
+    "w": 173,
+    "h": 100
+   },
+   "notes": "tabi boot, split toe"
+  },
+  {
+   "id": "shin_boot_far",
+   "parent": "thigh_far",
+   "pivot": {
+    "x": 562,
+    "y": 1018
+   },
+   "zIndex": 4,
+   "file": "parts/shin_boot_far.svg",
+   "offset": {
+    "x": 515,
+    "y": 978
+   },
+   "size": {
+    "w": 103,
+    "h": 289
+   },
+   "notes": "stocking shin + boot shaft with red cord ties"
+  },
+  {
+   "id": "thigh_far",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 566,
+    "y": 664
+   },
+   "zIndex": 5,
+   "file": "parts/thigh_far.svg",
+   "offset": {
+    "x": 512,
+    "y": 613
+   },
+   "size": {
+    "w": 123,
+    "h": 443
+   },
+   "notes": "stocking + garter strap"
+  },
+  {
+   "id": "sash_tail_1b",
+   "parent": "sash_tail_1a",
+   "pivot": {
+    "x": 641,
+    "y": 782
+   },
+   "zIndex": 6,
+   "file": "parts/sash_tail_1b.svg",
+   "offset": {
+    "x": 609,
+    "y": 755
+   },
+   "size": {
+    "w": 95,
+    "h": 302
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "sash_tail_1a",
+   "parent": "sash_knot",
+   "pivot": {
+    "x": 610,
+    "y": 556
+   },
+   "zIndex": 7,
+   "file": "parts/sash_tail_1a.svg",
+   "offset": {
+    "x": 575,
+    "y": 541
+   },
+   "size": {
+    "w": 91,
+    "h": 264
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "upper_arm_far",
+   "parent": "torso_upper",
+   "pivot": {
+    "x": 574,
+    "y": 396
+   },
+   "zIndex": 8,
+   "file": "parts/upper_arm_far.svg",
+   "offset": {
+    "x": 543,
+    "y": 362
+   },
+   "size": {
+    "w": 89,
+    "h": 208
+   }
+  },
+  {
+   "id": "forearm_far",
+   "parent": "upper_arm_far",
+   "pivot": {
+    "x": 602,
+    "y": 548
+   },
+   "zIndex": 9,
+   "file": "parts/forearm_far.svg",
+   "offset": {
+    "x": 572,
+    "y": 512
+   },
+   "size": {
+    "w": 99,
+    "h": 218
+   },
+   "notes": "fingerless glove, red cord wraps"
+  },
+  {
+   "id": "hand_far_open",
+   "parent": "forearm_far",
+   "pivot": {
+    "x": 643,
+    "y": 704
+   },
+   "zIndex": 10,
+   "file": "parts/hand_far_open.svg",
+   "offset": {
+    "x": 613,
+    "y": 681
+   },
+   "size": {
+    "w": 81,
+    "h": 103
+   },
+   "slot": "hand_far",
+   "notes": "swappable hand: open/relaxed"
+  },
+  {
+   "id": "hand_far_fist",
+   "parent": "forearm_far",
+   "pivot": {
+    "x": 643,
+    "y": 704
+   },
+   "zIndex": 11,
+   "file": "parts/hand_far_fist.svg",
+   "offset": {
+    "x": 612,
+    "y": 681
+   },
+   "size": {
+    "w": 77,
+    "h": 92
+   },
+   "slot": "hand_far",
+   "hidden": true,
+   "rotKey": "hand_far_open",
+   "notes": "swappable hand: fist"
+  },
+  {
+   "id": "hand_far_grip_sword",
+   "parent": "forearm_far",
+   "pivot": {
+    "x": 643,
+    "y": 704
+   },
+   "zIndex": 12,
+   "file": "parts/hand_far_grip_sword.svg",
+   "offset": {
+    "x": 612,
+    "y": 681
+   },
+   "size": {
+    "w": 85,
+    "h": 92
+   },
+   "slot": "hand_far",
+   "hidden": true,
+   "rotKey": "hand_far_open",
+   "grip": {
+    "x": 657.6,
+    "y": 749.96,
+    "axisDeg": -14
+   },
+   "notes": "swappable hand: grip_sword"
+  },
+  {
+   "id": "hand_far_grip_kunai",
+   "parent": "forearm_far",
+   "pivot": {
+    "x": 643,
+    "y": 704
+   },
+   "zIndex": 13,
+   "file": "parts/hand_far_grip_kunai.svg",
+   "offset": {
+    "x": 612,
+    "y": 681
+   },
+   "size": {
+    "w": 79,
+    "h": 92
+   },
+   "slot": "hand_far",
+   "hidden": true,
+   "rotKey": "hand_far_open",
+   "grip": {
+    "x": 657.6,
+    "y": 749.96,
+    "axisDeg": -14
+   },
+   "notes": "swappable hand: grip_kunai"
+  },
+  {
+   "id": "sword",
+   "parent": "sheath_back",
+   "pivot": {
+    "x": 322,
+    "y": 252
+   },
+   "zIndex": 14,
+   "file": "parts/sword.svg",
+   "offset": {
+    "x": 299,
+    "y": 240
+   },
+   "size": {
+    "w": 192,
+    "h": 355
+   },
+   "grip": {
+    "x": 353.22,
+    "y": 316.88,
+    "axisDeg": 64.3
+   },
+   "notes": "chokuto; attach to *_grip_sword when drawn"
+  },
+  {
+   "id": "sheath_back",
+   "parent": "torso_upper",
+   "pivot": {
+    "x": 400,
+    "y": 410
+   },
+   "zIndex": 15,
+   "file": "parts/sheath_back.svg",
+   "offset": {
+    "x": 345,
+    "y": 323
+   },
+   "size": {
+    "w": 152,
+    "h": 272
+   },
+   "notes": "sheath strapped to back"
+  },
+  {
+   "id": "hair_back",
+   "parent": "head_base",
+   "pivot": {
+    "x": 480,
+    "y": 280
+   },
+   "zIndex": 16,
+   "file": "parts/hair_back.svg",
+   "offset": {
+    "x": 444,
+    "y": 196
+   },
+   "size": {
+    "w": 65,
+    "h": 163
+   },
+   "notes": "hair mass behind head/neck"
+  },
+  {
+   "id": "pony_4",
+   "parent": "pony_3",
+   "pivot": {
+    "x": 352,
+    "y": 455
+   },
+   "zIndex": 17,
+   "file": "parts/pony_4.svg",
+   "offset": {
+    "x": 270,
+    "y": 422
+   },
+   "size": {
+    "w": 147,
+    "h": 192
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "pony_3",
+   "parent": "pony_2",
+   "pivot": {
+    "x": 380,
+    "y": 344
+   },
+   "zIndex": 18,
+   "file": "parts/pony_3.svg",
+   "offset": {
+    "x": 285,
+    "y": 302
+   },
+   "size": {
+    "w": 154,
+    "h": 186
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "pony_2",
+   "parent": "pony_1",
+   "pivot": {
+    "x": 416,
+    "y": 254
+   },
+   "zIndex": 19,
+   "file": "parts/pony_2.svg",
+   "offset": {
+    "x": 318,
+    "y": 201
+   },
+   "size": {
+    "w": 139,
+    "h": 183
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "pony_1",
+   "parent": "head_base",
+   "pivot": {
+    "x": 482,
+    "y": 200
+   },
+   "zIndex": 20,
+   "file": "parts/pony_1.svg",
+   "offset": {
+    "x": 344,
+    "y": 140
+   },
+   "size": {
+    "w": 165,
+    "h": 151
+   },
+   "notes": "chain_segment: spring"
+  },
+  {
+   "id": "foot_near",
+   "parent": "shin_boot_near",
+   "pivot": {
+    "x": 340,
+    "y": 1240
+   },
+   "zIndex": 21,
+   "file": "parts/foot_near.svg",
+   "offset": {
+    "x": 292,
+    "y": 1213
+   },
+   "size": {
+    "w": 92,
+    "h": 117
+   },
+   "slot": "foot_near",
+   "notes": "tabi boot (toe toward camera): standing / stance poses"
+  },
+  {
+   "id": "foot_near_side",
+   "parent": "shin_boot_near",
+   "pivot": {
+    "x": 340,
+    "y": 1240
+   },
+   "zIndex": 22,
+   "file": "parts/foot_near_side.svg",
+   "offset": {
+    "x": 292,
+    "y": 1229
+   },
+   "size": {
+    "w": 173,
+    "h": 100
+   },
+   "slot": "foot_near",
+   "hidden": true,
+   "rotKey": "foot_near",
+   "notes": "tabi boot side-on: walk / dash"
+  },
+  {
+   "id": "shin_boot_near",
+   "parent": "thigh_near",
+   "pivot": {
+    "x": 396,
+    "y": 1016
+   },
+   "zIndex": 23,
+   "file": "parts/shin_boot_near.svg",
+   "offset": {
+    "x": 287,
+    "y": 976
+   },
+   "size": {
+    "w": 154,
+    "h": 287
+   },
+   "notes": "stocking shin + boot shaft with red cord ties"
+  },
+  {
+   "id": "thigh_near",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 490,
+    "y": 656
+   },
+   "zIndex": 24,
+   "file": "parts/thigh_near.svg",
+   "offset": {
+    "x": 364,
+    "y": 589
+   },
+   "size": {
+    "w": 186,
+    "h": 466
+   },
+   "notes": "stocking + leather strap armor"
+  },
+  {
+   "id": "kunai_holster_thigh",
+   "parent": "thigh_near",
+   "pivot": {
+    "x": 436,
+    "y": 740
+   },
+   "zIndex": 25,
+   "file": "parts/kunai_holster_thigh.svg",
+   "offset": {
+    "x": 388,
+    "y": 672
+   },
+   "size": {
+    "w": 95,
+    "h": 187
+   },
+   "notes": "3 kunai in holster"
+  },
+  {
+   "id": "waist",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 524,
+    "y": 548
+   },
+   "zIndex": 26,
+   "file": "parts/waist.svg",
+   "offset": {
+    "x": 440,
+    "y": 457
+   },
+   "size": {
+    "w": 174,
+    "h": 101
+   },
+   "notes": "midriff"
+  },
+  {
+   "id": "pelvis",
+   "parent": null,
+   "pivot": {
+    "x": 524,
+    "y": 600
+   },
+   "zIndex": 27,
+   "file": "parts/pelvis.svg",
+   "offset": {
+    "x": 435,
+    "y": 505
+   },
+   "size": {
+    "w": 201,
+    "h": 211
+   },
+   "notes": "ROOT. shorts + hips + belt"
+  },
+  {
+   "id": "pouch_hip",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 475,
+    "y": 570
+   },
+   "zIndex": 28,
+   "file": "parts/pouch_hip.svg",
+   "offset": {
+    "x": 445,
+    "y": 560
+   },
+   "size": {
+    "w": 60,
+    "h": 68
+   },
+   "notes": "utility pouch"
+  },
+  {
+   "id": "smoke_bomb_cluster",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 446,
+    "y": 580
+   },
+   "zIndex": 29,
+   "file": "parts/smoke_bomb_cluster.svg",
+   "offset": {
+    "x": 423,
+    "y": 575
+   },
+   "size": {
+    "w": 49,
+    "h": 54
+   },
+   "notes": "smoke bombs on belt"
+  },
+  {
+   "id": "neck",
+   "parent": "torso_upper",
+   "pivot": {
+    "x": 512,
+    "y": 366
+   },
+   "zIndex": 30,
+   "file": "parts/neck.svg",
+   "offset": {
+    "x": 469,
+    "y": 275
+   },
+   "size": {
+    "w": 81,
+    "h": 98
+   }
+  },
+  {
+   "id": "torso_upper",
+   "parent": "waist",
+   "pivot": {
+    "x": 522,
+    "y": 500
+   },
+   "zIndex": 31,
+   "file": "parts/torso_upper.svg",
+   "offset": {
+    "x": 399,
+    "y": 311
+   },
+   "size": {
+    "w": 226,
+    "h": 203
+   },
+   "notes": "sleeveless high-collar top, harness strap, red knot"
+  },
+  {
+   "id": "strand_far",
+   "parent": "head_base",
+   "pivot": {
+    "x": 566,
+    "y": 236
+   },
+   "zIndex": 32,
+   "file": "parts/strand_far.svg",
+   "offset": {
+    "x": 546,
+    "y": 214
+   },
+   "size": {
+    "w": 54,
+    "h": 171
+   },
+   "notes": "loose strand beyond the face (spring)"
+  },
+  {
+   "id": "head_base",
+   "parent": "neck",
+   "pivot": {
+    "x": 512,
+    "y": 326
+   },
+   "zIndex": 33,
+   "file": "parts/head_base.svg",
+   "offset": {
+    "x": 463,
+    "y": 182
+   },
+   "size": {
+    "w": 111,
+    "h": 159
+   },
+   "notes": "skull, face skin, ear (no features)"
+  },
+  {
+   "id": "hair_front",
+   "parent": "head_base",
+   "pivot": {
+    "x": 520,
+    "y": 230
+   },
+   "zIndex": 34,
+   "file": "parts/hair_front.svg",
+   "offset": {
+    "x": 442,
+    "y": 169
+   },
+   "size": {
+    "w": 171,
+    "h": 172
+   },
+   "notes": "scalp, bangs, red ribbon"
+  },
+  {
+   "id": "face_neutral",
+   "parent": "head_base",
+   "pivot": {
+    "x": 545,
+    "y": 280
+   },
+   "zIndex": 35,
+   "file": "parts/face_neutral.svg",
+   "offset": {
+    "x": 516,
+    "y": 254
+   },
+   "size": {
+    "w": 52,
+    "h": 65
+   },
+   "slot": "face",
+   "notes": "swappable expression"
+  },
+  {
+   "id": "face_intense",
+   "parent": "head_base",
+   "pivot": {
+    "x": 545,
+    "y": 280
+   },
+   "zIndex": 36,
+   "file": "parts/face_intense.svg",
+   "offset": {
+    "x": 516,
+    "y": 254
+   },
+   "size": {
+    "w": 52,
+    "h": 71
+   },
+   "slot": "face",
+   "hidden": true,
+   "notes": "attack / shout"
+  },
+  {
+   "id": "face_hurt",
+   "parent": "head_base",
+   "pivot": {
+    "x": 545,
+    "y": 280
+   },
+   "zIndex": 37,
+   "file": "parts/face_hurt.svg",
+   "offset": {
+    "x": 522,
+    "y": 250
+   },
+   "size": {
+    "w": 44,
+    "h": 71
+   },
+   "slot": "face",
+   "hidden": true,
+   "notes": "hit reaction"
+  },
+  {
+   "id": "skirt_front_panel",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 560,
+    "y": 552
+   },
+   "zIndex": 38,
+   "file": "parts/skirt_front_panel.svg",
+   "offset": {
+    "x": 470,
+    "y": 535
+   },
+   "size": {
+    "w": 155,
+    "h": 439
+   },
+   "notes": "cloth: secondary motion"
+  },
+  {
+   "id": "sash_knot",
+   "parent": "pelvis",
+   "pivot": {
+    "x": 610,
+    "y": 532
+   },
+   "zIndex": 39,
+   "file": "parts/sash_knot.svg",
+   "offset": {
+    "x": 437,
+    "y": 494
+   },
+   "size": {
+    "w": 220,
+    "h": 78
+   },
+   "notes": "sash band + bow knot"
+  },
+  {
+   "id": "upper_arm_near",
+   "parent": "torso_upper",
+   "pivot": {
+    "x": 438,
+    "y": 386
+   },
+   "zIndex": 40,
+   "file": "parts/upper_arm_near.svg",
+   "offset": {
+    "x": 386,
+    "y": 342
+   },
+   "size": {
+    "w": 90,
+    "h": 216
+   },
+   "notes": "shoulder joint"
+  },
+  {
+   "id": "forearm_near",
+   "parent": "upper_arm_near",
+   "pivot": {
+    "x": 413,
+    "y": 528
+   },
+   "zIndex": 41,
+   "file": "parts/forearm_near.svg",
+   "offset": {
+    "x": 364,
+    "y": 509
+   },
+   "size": {
+    "w": 81,
+    "h": 219
+   },
+   "notes": "fingerless glove, red cord lacing"
+  },
+  {
+   "id": "hand_near_open",
+   "parent": "forearm_near",
+   "pivot": {
+    "x": 395,
+    "y": 702
+   },
+   "zIndex": 42,
+   "file": "parts/hand_near_open.svg",
+   "offset": {
+    "x": 363,
+    "y": 681
+   },
+   "size": {
+    "w": 69,
+    "h": 102
+   },
+   "slot": "hand_near",
+   "notes": "swappable hand: open/relaxed"
+  },
+  {
+   "id": "hand_near_fist",
+   "parent": "forearm_near",
+   "pivot": {
+    "x": 395,
+    "y": 702
+   },
+   "zIndex": 43,
+   "file": "parts/hand_near_fist.svg",
+   "offset": {
+    "x": 362,
+    "y": 681
+   },
+   "size": {
+    "w": 69,
+    "h": 89
+   },
+   "slot": "hand_near",
+   "hidden": true,
+   "rotKey": "hand_near_open",
+   "notes": "swappable hand: fist"
+  },
+  {
+   "id": "hand_near_grip_sword",
+   "parent": "forearm_near",
+   "pivot": {
+    "x": 395,
+    "y": 702
+   },
+   "zIndex": 44,
+   "file": "parts/hand_near_grip_sword.svg",
+   "offset": {
+    "x": 362,
+    "y": 681
+   },
+   "size": {
+    "w": 72,
+    "h": 89
+   },
+   "slot": "hand_near",
+   "hidden": true,
+   "rotKey": "hand_near_open",
+   "grip": {
+    "x": 393.79,
+    "y": 748.76,
+    "axisDeg": 4
+   },
+   "notes": "swappable hand: grip_sword"
+  },
+  {
+   "id": "hand_near_grip_kunai",
+   "parent": "forearm_near",
+   "pivot": {
+    "x": 395,
+    "y": 702
+   },
+   "zIndex": 45,
+   "file": "parts/hand_near_grip_kunai.svg",
+   "offset": {
+    "x": 362,
+    "y": 681
+   },
+   "size": {
+    "w": 69,
+    "h": 89
+   },
+   "slot": "hand_near",
+   "hidden": true,
+   "rotKey": "hand_near_open",
+   "grip": {
+    "x": 393.79,
+    "y": 748.76,
+    "axisDeg": 4
+   },
+   "notes": "swappable hand: grip_kunai"
+  },
+  {
+   "id": "kunai",
+   "parent": "hand_near_grip_kunai",
+   "pivot": {
+    "x": 860,
+    "y": 222
+   },
+   "zIndex": 46,
+   "file": "parts/kunai.svg",
+   "offset": {
+    "x": 843,
+    "y": 186
+   },
+   "size": {
+    "w": 34,
+    "h": 143
+   },
+   "hidden": true,
+   "grip": {
+    "x": 860,
+    "y": 222,
+    "axisDeg": 90
+   },
+   "notes": "held kunai; attach to *_grip_kunai"
+  },
+  {
+   "id": "strand_near",
+   "parent": "head_base",
+   "pivot": {
+    "x": 502,
+    "y": 214
+   },
+   "zIndex": 47,
+   "file": "parts/strand_near.svg",
+   "offset": {
+    "x": 489,
+    "y": 199
+   },
+   "size": {
+    "w": 42,
+    "h": 176
+   },
+   "notes": "loose side strand (spring)"
+  }
+ ]
+}

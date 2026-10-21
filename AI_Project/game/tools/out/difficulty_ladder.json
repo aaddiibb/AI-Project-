@@ -1,0 +1,186 @@
+{
+ "proxyHuman": "scripted, reaction 15 frames, 10% mistakes",
+ "matches": 40,
+ "rows": [
+  {
+   "agent": "minimax",
+   "level": "easy",
+   "n": 40,
+   "winRate": 0.925,
+   "ci": [
+    0.8013546984090248,
+    0.9741644432281419
+   ],
+   "drawRate": 0,
+   "lossRate": 0.075,
+   "hpMargin": 0.3841750000000001,
+   "msMean": 2.354437640294995,
+   "work": 149.92833333333334
+  },
+  {
+   "agent": "minimax",
+   "level": "normal",
+   "n": 40,
+   "winRate": 1,
+   "ci": [
+    0.9123754607496077,
+    1
+   ],
+   "drawRate": 0,
+   "lossRate": 0,
+   "hpMargin": 0.8440499999999999,
+   "msMean": 6.930613471768906,
+   "work": 600
+  },
+  {
+   "agent": "minimax",
+   "level": "hard",
+   "n": 40,
+   "winRate": 1,
+   "ci": [
+    0.9123754607496077,
+    1
+   ],
+   "drawRate": 0,
+   "lossRate": 0,
+   "hpMargin": 0.8839500000000001,
+   "msMean": 16.529620326468056,
+   "work": 1200
+  },
+  {
+   "agent": "minimax",
+   "level": "master",
+   "n": 40,
+   "winRate": 1,
+   "ci": [
+    0.9123754607496077,
+    1
+   ],
+   "drawRate": 0,
+   "lossRate": 0,
+   "hpMargin": 0.98795,
+   "msMean": 50.380350748893406,
+   "work": 3750
+  },
+  {
+   "agent": "mcts",
+   "level": "easy",
+   "n": 40,
+   "winRate": 0.225,
+   "ci": [
+    0.12315953254678531,
+    0.3750339640409305
+   ],
+   "drawRate": 0.025,
+   "lossRate": 0.75,
+   "hpMargin": -0.22050833333333336,
+   "msMean": 2.0437002562552773,
+   "work": 60
+  },
+  {
+   "agent": "mcts",
+   "level": "normal",
+   "n": 40,
+   "winRate": 0.85,
+   "ci": [
+    0.7092737396097997,
+    0.9293890829149257
+   ],
+   "drawRate": 0.025,
+   "lossRate": 0.125,
+   "hpMargin": 0.43585833333333335,
+   "msMean": 7.59793309787773,
+   "work": 240
+  },
+  {
+   "agent": "mcts",
+   "level": "hard",
+   "n": 40,
+   "winRate": 0.975,
+   "ci": [
+    0.8711834051199223,
+    0.9955732825922052
+   ],
+   "drawRate": 0,
+   "lossRate": 0.025,
+   "hpMargin": 0.6079125000000001,
+   "msMean": 16.526179870423757,
+   "work": 480
+  },
+  {
+   "agent": "mcts",
+   "level": "master",
+   "n": 40,
+   "winRate": 1,
+   "ci": [
+    0.9123754607496077,
+    1
+   ],
+   "drawRate": 0,
+   "lossRate": 0,
+   "hpMargin": 0.814625,
+   "msMean": 54.40028898516182,
+   "work": 1500
+  },
+  {
+   "agent": "fuzzy",
+   "level": "easy",
+   "n": 40,
+   "winRate": 0.225,
+   "ci": [
+    0.12315953254678531,
+    0.3750339640409305
+   ],
+   "drawRate": 0,
+   "lossRate": 0.775,
+   "hpMargin": -0.19666250000000002,
+   "msMean": 0.05461323705049054,
+   "work": 0
+  },
+  {
+   "agent": "fuzzy",
+   "level": "normal",
+   "n": 40,
+   "winRate": 0.45,
+   "ci": [
+    0.30705075280944705,
+    0.6017117011155924
+   ],
+   "drawRate": 0.025,
+   "lossRate": 0.525,
+   "hpMargin": -0.06126666666666665,
+   "msMean": 0.06253676296866643,
+   "work": 0
+  },
+  {
+   "agent": "fuzzy",
+   "level": "hard",
+   "n": 40,
+   "winRate": 0.425,
+   "ci": [
+    0.2850916852481588,
+    0.5780519956394001
+   ],
+   "drawRate": 0.1,
+   "lossRate": 0.475,
+   "hpMargin": 0.01660416666666667,
+   "msMean": 0.07465770029966814,
+   "work": 0
+  },
+  {
+   "agent": "fuzzy",
+   "level": "master",
+   "n": 40,
+   "winRate": 0.425,
+   "ci": [
+    0.2850916852481588,
+    0.5780519956394001
+   ],
+   "drawRate": 0.075,
+   "lossRate": 0.5,
+   "hpMargin": -0.022412500000000002,
+   "msMean": 0.063576714405715,
+   "work": 0
+  }
+ ]
+}
