@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shinobi Arena: audio render</title>
+<style>
+  body { background: #14121c; color: #f6f0e0; font: 16px/1.5 Georgia, serif; margin: 32px; }
+  code, pre { font: 14px ui-monospace, Consolas, monospace; } a { color: #e2b857; }
+  pre { background: #1f1d28; padding: 12px; border-radius: 6px; max-width: 900px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h2>Offline audio render of a replay</h2>
+<p>Plays an arena replay through the game's real audio engine, rendered faster than real time into an
+<code>OfflineAudioContext</code>: the same cues, mix, ducking, reverb and music as in the game. Use it to listen to a whole
+match, check the loudness targets and confirm that a replay always sounds the same.<br>
+<code>?replay=../replays/demo_minimax_vs_mcts.json</code> chooses the log; serve the project with <code>npm run serve</code>
+and open <code>http://localhost:8767/game/tools/audio_render.html</code>.</p>
+<pre id="out">rendering…</pre>
+<p id="dl"></p>
+<script type="module">
+import { Match, ReplayController } from '../src/ai/match.js';
+import { Camera } from '../src/render.js';
+import { AudioEngine } from '../src/audio/engine.js';
+import { Music } from '../src/audio/music.js';
+import { CueTracker, tension } from '../src/audio/cues.js';
+import { MIX, panOf, bankJobs } from '../src/audio/sounds.js';
+import { render, SR } from '../src/audio/dsp.js';
+import { loudness, wav } from '../src/audio/loudness.js';
+
+const out = document.getElementById('out'), say = (s) => { out.textContent += '\n' + s; };
+async function run() {
+  const q = new URLSearchParams(location.search);
+  const url = q.get('replay') || '../replays/demo_minimax_vs_mcts.json', maxSec = +(q.get('seconds') || 0);
+  const log = await (await fetch(url)).json();
+  const t0 = performance.now();
+  const bank = new Map(); for (const j of bankJobs()) bank.set(j.key, render(j.id, j.v, j.note));
+  say(`bank: ${bank.size} buffers rendered in ${((performance.now() - t0) / 1000).toFixed(2)} s`);
+  // pass 1: count the steps (intro + fight + K.O. display frames, exactly as the browser plays a replay)
+  const mk = () => new Match({ chars: log.chars, controllers: [new ReplayController(log), new ReplayController(log)], bestOf: log.bestOf, roundFrames: log.roundFrames, koFrames: 150, introFrames: 90, verify: log });
+  let steps = 0; { const m = mk(); while (!m.over) { m.step(); steps++; } }
+  if (maxSec) steps = Math.min(steps, Math.round(maxSec * 60));
+  const len = steps / 60 + 4.5;
+  const ctx = new OfflineAudioContext(2, Math.ceil(len * SR), SR);
+  const e = new AudioEngine(); for (const [k, b] of bank) e.addRaw(k, b); e.useOffline(ctx);
+  await e.loadSamples(); say(`voices: ${[...e.buffers.keys()].filter((k) => k.startsWith('v_')).length} clips decoded`);
+  const only = q.get('only'); if (only === 'music') e.setVolume('sfx', 0); if (only === 'sfx') e.setVolume('music', 0); // stem checks
+  const music = new Music(e); music.start(); music.setMode('battle');
+  const tr = new CueTracker(), cam = new Camera(), m = mk(), counts = {};
+  let cs = cam.update(m.sim.f[0], m.sim.f[1], true);
+  for (let k = 0; k <= steps; k++) {
+    e.offlineTime = k / 60;
+    if (k < steps) m.step();
+    cs = cam.update(m.sim.f[0], m.sim.f[1], false);
+    const pan = (x) => panOf(x, cs.cx, cs.w);
+    for (const c of tr.frame(m.sim, m)) { const v = e.play(c.id, { variant: c.variant, rate: c.rate, gain: c.gain, pan: pan(c.x), when: k / 60 }); counts[c.id] = (counts[c.id] || 0) + (v ? 1 : 0); }
+    e.syncLoops(tr.loops, pan);
+    if (k % 6 === 0) music.setTension(m.over ? 0 : tension(m.sim, m), 0.1);
+    music.scheduleUntil(k / 60 + 0.12);
+  }
+  e.offlineTime = steps / 60; music.setPaused(true); // let the tails ring out, music fades
+  const buf = await ctx.startRendering();
+  const ch = [buf.getChannelData(0), buf.getChannelData(1)];
+  const L = loudness(ch, SR);
+  const result = { replay: url, only: only || 'all', seconds: +len.toFixed(1), steps, verify: { ok: m.verify.ok, bad: m.verify.bad }, integratedLUFS: +L.integrated.toFixed(1), shortTermMaxLUFS: +L.shortTermMax.toFixed(1), samplePeakDb: +L.samplePeakDb.toFixed(2), renderSec: +((performance.now() - t0) / 1000).toFixed(2), cues: counts };
+  say(JSON.stringify(result, null, 1));
+  const bytes = wav(ch, SR), blob = new Blob([bytes], { type: 'audio/wav' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = url.split('/').pop().replace('.json', '') + '.wav'; a.textContent = 'download the WAV (' + (bytes.length / 1e6).toFixed(1) + ' MB)';
+  document.getElementById('dl').appendChild(a);
+  const audio = document.createElement('audio'); audio.controls = true; audio.src = a.href; document.getElementById('dl').append(document.createElement('br'), audio);
+  window.result = result; window.wavBytes = bytes;
+}
+run().catch((err) => { say('ERROR ' + err.stack); window.result = { error: err.message }; });
+</script>
+</body>
+</html>

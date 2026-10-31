@@ -19,9 +19,11 @@ game/AI_PLAN.md
 game/AUDIO_PLAN.md
 *.md
 !game/README.md
+!/README.md
 
 # ---- Development-only tools and generated renders
-game/tools/
+game/tools/out/
+game/tools/proto/
 game/renders/
 art/*/tools/
 art/*/renders/*

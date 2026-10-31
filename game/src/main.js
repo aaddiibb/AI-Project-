@@ -139,8 +139,11 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
         : new Match({ chars, controllers: ctrl, bestOf: cfg.bestOf || 3, roundFrames: (cfg.roundSecs || 99) * 60, koFrames: 150, introFrames: 90, record: true, meta: { mode: cfg.mode, agents: cfg.agents, levels: cfg.levels } });
       G.sim = G.match.sim;
     }
-    overlay.setAgents(G.agents, [labelOf(0), labelOf(1)]);
-    overlay.toggle(cfg.think);
+    // AI cards: the badge names the algorithm, so the label is just side + difficulty
+    const cardLabel = (i) => (cfg.mode === 'replay' ? `P${i + 1}` : `P${i + 1} · ${LEVELS[cfg.levels[i]]?.label.toUpperCase() || ''}`);
+    overlay.setAgents(G.agents, [cardLabel(0), cardLabel(1)], { controls: cfg.mode === 'hva' || cfg.mode === 'train' });
+    overlay.setMode(cfg.think === false ? 'off' : cfg.think === true ? 'auto' : cfg.think);
+    touch.setGameActive(true, overlay.hasAI, overlay.visible); syncThinkBtn();
     const sub = cfg.mode === 'train' ? `${chars[0].name} · TEST ARENA` : chars[0].id === chars[1].id ? `${chars[0].name} MIRROR` : `${chars[0].name} vs ${chars[1].name}`;
     hud.setup(G.sim, { names: [labelOf(0).replace(/^P1 · /, ''), labelOf(1).replace(/^P2 · /, '')], title: cfg.mode === 'train' ? 'TRAINING' : cfg.mode === 'replay' ? 'REPLAY' : '', subtitle: sub, inputs: cfg.mode !== 'ava' && cfg.mode !== 'replay' });
     $('dummyRow').classList.toggle('hide', cfg.mode !== 'train'); $('meterRow').classList.toggle('hide', cfg.mode !== 'train');
@@ -158,7 +161,8 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
   }
   /** back to the front end: drop the running game (agents, puppets, sim) so the menus show a clean stage */
   function endGame() {
-    touch.setVisible(false); // back to the menus: hide the clusters, un-reserve the edge strips
+    touch.setVisible(false); touch.setGameActive(false); // back to the menus: hide the clusters and the chip row
+    $('thinkBtn').classList.add('hide');
     for (const a of G.agents) a?.dispose?.();
     for (const p of G.puppets) p?.destroy();
     G.agents = [null, null]; G.puppets = [null, null]; G.sim = null; G.match = null; G.cfg = null; G.game = (G.game || 0) + 1;
@@ -181,6 +185,14 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     if (portrait) { if (!S.paused) { S.rotPaused = true; S.paused = true; sound.setPaused(true); } }
     else if (S.rotPaused) { S.rotPaused = false; S.paused = false; sound.setPaused(false); }
   };
+  // show / hide the AI thinking overlay mid-match: H, the desktop chip under the timer, the AI chip on touch
+  const syncThinkBtn = () => {
+    const b = $('thinkBtn'); b.classList.toggle('hide', !overlay.hasAI);
+    b.textContent = `AI THINKING · ${overlay.visible && overlay.mode !== 'off' ? 'ON' : 'OFF'} (H)`;
+  };
+  $('thinkBtn').onclick = () => overlay.toggle();
+  overlay.onChange = (on) => { touch.setAI(on); syncThinkBtn(); };
+  touch.onToggleAI = () => overlay.toggle();
   for (const m of DUMMY_MODES) { const o = document.createElement('option'); o.value = m.id; o.textContent = m.label; $('dummy').appendChild(o); }
   $('dummy').onchange = (e) => { S.dummy = e.target.value; e.target.blur(); };
   $('step').onchange = (e) => { S.stepEvery = +e.target.value; e.target.blur(); };

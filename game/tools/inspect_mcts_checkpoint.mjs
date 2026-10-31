@@ -1,0 +1,25 @@
+import fs from 'node:fs/promises';
+import {Sim} from '../src/sim.js';
+import {makeAgent} from '../src/ai/registry.js';
+import {terms,evaluate} from '../src/ai/eval.js';
+const hp=Number(process.argv[2]||300),index=Number(process.argv[3]||1);
+const dir=new URL(`../../docs/decision-walkthrough/normal-${hp}hp/`,import.meta.url);
+const d=JSON.parse(await fs.readFile(new URL('decisions.json',dir),'utf8'))[index];
+if(d.side!==1)throw Error('This teaching trace expects Shinobi side1');
+const sim=Sim.fromState(d.estimatedFullState);sim.chars=sim.chars.map(c=>({...c,phys:{...c.phys,hp}}));
+const a=makeAgent('mcts',{side:1,seed:1,level:'normal',mode:'nodes'});a.rng.s=d.rngBefore;
+const trace={sourceDecision:index,frame:d.liveFrame,perspective:'local0=Shinobi, local1=Samurai',nodes:[],iterations:[]};
+const ids=new WeakMap();let current=null,rolling=false,lastRolloutState=null;
+const snap=s=>({frame:s.frame,fighters:s.f.map(f=>({character:s.C(f).id,state:f.state,move:f.move,t:f.t,stun:f.stun,hp:f.hp,meter:f.meter,guard:f.guard,x:f.x})),projectiles:s.projectiles.length});
+const stats=(n,k)=>n.acts[k].map((m,i)=>({action:m?.id??'continue',N:n.N[k][i],W:n.W[k][i],mean:n.N[k][i]?n.W[k][i]/n.N[k][i]:null}));
+const make=a.makeNode.bind(a),select=a.select.bind(a),expand=a.expand.bind(a),rollout=a.rollout.bind(a),policy=a.policy.bind(a),iterate=a.iterate.bind(a),step=Sim.prototype.step;
+a.makeNode=function(s,ps){const n=make(s,ps);ids.set(n,trace.nodes.length);trace.nodes.push({id:ids.get(n),state:snap(s),actions:n.acts.map(xs=>xs.map(m=>m?.id??'continue'))});return n};
+a.select=function(n,k){const chosen=select(n,k),r={node:ids.get(n),localSide:k,character:k===0?'shinobi':'samurai',nodeVisits:n.n,selected:n.acts[k][chosen]?.id??'continue',unvisited:n.N[k][chosen]===0,forced:n.acts[k].length===1,statsBefore:stats(n,k)};current.selections.push(r);current.refs.push({r,n,k});return chosen};
+a.expand=function(n,x,y){const kid=expand(n,x,y);current.expansion={parent:ids.get(n),child:ids.get(kid),fromFrame:n.sim.frame,toFrame:kid.sim.frame,actions:[n.acts[0][x]?.id??'continue',n.acts[1][y]?.id??'continue']};return kid};
+a.policy=function(s,side){const m=policy(s,side);if(rolling)current.rolloutChoices.push({frame:s.frame,side,character:s.C(s.f[side]).id,action:m.id});return m};
+Sim.prototype.step=function(inputs){const result=step.call(this,inputs);if(rolling){lastRolloutState=this;current.rolloutSteps++;}return result};
+a.rollout=function(n){rolling=true;lastRolloutState=n.sim;try{const r=rollout(n);current.rollout={from:snap(n.sim),to:snap(lastRolloutState),terms:terms(lastRolloutState,1),H:evaluate(lastRolloutState,1),r,opponentReward:1-r};return r}finally{rolling=false}};
+a.iterate=function(root){current={iteration:trace.iterations.length+1,rootBefore:root.n,selections:[],rolloutChoices:[],rolloutSteps:0,refs:[]};iterate(root);current.rootAfter=root.n;for(const {r,n,k}of current.refs)r.statsAfter=stats(n,k);delete current.refs;trace.iterations.push(current)};
+try{const m=a.decide(sim);trace.result=a.thinking();if(m.id!==d.searchChoice||a.rng.s!==d.rngAfterSearch||JSON.stringify(trace.result.rows)!==JSON.stringify(d.thinking.rows))throw Error('MCTS checkpoint failed to reproduce');}finally{Sim.prototype.step=step}
+await fs.writeFile(new URL(`mcts-checkpoint-${d.liveFrame}.json`,dir),JSON.stringify(trace,null,2));
+console.log(JSON.stringify({result:trace.result,first:trace.iterations[0],second:trace.iterations[1],firstVisitedShinobiSelection:trace.iterations.find(i=>i.selections.some(s=>s.localSide===0&&!s.unvisited&&!s.forced))},null,2));

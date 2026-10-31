@@ -10,7 +10,8 @@ import { LEVELS } from './ai/difficulty.js';
 import { STAGES } from './stage.js';
 import { CONDITIONS, WEATHER_MODES, weatherLabel, rollConditions } from './atmosphere.js';
 import { ROSTER, ROSTER_ORDER } from './roster.js';
-import { getHpMult, setHpMult, touchInst } from './touch.js'; // HP setter (all devices) + touch button editor
+import { getHpMult, setHpMult, touchInst } from './touch.js';
+import { THINK_MODES, THINK_LABEL } from './overlay.js'; // HP setter (all devices) + touch button editor
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -50,7 +51,7 @@ export class Menu {
   constructor(hooks) {
     Object.assign(this, hooks);
     this.screen = null; this.focus = 0; this.log = null; this.mode = 'hva'; this.inTraining = false;
-    this.opts = { think: true, bestOf: 3, roundSecs: 99, weather: 'dynamic' };
+    this.opts = { think: 'auto', bestOf: 3, roundSecs: 99, weather: 'dynamic' };
     this.sel = { side: 0, row: 0, sides: [this.defSide('samurai', 0, 'minimax'), this.defSide('shinobi', 0, 'mcts')] };
     this.stageIx = 0;
     // the touch editor's DONE chip refreshes this screen (only when OPTIONS is showing)
@@ -59,6 +60,7 @@ export class Menu {
     try {
       const s = JSON.parse(localStorage.getItem(KEY) || '{}');
       if (s.opts) Object.assign(this.opts, s.opts);
+      if (typeof this.opts.think === 'boolean') this.opts.think = this.opts.think ? 'auto' : 'off'; // (older saves: on / off)
       if (s.sides) s.sides.forEach((d, i) => Object.assign(this.sel.sides[i], d, { ready: false }));
     } catch { /* storage unavailable: defaults */ }
     this.el = $('menu');
@@ -67,7 +69,7 @@ export class Menu {
     const q = new URLSearchParams(location.search);
     this.preset = q.get('autostart') === '1' ? {
       mode: q.get('mode') || 'ava', chars: [q.get('p1') || 'samurai', q.get('p2') || 'samurai'], agents: [q.get('a1') || 'minimax', q.get('a2') || 'mcts'],
-      levels: [q.get('l1') || 'hard', q.get('l2') || 'hard'], stage: q.get('stage') || 'auto', think: q.get('think') !== '0', replay: q.get('replay'), weather: q.get('weather') || 'dynamic',
+      levels: [q.get('l1') || 'hard', q.get('l2') || 'hard'], stage: q.get('stage') || 'auto', think: q.get('think') === '0' ? 'off' : THINK_MODES.includes(q.get('think')) ? q.get('think') : 'auto', replay: q.get('replay'), weather: q.get('weather') || 'dynamic',
     } : null;
   }
   defSide(char, pal, agent) { return { char, pal, agent, level: 'hard', ready: false }; }
@@ -131,7 +133,10 @@ export class Menu {
           { id: 'music', label: 'MUSIC', value: pct(st.music), bar: st.music },
           { id: 'sfx', label: 'EFFECTS', value: pct(st.sfx), bar: st.sfx },
           { id: 'muted', label: 'SOUND', value: st.muted ? 'OFF' : 'ON' },
-          { id: 'think', label: 'AI THINKING OVERLAY', value: this.opts.think ? 'ON' : 'OFF' },
+          {
+            id: 'think', label: 'AI THINKING OVERLAY', value: THINK_LABEL[this.opts.think] || 'AUTO',
+            desc: 'How the CPU’s decisions are shown. Auto fits the screen (full cards on a desktop, a one-line ticker on a phone), Compact = the pick and top 3 only, Off = hidden. In a match: H, or the AI chip.',
+          },
           { id: 'bestOf', label: 'ROUNDS', value: `BEST OF ${this.opts.bestOf}` },
           { id: 'roundSecs', label: 'ROUND TIME', value: `${this.opts.roundSecs} s` },
           {
@@ -141,7 +146,7 @@ export class Menu {
           // HP works on PC and phone; the button editor only exists when the touch overlay is mounted
           ...(touchInst() ? [{
             id: 'moveBtns', label: 'MOVE BUTTONS', value: touchInst().edit ? 'EDITING' : 'OFF',
-            desc: 'Opens the drag editor: move each side of the touch controls, then tap DONE. Positions are saved.',
+            desc: 'Opens the drag editor: move the D-pad, the buttons and the ☰ / ⛶ / AI chip row anywhere, then tap DONE. Positions are saved.',
           }] : []),
           {
             id: 'hp', label: 'HP SETTER', value: touchHpLabel(getHpMult()),
@@ -211,7 +216,7 @@ export class Menu {
         const step = d || 1;
         if (id === 'master' || id === 'music' || id === 'sfx') this.sound?.set(id, Math.max(0, Math.min(1, Math.round((st[id] + step * 0.1) * 10) / 10)));
         if (id === 'muted') this.sound?.set('muted', !st.muted);
-        if (id === 'think') this.opts.think = !this.opts.think;
+        if (id === 'think') this.opts.think = THINK_MODES[wrap(THINK_MODES.indexOf(this.opts.think) + step, THINK_MODES.length)];
         if (id === 'bestOf') { const o = [1, 3, 5]; this.opts.bestOf = o[wrap(o.indexOf(this.opts.bestOf) + step, 3)]; }
         if (id === 'roundSecs') { const o = [45, 60, 99]; this.opts.roundSecs = o[wrap(o.indexOf(this.opts.roundSecs) + step, 3)]; }
         if (id === 'weather') this.opts.weather = WEATHER_MODES[wrap(WEATHER_MODES.indexOf(this.opts.weather) + step, WEATHER_MODES.length)];

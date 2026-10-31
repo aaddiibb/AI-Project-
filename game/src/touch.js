@@ -17,6 +17,7 @@ export function touchStrip() { return inst ? inst.strips() : [0, 0]; }
 export function touchInst() { return inst; }
 
 const STORE = 'algo-fighter-touch';
+const DRAGGABLE = ['tcL', 'tcR', 'tcTop']; // D-pad, buttons, and the ☰ / ⛶ / AI chip row (MOVE BUTTONS in OPTIONS)
 const HP_TIERS = [1, 2, 5]; // 1000 / 2000 / 5000
 const load = () => { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch { return {}; } };
 const save = (o) => { try { localStorage.setItem(STORE, JSON.stringify(o)); } catch { /* storage unavailable */ } };
@@ -45,7 +46,7 @@ export class TouchControls {
     this.char = null; this.specialCost = 25; this.ultCost = 100; this.spRdy = false; this.ultRdy = false;
     this.edit = false;
     const s = load();
-    this.drag = (s.drag && typeof s.drag === 'object') ? s.drag : { tcL: null, tcR: null }; // { side: { xPct, yPct } } in viewport units
+    this.drag = (s.drag && typeof s.drag === 'object') ? { tcTop: null, ...s.drag } : { tcL: null, tcR: null, tcTop: null }; // { side: { xPct, yPct } } in viewport units
     if (!this.enabled) return;
     inst = this;
     document.body.classList.add('touchDevice'); // menu copy / tap-target CSS
@@ -61,10 +62,12 @@ export class TouchControls {
     this.wireButtons();
     this.wirePad();
     const menuBtn = document.getElementById('touchMenuBtn');
-    menuBtn?.addEventListener('click', (e) => { e.preventDefault(); this.haptic(12); this.onPause?.(); });
+    menuBtn?.addEventListener('click', (e) => { e.preventDefault(); if (this.edit) return; this.haptic(12); this.onPause?.(); });
+    const ai = document.getElementById('touchAI'); // show / hide the AI thinking overlay mid-match
+    ai?.addEventListener('click', (e) => { e.preventDefault(); if (this.edit) return; this.haptic(10); this.onToggleAI?.(); });
     const fs = document.getElementById('touchFS');
     if (fs && !document.documentElement.requestFullscreen) fs.style.display = 'none'; // iPhone Safari has no element fullscreen: no dead button
-    if (fs) fs.addEventListener('click', (e) => { e.preventDefault(); this.haptic(10); this.toggleFullscreen(); });
+    if (fs) fs.addEventListener('click', (e) => { e.preventDefault(); if (this.edit) return; this.haptic(10); this.toggleFullscreen(); });
     const done = document.getElementById('touchDone');
     done?.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); this.haptic(14); this.endEdit(true); });
     const reset = document.getElementById('touchReset');
@@ -113,9 +116,12 @@ export class TouchControls {
   editScale() { return 1.12; }
 
   applyDrag() {
-    for (const side of ['tcL', 'tcR']) {
+    for (const side of DRAGGABLE) {
       const el = document.getElementById(side);
       const d = this.drag?.[side];
+      if (side === 'tcTop') { // the chip row is not a full-height strip: only its corner moves
+        el.style.left = d ? `${d.x}vw` : ''; el.style.top = d ? `${d.y}vh` : ''; el.style.bottom = d ? 'auto' : ''; continue;
+      }
       if (d) { el.style.left = `${d.x}vw`; el.style.top = `${d.y}vh`; el.style.right = 'auto'; el.style.bottom = 'auto'; el.style.height = 'auto'; } // collapse: buttons move with the drag
       else { el.style.left = ''; el.style.top = ''; el.style.right = side === 'tcR' ? '0' : ''; el.style.bottom = ''; el.style.height = ''; }
     }
@@ -133,7 +139,7 @@ export class TouchControls {
     this.edit = true;
     this.paused = false;
     this.clearBits();
-    this.ui.classList.remove('hide', 'paused');
+    this.ui.classList.remove('noctl', 'paused');
     this.ui.classList.add('edit');
     document.body.classList.add('touchOn');
     this.fit();
@@ -145,7 +151,7 @@ export class TouchControls {
     this.edit = false;
     save({ hpMult, drag: this.drag });
     this.ui.classList.remove('edit');
-    this.ui.classList.toggle('hide', !this.visible);
+    this.ui.classList.toggle('noctl', !this.visible);
     document.body.classList.toggle('touchOn', this.visible);
     this.applyDrag();
     if (notify) this.onEditEnd?.();
@@ -153,9 +159,9 @@ export class TouchControls {
 
   /** OPTIONS editor: put both clusters back in their corners */
   resetDrag() {
-    this.drag = { tcL: null, tcR: null };
+    this.drag = { tcL: null, tcR: null, tcTop: null };
     save({ hpMult, drag: this.drag });
-    for (const side of ['tcL', 'tcR']) { const el = document.getElementById(side); if (el) el.style.paddingBottom = ''; }
+    for (const side of DRAGGABLE) { const el = document.getElementById(side); if (el) el.style.paddingBottom = ''; }
     this.applyDrag();
     this.fit();
   }
@@ -169,11 +175,21 @@ export class TouchControls {
     if (on && this.edit) this.endEdit(false); // never enter a fight in edit mode: buttons must be live
     this.visible = on;
     if (!on) this.clearBits();
-    this.ui.classList.toggle('hide', !on);
+    this.ui.classList.toggle('noctl', !on);
     document.body.classList.toggle('touchOn', on); // gates the rotate overlay + hides PC-only HUD chrome
     this.applyDrag();
     if (on) this.fit();
   }
+
+  /** any game running (also CPU vs CPU / replays, which have no player controls): the chip row stays reachable;
+   *  hasAI shows the AI chip, aiOn its state */
+  setGameActive(on, hasAI = false, aiOn = true) {
+    if (!this.enabled) return;
+    this.ui.classList.toggle('ingame', !!on);
+    this.ui.classList.toggle('hasai', !!on && hasAI);
+    this.setAI(aiOn);
+  }
+  setAI(on) { document.getElementById('touchAI')?.classList.toggle('off', !on); }
 
   /** VS screen / pause menu / result screen: keep the controls on screen but out of the way */
   setPaused(on) {
@@ -270,7 +286,7 @@ export class TouchControls {
       el.addEventListener('pointerdown', (e) => {
         if (!this.edit) return;
         e.preventDefault(); e.stopPropagation();
-        el.style.height = 'auto'; el.style.paddingBottom = '8px'; // collapse the strip so it moves as one hand-sized handle
+        if (side !== 'tcTop') { el.style.height = 'auto'; el.style.paddingBottom = '8px'; } // collapse the strip so it moves as one hand-sized handle
         const r = el.getBoundingClientRect(), sx = e.clientX - r.left, sy = e.clientY - r.top;
         try { el.setPointerCapture(e.pointerId); } catch { /* mouse without capture still works inside the box */ }
         this.haptic(10);
@@ -289,7 +305,7 @@ export class TouchControls {
         el.addEventListener('pointercancel', done);
       });
     };
-    mk('tcL'); mk('tcR');
+    DRAGGABLE.forEach(mk);
   }
 
   /** the D-pad is one hit area: press anywhere and slide between directions, diagonals included */

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Audition</title>
+<!-- Audition the downloaded voice packs (game/assets/voice_src) and pick a voice per character. Serve the project root
+     (launch config "shinobi-game", port 8766) and open /game/tools/voice_audition.html. Picks are kept in this browser. -->
+<style>
+  :root { --bg: #14121c; --panel: #1f1c29; --ink: #f6f0e0; --dim: #a59fb3; --gold: #e2b857; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px 16px 60px; background: var(--bg); color: var(--ink); font: 15px/1.5 Georgia, serif; }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; letter-spacing: 6px; } h1 + p { margin: 0 0 22px; color: var(--dim); }
+  h2 { margin: 30px 0 10px; letter-spacing: 4px; font-size: 20px; }
+  h2.sam { color: #ff6a5b; } h2.shi { color: #8fb0ff; } h2.ann { color: var(--gold); }
+  .voice { background: var(--panel); border: 1px solid #343046; border-left: 5px solid #444; border-radius: 6px; padding: 12px 14px; margin: 10px 0; }
+  .voice.rec { border-left-color: var(--gold); }
+  .voice.picked { outline: 2px solid var(--gold); }
+  .vh { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; justify-content: space-between; }
+  .vh b { font-size: 17px; } .vh small { color: var(--dim); }
+  .tag { font-size: 12px; letter-spacing: 2px; color: var(--bg); background: var(--gold); padding: 1px 7px; border-radius: 3px; margin-left: 6px; }
+  .clips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .clips button, .pick { font: 13px ui-monospace, Consolas, monospace; background: #2a2636; color: var(--ink); border: 1px solid #4a4560; border-radius: 4px; padding: 5px 9px; cursor: pointer; }
+  .clips button:hover { border-color: var(--gold); } .clips button.playing { background: var(--gold); color: var(--bg); }
+  .cl { display: inline-flex; } .cl button:first-child { border-radius: 4px 0 0 4px; }
+  .tick { border-radius: 0 4px 4px 0 !important; border-left: none !important; color: var(--dim) !important; padding: 5px 7px !important; }
+  .tick.on { background: #2f8f5a !important; color: #fff !important; }
+  .pick { background: transparent; border-color: var(--gold); color: var(--gold); }
+  .voice.picked .pick { background: var(--gold); color: var(--bg); }
+  #out { position: sticky; bottom: 0; margin-top: 24px; background: #0e0c14; border: 1px solid var(--gold); border-radius: 6px; padding: 10px 14px; }
+  #out code { color: var(--gold); white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>VOICE AUDITION</h1>
+  <p>Click a clip to play it. Tick <b>✓</b> next to clips you want to use, mark one voice per character with <b>Pick</b>, then tell Claude your picks (the box at the bottom). ★ = Claude's suggestion from the pitch / tone analysis.</p>
+  <div id="root"></div>
+  <div id="out">Picks: <code id="picks">none yet</code></div>
+</main>
+<script>
+const SRC = '../assets/voice_src/';
+const Y = SRC + 'x_yelling_sounds/yelling sounds/', R = SRC + 'x_RPG_Voice_Starter_Pack/RPG Voice Starter Pack/', K = SRC + 'x_kenney_voiceoverFighter/Audio/';
+const range = (n, f) => Array.from({ length: n }, (_, i) => f(i + 1));
+const rpg = (t) => ['attack1', 'attack2', 'attack3', 'damaged1', 'damaged2', 'damaged3', 'jump1', 'jump2', 'jump3', 'fire', 'freeze', 'hellstorm'].map((c) => [c, `${R}Type ${t}/${c}.wav`]);
+const VOICES = [
+  { role: 'samurai_attack', title: 'SAMURAI — ATTACK SHOUTS (tick ✓ the ones you like)', cls: 'sam', list: [
+    { id: 'kiai_v0', name: 'Kiai cuts — voice 0 (your non-goofy yells 3, 6, 7, 8, 13)', note: 'only the first 0.34 s of each yell: the sharp "hah!" without the scream. _deep = 2 semitones lower', rec: true,
+      clips: [3, 6, 7, 8, 13].flatMap((i) => [[`v0_${i}`, `${SRC}x_sam_kiai/v0_${i}.wav`], [`v0_${i}_deep`, `${SRC}x_sam_kiai/v0_${i}_deep.wav`]]) },
+    { id: 'kiai_v3', name: 'Kiai cuts — voice 3', note: 'same cut from voice 3 (a similar deep voice)', clips: range(16, (i) => [[`v3_${i}`, `${SRC}x_sam_kiai/v3_${i}.wav`], [`v3_${i}_deep`, `${SRC}x_sam_kiai/v3_${i}_deep.wav`]]).flat() },
+    { id: 'grunt_v3', name: 'Voice 3 grunts (as recorded)', note: 'short effort grunts', clips: range(6, (i) => [`grunt${i}`, `${Y}3grunt${i}.wav`]) },
+  ] },
+  { role: 'samurai', title: 'SAMURAI — VOICE / HURT SOUNDS', cls: 'sam', list: [
+    { id: 'yell_0', name: 'Yelling pack — voice 0', note: 'you flagged 1, 2, 4, 5, 9, 10, 11, 12 as goofy; 3, 6, 7, 8, 13 kept for getting hit', rec: true, clips: [3, 6, 7, 8, 13].map((i) => [`yell${i}`, `${Y}yell${i}.wav`]) },
+    { id: 'yell_3', name: 'Yelling pack — voice 3', note: 'deep, also has 6 short grunts (good for attacks)', clips: [...range(6, (i) => [`grunt${i}`, `${Y}3grunt${i}.wav`]), ...range(16, (i) => [`yell${i}`, `${Y}3yell${i}.wav`])] },
+    { id: 'yell_1', name: 'Yelling pack — voice 1', note: 'higher, younger', clips: range(16, (i) => [`yell${i}`, `${Y}1yell${i}.wav`]) },
+    { id: 'yell_2', name: 'Yelling pack — voice 2', note: 'highest, brightest', clips: range(11, (i) => [`yell${i}`, `${Y}2yell${i}.wav`]) },
+  ] },
+  { role: 'shinobi', title: 'SHINOBI (female, cool kunoichi)', cls: 'shi', list: [
+    { id: 'rpg_3', name: 'RPG starter pack — Type 3', note: 'lowest, most mature of the three', rec: true, clips: rpg(3) },
+    { id: 'rpg_2', name: 'RPG starter pack — Type 2', note: 'mid register', clips: rpg(2) },
+    { id: 'rpg_1', name: 'RPG starter pack — Type 1', note: 'high, bright (cute / young)', clips: rpg(1) },
+    { id: 'gruntwork', name: 'Female Gruntwork 1 (split into 34 sounds)', note: 'mature, wordless grunts. License unclear (CC-BY or CC-BY-SA): needs credit', clips: range(34, (i) => [`g${String(i).padStart(2, '0')}`, `${SRC}x_gruntwork/grunt${String(i).padStart(2, '0')}.wav`]) },
+  ] },
+  { role: 'announcer', title: 'ANNOUNCER (round calls, K.O.)', cls: 'ann', list: [
+    { id: 'kenney', name: 'Kenney Voiceover: Fighter', note: 'big processed announcer voice, CC0', rec: true,
+      clips: ['round_1', 'round_2', 'round_3', 'final_round', 'fight', 'begin', 'ready', 'time', 'winner', 'you_win', 'you_lose', 'flawless_victory', 'tie', 'choose_your_character', 'player_1', 'player_2', 'combo', 'game_over'].map((c) => [c, `${K}${c}.ogg`]) },
+  ] },
+];
+const KEY = 'voice-audition-picks';
+let picks = {}, ticks = {}; try { ({ picks = {}, ticks = {} } = JSON.parse(localStorage.getItem(KEY) || '{}')); } catch { /* fresh */ }
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ picks, ticks })); } catch { /* private window */ } };
+const root = document.getElementById('root');
+let cur = null;
+for (const g of VOICES) {
+  const h = document.createElement('h2'); h.className = g.cls; h.textContent = g.title; root.appendChild(h);
+  for (const v of g.list) {
+    const d = document.createElement('div'); d.className = 'voice' + (v.rec ? ' rec' : ''); d.dataset.role = g.role; d.dataset.id = v.id;
+    d.innerHTML = `<div class="vh"><span><b>${v.name}</b>${v.rec ? '<span class="tag">★ SUGGESTED</span>' : ''}<br><small>${v.note}</small></span><button class="pick">Pick for ${g.role}</button></div><div class="clips"></div>`;
+    const box = d.querySelector('.clips');
+    for (const [label, url] of v.clips) {
+      const b = document.createElement('button'); b.textContent = '▶ ' + label;
+      b.onclick = () => {
+        if (cur) { cur.a.pause(); cur.b.classList.remove('playing'); }
+        const a = new Audio(url); cur = { a, b }; b.classList.add('playing');
+        a.onended = () => b.classList.remove('playing'); a.play().catch(() => b.classList.remove('playing'));
+      };
+      const t = document.createElement('button'); t.className = 'tick'; t.textContent = '✓'; t.title = 'use this clip';
+      const key = `${v.id}:${label}`;
+      t.onclick = () => { const L = (ticks[g.role] ||= []); const k = L.indexOf(key); if (k >= 0) L.splice(k, 1); else L.push(key); save(); show(); };
+      t.dataset.key = key; t.dataset.role = g.role;
+      const w = document.createElement('span'); w.className = 'cl'; w.append(b, t); box.appendChild(w);
+    }
+    d.querySelector('.pick').onclick = () => { picks[g.role] = v.id; save(); show(); };
+    root.appendChild(d);
+  }
+}
+function show() {
+  for (const d of document.querySelectorAll('.voice')) d.classList.toggle('picked', picks[d.dataset.role] === d.dataset.id);
+  for (const t of document.querySelectorAll('.tick')) t.classList.toggle('on', (ticks[t.dataset.role] || []).includes(t.dataset.key));
+  const lines = [...Object.entries(picks).map(([k, v]) => `${k}: ${v}`), ...Object.entries(ticks).filter(([, L]) => L.length).map(([k, L]) => `${k} clips: ${L.join(', ')}`)];
+  document.getElementById('picks').textContent = lines.length ? lines.join(String.fromCharCode(10)) : 'none yet';
+}
+show();
+</script>
+</body>
+</html>
