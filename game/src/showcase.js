@@ -2,7 +2,7 @@
 // character select, the hero art on the title and the VS screen. Drawn in screen space (1920x1080, under the DOM menu)
 // above the dimmed stage. Render only: it builds its own throwaway puppets and never touches a sim.
 import { ROSTER } from './roster.js';
-import { Puppet, loadRig, loadPoses } from './render.js';
+import { Puppet, loadRig, loadPoses, VIEW } from './render.js';
 import { getChar } from './characters/index.js';
 
 const W = 1920, H = 1080;
@@ -20,6 +20,15 @@ export class Showcase {
     this.sides = [0, 1].map(() => ({ id: null, pal: -1, portrait: null, pup: null, holder: null, ring: null, t: 0, pick: -1, token: 0 }));
     this.heroes = [];
     this.fadeMask = this.gradientTexture();
+    const c = document.createElement('canvas'); c.width = 128; c.height = 128; // soft aura behind the hero art
+    const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(0.45, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128); this.auraTex = PIXI.Texture.from(c);
+    const f = document.createElement('canvas'); f.width = 4; f.height = 256; // the heroes' feet fade into the dark
+    const fg = f.getContext('2d'), fgr = fg.createLinearGradient(0, 0, 0, 256);
+    fgr.addColorStop(0, 'rgba(12,10,18,0)'); fgr.addColorStop(1, 'rgba(12,10,18,1)'); fg.fillStyle = fgr; fg.fillRect(0, 0, 4, 256);
+    this.floorFade = PIXI.Texture.from(f);
+    this.vsbg = new PIXI.Graphics(); this.root.addChildAt(this.vsbg, 1); // VS: the two coloured halves + speed lines
   }
 
   async texture(url) { return (this.tex[url] ||= this.PIXI.Assets.load(url)); }
@@ -39,8 +48,9 @@ export class Showcase {
     if (mode === this.mode) return;
     this.mode = mode; this.t = 0;
     for (const s of this.sides) this.clearSide(s);
-    for (const h of this.heroes) h.sprite.destroy(); this.heroes = [];
-    this.layer.removeChildren();
+    for (const h of this.heroes) { h.sprite.destroy(); h.aura?.destroy(); } this.heroes = [];
+    this.fade?.destroy(); this.fade = null;
+    this.layer.removeChildren(); this.vsbg.clear();
     this.root.visible = mode !== 'off';
     if (mode === 'title') this.heroArt(['samurai', 'shinobi'], 'title');
   }
@@ -93,34 +103,62 @@ export class Showcase {
     const mode = this.mode;
     const texs = await Promise.all(ids.map((id) => this.texture(ROSTER[id].full)));
     if (this.mode !== mode) return;
+    const { PIXI } = this;
     texs.forEach((tex, i) => {
-      const sp = new this.PIXI.Sprite(tex);
-      const h = kind === 'title' ? 900 : 1000, k = h / tex.height;
+      const sp = new PIXI.Sprite(tex);
+      const h = kind === 'title' ? 960 : 1000, k = h / tex.height;
       sp.anchor.set(0.5, 1); sp.scale.set(i === 0 ? k : -k, k);
       if (kind === 'vs' && ids[0] === ids[1] && i === 1) sp.tint = 0x9a90b8; // mirror match: the second one in shadow
-      this.layer.addChild(sp);
-      this.heroes.push({ sprite: sp, i, kind });
+      const aura = new PIXI.Sprite(this.auraTex); aura.anchor.set(0.5); aura.blendMode = 'add';
+      aura.tint = i === 0 ? 0xd2283c : 0x6a4cd8; aura.width = 900; aura.height = 1100;
+      this.layer.addChild(aura, sp);
+      this.heroes.push({ sprite: sp, aura, i, kind });
     });
+    this.fade = new PIXI.Sprite(this.floorFade); this.layer.addChild(this.fade); // over the heroes' feet
   }
   vs(ids) { this.setMode('vs'); this.heroArt(ids, 'vs'); }
+
+  /** VS: crimson and indigo halves slam in along a diagonal, a hot seam between them, speed lines streaming out */
+  vsBackground(t, ex, ey) {
+    const g = this.vsbg.clear(), a = ease((t - 2) / 14), L = -ex - 20, R = W + ex + 20, T = -ey, B = H + ey;
+    const seam = (y) => 1010 - (100 * y) / H, tx = seam(T), bx = seam(B); // the diagonal seam's x at the top / bottom edge
+    const off = (1 - a) * 1500;
+    g.poly([L - off, T, tx - off, T, bx - off, B, L - off, B]).fill({ color: 0x5c0d18, alpha: 0.9 });
+    g.poly([tx + off, T, R + off, T, R + off, B, bx + off, B]).fill({ color: 0x15204e, alpha: 0.9 });
+    for (let i = 0; i < 26; i++) { // speed lines: each side streams outwards from the seam
+      const side = i % 2, y = T + ((i * 97) % (B - T)), sp = 26 + (i % 5) * 9, len = 220 + (i * 53) % 380;
+      const x = ((t * sp + i * 311) % (W / 2 + ex + 400));
+      const xx = side ? seam(y) + 60 + x : seam(y) - 60 - x - len;
+      g.rect(xx + (side ? off : -off), y, len, 3 + (i % 3)).fill({ color: side ? 0x7e9cff : 0xff6a6a, alpha: 0.16 * a });
+    }
+    const glow = 0.6 + 0.4 * Math.sin(t / 6);
+    g.moveTo(tx, T).lineTo(bx, B).stroke({ width: 46, color: 0xff3048, alpha: 0.18 * a * glow })
+      .moveTo(tx, T).lineTo(bx, B).stroke({ width: 14, color: 0xffd6a0, alpha: 0.55 * a })
+      .moveTo(tx, T).lineTo(bx, B).stroke({ width: 4, color: 0xffffff, alpha: a });
+  }
 
   // ------------------------------------------------------------------ per frame
   update(time) {
     if (this.mode === 'off') return;
     const t = ++this.t;
-    this.shade.clear().rect(0, 0, W, H).fill({ color: 0x0c0a12, alpha: { title: 0.35, select: 0.72, stage: 0.78, vs: 0.92 }[this.mode] ?? 0.6 });
+    const ex = VIEW.ex, ey = VIEW.ey, Hb = H + ey; // Hb: the real bottom edge on tall screens
+    this.shade.clear().rect(-ex, -ey, W + 2 * ex, H + 2 * ey).fill({ color: 0x0c0a12, alpha: { title: 0.3, select: 0.72, stage: 0.78, vs: 0.9 }[this.mode] ?? 0.6 });
+    if (this.mode === 'vs') this.vsBackground(t, ex, ey);
     for (const h of this.heroes) {
       const sp = h.sprite, dir = h.i === 0 ? -1 : 1;
       if (h.kind === 'title') {
         const a = ease(t / 70);
-        sp.position.set(W / 2 + dir * (640 + 12 * Math.sin(t / 90 + h.i)) + dir * (1 - a) * 200, H + 30);
-        sp.alpha = 0.55 * a;
+        sp.position.set(W / 2 + dir * (650 + 12 * Math.sin(t / 90 + h.i)) + dir * (1 - a) * 200, Hb + 40);
+        sp.alpha = 0.92 * a;
+        h.aura.position.set(sp.x, Hb - 520); h.aura.alpha = 0.2 * a * (0.85 + 0.15 * Math.sin(t / 50 + h.i * 2));
       } else {
         const a = ease((t - 4) / 16);
-        sp.position.set(W / 2 + dir * (440 + (1 - a) * 900) + dir * 30 * Math.min(1, t / 160), H + 20);
+        sp.position.set(W / 2 + dir * (440 + (1 - a) * 900) + dir * 30 * Math.min(1, t / 160), Hb + 20);
         sp.alpha = a;
+        h.aura.position.set(sp.x, Hb - 560); h.aura.alpha = 0.32 * a;
       }
     }
+    if (this.fade) { this.fade.position.set(-ex, Hb - 190); this.fade.width = W + 2 * ex; this.fade.height = 190; this.fade.alpha = this.mode === 'vs' ? 0.9 : 0.75; }
     for (let i = 0; i < 2; i++) {
       const s = this.sides[i];
       if (!s.pup) continue;

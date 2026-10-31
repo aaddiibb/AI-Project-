@@ -24,7 +24,9 @@ game/AUDIO_PLAN.md
 game/tools/
 game/renders/
 art/*/tools/
-art/*/renders/
+art/*/renders/*
+!art/*/renders/parts/
+# (renders/parts holds the raster face cut-outs the live game loads)
 art/cyborg/
 
 # ---- Office lock files and presentations

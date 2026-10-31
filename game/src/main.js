@@ -13,8 +13,9 @@ import { Sim } from './sim.js';
 import { Keyboard } from './input.js';
 import { TouchControls, getHpMult, touchStrip } from './touch.js';
 import { dummyInput, DUMMY_MODES } from './dummy.js';
-import { Puppet, Camera, loadRig, loadPoses, VIEW_W, VIEW_H } from './render.js';
+import { Puppet, Camera, loadRig, loadPoses, VIEW_W, VIEW_H, VIEW, fitView } from './render.js';
 import { Stage, STAGES } from './stage.js';
+import { Atmosphere, rollConditions, mulC } from './atmosphere.js';
 import { Fx } from './fx.js';
 import { Hud } from './hud.js';
 import { Overlay } from './overlay.js';
@@ -35,7 +36,8 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
 (async () => {
   const app = new PIXI.Application();
-  await app.init({ resizeTo: window, background: 0x14121c, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
+  const phone = matchMedia('(pointer: coarse)').matches; // phones: cap the pixel ratio (3x screens cost a lot of fill rate)
+  await app.init({ resizeTo: window, background: 0x14121c, antialias: true, resolution: Math.min(window.devicePixelRatio || 1, phone ? 2 : 3), autoDensity: true });
   $('app').appendChild(app.canvas);
 
   const root = new PIXI.Container();
@@ -47,9 +49,17 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
   const back = new PIXI.Container(), dim = new PIXI.Graphics(), shadows = new PIXI.Graphics(), fighterLayer = new PIXI.Container(), fxLayer = new PIXI.Container(), front = new PIXI.Container();
   const kanjiLayer = new PIXI.Container(), bars = new PIXI.Graphics(); // ultimate kanji (behind the fighters); cinema bars + white flash (screen space)
   world.addChild(back, dim, kanjiLayer, shadows, fighterLayer, fxLayer, front);
-  root.addChild(bars);
+  const weatherLayer = new PIXI.Container(); // screen-space rain / snow / vignette / lightning flash (atmosphere.js)
+  root.addChild(weatherLayer, bars);
   const menuLayer = new PIXI.Container(); root.addChild(menuLayer); // front end: portraits, models, hero art (showcase.js)
-  const layout = () => { const [l, r] = touchStrip(); const w = Math.max(0, innerWidth - l - r); const s = Math.min(w / VIEW_W, innerHeight / VIEW_H); root.scale.set(s); root.position.set(l + (w - VIEW_W * s) / 2, (innerHeight - VIEW_H * s) / 2); };
+  // the 1920x1080 frame is centred; on screens that are not 16:9 the world fills the rest (sides on phones, above and
+  // below on tablets) instead of black bars
+  const layout = () => {
+    const [l, r] = touchStrip(); const f = fitView(Math.max(0, innerWidth - l - r), innerHeight);
+    root.scale.set(f.s); root.position.set(l + f.x, f.y);
+    mask.clear().rect(-VIEW.ex, -VIEW.ey, VIEW_W + 2 * VIEW.ex, VIEW_H + 2 * VIEW.ey).fill(0xffffff);
+    $('hudbox').style.setProperty('--ex', `${VIEW.ex}px`); $('hudbox').style.setProperty('--ey', `${VIEW.ey}px`);
+  };
   layout(); addEventListener('resize', layout);
 
   const stage = new Stage(PIXI, back, front);
@@ -63,6 +73,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
   const camera = new Camera();
   const sound = new Sound();
   const showcase = new Showcase(PIXI, menuLayer);
+  const atmo = new Atmosphere(PIXI, stage, weatherLayer, sound, VIEW); // time of day + weather (cosmetic, per round)
 
   // ------------------------------------------------------------------ game state
   const G = { cfg: null, mode: null, sim: null, match: null, puppets: [null, null], agents: [null, null], phase: 'fight', lastPhase: null, round: -1, data: null };
@@ -102,6 +113,9 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     // stage: chosen in the menu, or 'auto' = P1's home stage (Samurai: cherry temple, Shinobi: bamboo mountain)
     const stageName = cfg.stage && cfg.stage !== 'auto' ? cfg.stage : (Object.entries(STAGES).find(([, s]) => s.home === chars[0].id)?.[0] || 'temple');
     await stage.load(stageName);
+    // time of day / weather for every round (rolled by the menu for the VS screen's forecast, or here)
+    G.conds = cfg.conds || rollConditions(cfg.weather || 'dynamic');
+    atmo.set(G.conds[0], 0);
     // colour schemes: chosen on the character select (default P1 = palette 0, P2 = palette 1, the old mirror palettes)
     const pal = cfg.palettes || [0, 1];
     const [r0, r1, p0, p1] = await Promise.all([loadRig(PIXI, paletteRig(chars[0].id, pal[0])), loadRig(PIXI, paletteRig(chars[1].id, pal[1])), loadPoses(chars[0]), loadPoses(chars[1])]);
@@ -205,7 +219,11 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
   function phaseBanners() {
     const m = G.match; if (!m) return;
     if (m.phase === G.lastPhase && m.round === G.round) return;
-    if (m.phase === 'intro') hud.banner(`ROUND ${m.round + 1}`, 1400);
+    if (m.phase === 'intro') {
+      const c = G.conds[m.round % G.conds.length];
+      if (m.round > 0) atmo.set(c, 150); // the sky turns while the next round is announced
+      hud.banner(`ROUND ${m.round + 1}`, 1400, `${atmo.condition.icon} ${atmo.condition.label}`);
+    }
     else if (m.phase === 'fight' && G.lastPhase === 'intro') hud.banner('FIGHT!', 700);
     else if (m.phase === 'fight' && G.lastPhase === null) hud.banner(`ROUND ${m.round + 1}`, 900);
     else if (m.phase === 'ko') hud.banner(m.pending?.reason === 'time' ? 'TIME' : m.pending?.reason === 'double' ? 'DOUBLE K.O.' : 'K.O.', 2000);
@@ -265,7 +283,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     const ink = inkAmount(sim);
     sim.f.forEach((f, i) => {
       const shake = sim.hitstop > 0 && (f.state === 'hitstun' || f.state === 'blockstun' || f.state === 'knock') ? (sim.frame % 2 ? 7 : -7) * f.facing * -1 : 0;
-      G.puppets[i].tint = ink > 0.5 ? (S.flash[i] > 0 ? 0x5a0a16 : 0x17131c) : S.flash[i] > 0 ? 0xff9090 : 0xffffff; // ink-wash: black silhouettes
+      G.puppets[i].tint = ink > 0.5 ? (S.flash[i] > 0 ? 0x5a0a16 : 0x17131c) : mulC(S.flash[i] > 0 ? 0xff9090 : 0xffffff, atmo.fighterTint()); // ink-wash: black silhouettes; else lit by the weather
       if (S.flash[i] > 0 && sim.hitstop === 0) S.flash[i]--;
       const v = ultfx.view(sim, f, i) || { f, visible: true }, pup = G.puppets[i];
       if (v.tint !== undefined) pup.tint = v.tint;
@@ -314,6 +332,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
       const cx = 2600 + 1100 * Math.sin(++menuT / 1500), w = 4300, s = VIEW_W / w;
       const cs = { s, tx: VIEW_W / 2 - cx * s, ty: 940 - 1300 * s, cx, w };
       world.scale.set(s); world.position.set(cs.tx, cs.ty); stage.update(cs, 1);
+      const fr = tk.deltaMS / (1000 / 60); atmo.cycle(fr); atmo.update(cs, fr, {});
       dim.clear(); bars.clear(); front.visible = true;
       return;
     }
@@ -329,6 +348,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     const sx = (Math.random() - 0.5) * fx.shake * cs.s * 2, sy = (Math.random() - 0.5) * fx.shake * cs.s * 2; // screen shake is cosmetic (not the sim)
     world.scale.set(cs.s); world.position.set(cs.tx + sx, cs.ty + sy);
     stage.update(cs, n || 1);
+    atmo.update(cs, tk.deltaMS / (1000 / 60) * S.speed, { ink: inkAmount(sim), paused: S.paused || !running });
     dim.clear();
     if (sim.superFreeze > 0 && !ultfx.ownsDim) dim.rect(-1000, -2000, 8000, 5000).fill({ color: 0x120a1c, alpha: 0.62 * Math.min(1, sim.superFreeze / 6) });
     const ink = inkAmount(sim); // ultimate cinematic: the world drains to sumi-e paper
@@ -337,8 +357,9 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     bars.clear();
     const ownBars = ultfx.screen(world); // ultimates: bars, fades, glints, the screen split
     const bar = cine && !ownBars ? 118 * Math.min(1, cine.t / 10, Math.max(0, (cineSpec(sim).len - cine.t) / 10)) : 0;
-    if (bar > 0) bars.rect(0, 0, VIEW_W, bar).fill(0x0b0a0e).rect(0, VIEW_H - bar, VIEW_W, bar).fill(0x0b0a0e);
-    if (fx.white > 0) bars.rect(0, 0, VIEW_W, VIEW_H).fill({ color: 0xffffff, alpha: fx.white });
+    const bx = -VIEW.ex, bw = VIEW_W + 2 * VIEW.ex, by = -VIEW.ey, bh = VIEW_H + 2 * VIEW.ey;
+    if (bar > 0) bars.rect(bx, by, bw, bar).fill(0x0b0a0e).rect(bx, by + bh - bar, bw, bar).fill(0x0b0a0e);
+    if (fx.white > 0) bars.rect(bx, by, bw, bh).fill({ color: 0xffffff, alpha: fx.white });
     shadows.clear();
     for (const f of sim.f) {
       const k = Math.max(0.35, 1 - f.h / 1100), lying = f.state === 'down' || f.state === 'knock';
@@ -356,7 +377,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     hud.update(sim, G.mode === 'hva' || G.mode === 'train' ? kb.bits | touch.bits : G.match ? G.match.lastBits[0] : 0, info);
   });
 
-  window.game = { G, S, fx, camera, kb, touch, stage, overlay, sound, menu, showcase, stepSim: simStep, startGame, app }; // (app: frame-exact capture tooling)
+  window.game = { G, S, fx, camera, kb, touch, stage, atmo, overlay, sound, menu, showcase, stepSim: simStep, startGame, app }; // (app: frame-exact capture tooling)
   $('loading').classList.add('done');
   await menu.init();
 })().catch((err) => { console.error(err); document.getElementById('loading').textContent = 'ERROR: ' + err.message; });

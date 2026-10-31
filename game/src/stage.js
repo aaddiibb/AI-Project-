@@ -15,7 +15,23 @@ async function rasterise(PIXI, url, w, h, scale) {
   const c = document.createElement('canvas');
   c.width = cw; c.height = ch;
   c.getContext('2d').drawImage(img, 0, 0, cw, ch);
-  return PIXI.Texture.from(c);
+  const tex = PIXI.Texture.from(c);
+  tex.bottomRGB = bottomColour(c);
+  return tex;
+}
+/** average colour of a canvas's bottom rows (the floor art's near edge, continued by the apron) */
+function bottomColour(c) {
+  const d = c.getContext('2d').getImageData(0, c.height - 3, c.width, 3).data;
+  let r = 0, g = 0, b = 0, n = 0;
+  for (let i = 0; i < d.length; i += 16) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+  return [r / n, g / n, b / n].map(Math.round);
+}
+/** tall screens (tablets) see below the floor art: a strip in its bottom colour, darkening towards the screen edge */
+function apronTexture(PIXI, [r, g, b]) {
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256;
+  const x = c.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, `rgb(${r},${g},${b})`); gr.addColorStop(1, `rgb(${Math.round(r * 0.4)},${Math.round(g * 0.4)},${Math.round(b * 0.42)})`);
+  x.fillStyle = gr; x.fillRect(0, 0, 4, 256); return PIXI.Texture.from(c);
 }
 
 function petalTexture(PIXI, hue) {
@@ -45,6 +61,7 @@ export class Stage {
   constructor(PIXI, back, front) {
     this.PIXI = PIXI; this.back = back; this.front = front;
     this.sets = {}; this.cur = null; this.layers = []; this.petals = []; this.t = 0; this.ambient = null;
+    this.look = { wind: 0, alpha: 1, tint: 0xffffff }; // set by atmosphere.js: weather wind, petal density, light colour
   }
 
   /** load (once) and show a stage; `name` is a STAGES key */
@@ -61,10 +78,15 @@ export class Stage {
         const s = new PIXI.Sprite(tex[i]);
         s.position.set(l.x, l.y); s.scale.set(1 / l.scale);
         holder.addChild(s); root.addChild(holder);
-        layers.push({ holder, factor: Math.min(1, l.factor), name: l.name }); // never in front of the fighters
+        const extra = [];
+        if (l.name === 'floor') { // continue the floor below its art for tall screens
+          const a = new PIXI.Sprite(apronTexture(PIXI, tex[i].bottomRGB)); a.position.set(l.x, l.y + l.h - 2); a.width = l.w; a.height = 900;
+          holder.addChildAt(a, 0); extra.push(a);
+        }
+        layers.push({ holder, sprite: s, extra, factor: Math.min(1, l.factor), name: l.name }); // never in front of the fighters
       });
       this.back.addChildAt(root, 0);
-      this.sets[name] = { root, layers, ambient: meta.ambient || 'petals' };
+      this.sets[name] = { root, layers, ambient: meta.ambient || 'petals', meta };
     }
     for (const [k, set] of Object.entries(this.sets)) set.root.visible = k === name;
     const set = this.sets[name];
@@ -97,7 +119,8 @@ export class Stage {
     this.t += frames;
     for (const l of this.layers) l.holder.x = (1 - l.factor) * (cam.cx - 2600);
     const left = cam.cx - cam.w / 2, right = cam.cx + cam.w / 2, top = 1300 - 940 / cam.s;
-    const leaves = this.ambient === 'leaves';
+    const leaves = this.ambient === 'leaves', { wind, alpha, tint } = this.look;
+    this.petalLayer.visible = alpha > 0.02;
     for (const p of this.petals) {
       if (!p.init || p.y > 1560 || p.x < left - 400 || p.x > right + 400) {
         const first = !p.init;
@@ -108,12 +131,12 @@ export class Stage {
         p.rs = (Math.random() - 0.5) * (leaves ? 0.05 : 0.08); p.size = 0.55 + Math.random() * 0.8; p.s.rotation = Math.random() * 6;
       }
       p.ph += 0.03 * frames;
-      p.x += (p.vx + Math.sin(p.ph) * (leaves ? 2.2 : 1.4)) * frames * 1.6;
+      p.x += (p.vx + wind * 6 + Math.sin(p.ph) * (leaves ? 2.2 : 1.4)) * frames * 1.6;
       p.y += (p.vy + Math.cos(p.ph * 0.7) * 0.6) * frames * 1.6;
       p.s.position.set(p.x, p.y);
       p.s.rotation += p.rs * frames;
       p.s.scale.set(p.size * 1.5, p.size * 1.5 * (0.45 + 0.55 * Math.abs(Math.cos(p.ph))));
-      p.s.alpha = 0.85;
+      p.s.alpha = 0.85 * alpha; p.s.tint = tint;
     }
   }
 }

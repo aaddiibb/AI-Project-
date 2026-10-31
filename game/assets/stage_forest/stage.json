@@ -45,6 +45,16 @@
    "scale": 0.4
   },
   {
+   "name": "shrine",
+   "file": "shrine.svg",
+   "factor": 0.5,
+   "x": 2050,
+   "y": 640,
+   "w": 1100,
+   "h": 680,
+   "scale": 0.4
+  },
+  {
    "name": "bamboo_back",
    "file": "bamboo_back.svg",
    "factor": 0.6,
@@ -73,6 +83,81 @@
    "w": 6600,
    "h": 760,
    "scale": 0.5
+  },
+  {
+   "name": "lanterns",
+   "file": "lanterns.svg",
+   "factor": 1,
+   "x": 0,
+   "y": 560,
+   "w": 5200,
+   "h": 760,
+   "scale": 0.5
+  }
+ ],
+ "lights": [
+  {
+   "layer": "lanterns",
+   "kind": "point",
+   "x": 300,
+   "y": 953,
+   "r": 250,
+   "color": "#ffb347",
+   "flicker": 1
+  },
+  {
+   "layer": "lanterns",
+   "kind": "point",
+   "x": 4900,
+   "y": 953,
+   "r": 250,
+   "color": "#ffb347",
+   "flicker": 1
+  },
+  {
+   "layer": "shrine",
+   "kind": "point",
+   "x": 2490,
+   "y": 988,
+   "r": 120,
+   "color": "#ffbe6a",
+   "flicker": 1
+  },
+  {
+   "layer": "shrine",
+   "kind": "point",
+   "x": 2710,
+   "y": 988,
+   "r": 120,
+   "color": "#ffbe6a",
+   "flicker": 1
+  },
+  {
+   "layer": "cliffs",
+   "kind": "point",
+   "x": 3900,
+   "y": 20,
+   "r": 70,
+   "color": "#ffb347",
+   "a": 0.75
+  },
+  {
+   "layer": "cliffs",
+   "kind": "point",
+   "x": 3900,
+   "y": -100,
+   "r": 60,
+   "color": "#ffb347",
+   "a": 0.75
+  },
+  {
+   "layer": "cliffs",
+   "kind": "point",
+   "x": 3900,
+   "y": -220,
+   "r": 50,
+   "color": "#ffb347",
+   "a": 0.75
   }
  ]
 }

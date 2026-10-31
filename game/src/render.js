@@ -8,6 +8,16 @@ const ROOT = '../';            // the game is served from <project>/game/, chara
 const CENTER = 520;            // rig centre line in master units
 const GROUND = 1300;
 export const VIEW_W = 1920, VIEW_H = 1080;
+/** screens that are not 16:9: the world view extends `ex` px past each side of the 1920x1080 frame (wide phones,
+ *  ultrawide) and `ey` px above and below it (tablets, 16:10). The menus stay centred, the fight HUD hugs the top. */
+export const VIEW = { ex: 0, ey: 0 };
+/** fit the 1920x1080 frame into a w x h window: its scale and offset, and the extra view around it (sets VIEW) */
+export function fitView(w, h) {
+  const s = Math.min(w / VIEW_W, h / VIEW_H);
+  VIEW.ex = Math.max(0, Math.min(340, (w / s - VIEW_W) / 2));
+  VIEW.ey = Math.max(0, Math.min(220, (h / s - VIEW_H) / 2));
+  return { s, x: (w - VIEW_W * s) / 2, y: (h - VIEW_H * s) / 2 };
+}
 
 const cache = new Map();
 const once = (key, fn) => { if (!cache.has(key)) cache.set(key, fn()); return cache.get(key); };
@@ -110,13 +120,15 @@ export class Camera {
   /** frame both fighters; returns the world container transform */
   update(a, b, snap = false) {
     const dist = Math.abs(a.x - b.x);
-    const targetW = Math.max(3900, Math.min(5200, dist + 2300));
+    const wide = 1 + (2 * VIEW.ex) / VIEW_W; // a wider screen sees w * wide: never past the world
+    const maxW = Math.min(5200 / wide, (VIEW_W * 2850) / (940 + VIEW.ey)); // a taller one must not see above the sky art
+    const targetW = Math.min(maxW, Math.max(3900, Math.min(5200, dist + 2300)));
     let targetCx = (a.x + b.x) / 2;
-    targetCx = Math.max(targetW / 2, Math.min(5200 - targetW / 2, targetCx));
+    targetCx = Math.max((targetW * wide) / 2, Math.min(5200 - (targetW * wide) / 2, targetCx));
     const k = snap ? 1 : 0.14;
     this.w += (targetW - this.w) * k;
     this.cx += (targetCx - this.cx) * k;
-    const lim = this.w / 2;
+    const lim = (this.w * wide) / 2;
     this.cx = Math.max(lim, Math.min(5200 - lim, this.cx));
     const s = VIEW_W / this.w;
     return { s, tx: VIEW_W / 2 - this.cx * s, ty: 940 - GROUND * s, cx: this.cx, w: this.w };

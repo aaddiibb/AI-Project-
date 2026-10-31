@@ -8,6 +8,7 @@
 import { AGENTS } from './ai/registry.js';
 import { LEVELS } from './ai/difficulty.js';
 import { STAGES } from './stage.js';
+import { CONDITIONS, WEATHER_MODES, weatherLabel, rollConditions } from './atmosphere.js';
 import { ROSTER, ROSTER_ORDER } from './roster.js';
 import { getHpMult, setHpMult, touchInst } from './touch.js'; // HP setter (all devices) + touch button editor
 
@@ -27,7 +28,7 @@ const MODES = {
   ava: { label: 'CPU vs CPU', desc: 'Watch two algorithms fight it out, with their thinking shown live.' },
   train: { label: 'TRAINING', desc: 'Free practice against a training dummy, with frame data, hit boxes and infinite meter.' },
   replay: { label: 'REPLAY', desc: 'Play back a recorded match, checked frame by frame against the original run.' },
-  options: { label: 'OPTIONS', desc: 'Sound, match rules and the AI thinking overlay.' },
+  options: { label: 'OPTIONS', desc: 'Sound, match rules, time of day and weather, and the AI thinking overlay.' },
   exit: { label: 'EXIT', desc: 'Leave the game.' },
 };
 const DEMOS = [
@@ -49,7 +50,7 @@ export class Menu {
   constructor(hooks) {
     Object.assign(this, hooks);
     this.screen = null; this.focus = 0; this.log = null; this.mode = 'hva'; this.inTraining = false;
-    this.opts = { think: true, bestOf: 3, roundSecs: 99 };
+    this.opts = { think: true, bestOf: 3, roundSecs: 99, weather: 'dynamic' };
     this.sel = { side: 0, row: 0, sides: [this.defSide('samurai', 0, 'minimax'), this.defSide('shinobi', 0, 'mcts')] };
     this.stageIx = 0;
     // the touch editor's DONE chip refreshes this screen (only when OPTIONS is showing)
@@ -66,7 +67,7 @@ export class Menu {
     const q = new URLSearchParams(location.search);
     this.preset = q.get('autostart') === '1' ? {
       mode: q.get('mode') || 'ava', chars: [q.get('p1') || 'samurai', q.get('p2') || 'samurai'], agents: [q.get('a1') || 'minimax', q.get('a2') || 'mcts'],
-      levels: [q.get('l1') || 'hard', q.get('l2') || 'hard'], stage: q.get('stage') || 'auto', think: q.get('think') !== '0', replay: q.get('replay'),
+      levels: [q.get('l1') || 'hard', q.get('l2') || 'hard'], stage: q.get('stage') || 'auto', think: q.get('think') !== '0', replay: q.get('replay'), weather: q.get('weather') || 'dynamic',
     } : null;
   }
   defSide(char, pal, agent) { return { char, pal, agent, level: 'hard', ready: false }; }
@@ -81,6 +82,7 @@ export class Menu {
       mode: p.mode, chars: p.chars, palettes: [0, 1], agents: [p.mode === 'ava' ? p.agents[0] : null, p.mode === 'train' ? null : p.agents[1]],
       levels: p.levels, stage: p.stage, think: p.think, bestOf: 3, roundSecs: 99,
     };
+    cfg.conds = rollConditions(p.weather);
     this.cfg = cfg; this.hide(); await this.onStart(cfg);
   }
 
@@ -132,6 +134,10 @@ export class Menu {
           { id: 'think', label: 'AI THINKING OVERLAY', value: this.opts.think ? 'ON' : 'OFF' },
           { id: 'bestOf', label: 'ROUNDS', value: `BEST OF ${this.opts.bestOf}` },
           { id: 'roundSecs', label: 'ROUND TIME', value: `${this.opts.roundSecs} s` },
+          {
+            id: 'weather', label: 'TIME & WEATHER', value: weatherLabel(this.opts.weather),
+            desc: 'Dynamic: the day turns as the match goes on (day, then dusk or night, then a storm, rain or snow). Random, or one fixed sky. Looks only: the fight plays the same.',
+          },
           // HP works on PC and phone; the button editor only exists when the touch overlay is mounted
           ...(touchInst() ? [{
             id: 'moveBtns', label: 'MOVE BUTTONS', value: touchInst().edit ? 'EDITING' : 'OFF',
@@ -208,6 +214,7 @@ export class Menu {
         if (id === 'think') this.opts.think = !this.opts.think;
         if (id === 'bestOf') { const o = [1, 3, 5]; this.opts.bestOf = o[wrap(o.indexOf(this.opts.bestOf) + step, 3)]; }
         if (id === 'roundSecs') { const o = [45, 60, 99]; this.opts.roundSecs = o[wrap(o.indexOf(this.opts.roundSecs) + step, 3)]; }
+        if (id === 'weather') this.opts.weather = WEATHER_MODES[wrap(WEATHER_MODES.indexOf(this.opts.weather) + step, WEATHER_MODES.length)];
         const t = touchInst();
         if (id === 'moveBtns' && t) { // toggle the drag editor (begin Edit shows the clusters over this menu)
           if (t.edit) t.endEdit(false); else t.beginEdit();
@@ -338,6 +345,7 @@ export class Menu {
     const L = this.stageList(), cur = L[this.focus];
     return `<div class="stscreen"><div class="shead"><b>SELECT STAGE</b><span>${esc(MODES[this.mode].label)}</span></div>
       <div class="sbig">${cur.img ? `<img src="${cur.img}" alt="">` : '<div class="q">?</div>'}<div class="sname">${esc(cur.label)}</div></div>
+      <div class="sweather">TIME &amp; WEATHER · <b>${esc(weatherLabel(this.opts.weather))}</b>${this.opts.weather === 'dynamic' ? ' — the day turns round by round' : ''}</div>
       <div class="sthumbs">${L.map((s, i) => `<div class="th ${i === this.focus ? 'on' : ''}" data-i="${i}">${s.img ? `<img src="${s.img}" alt="">` : '<div class="q">?</div>'}<span>${esc(s.label)}</span></div>`).join('')}</div>
       <div class="hints">${touchInst() ? 'tap a stage to fight' : '<kbd>A</kbd><kbd>D</kbd> choose · <kbd>Enter</kbd> fight · <kbd>Esc</kbd> back'}</div></div>`;
   }
@@ -359,6 +367,7 @@ export class Menu {
 
   // ------------------------------------------------------------------ VS screen: shown while the game loads
   vs(cfg) {
+    cfg.conds ||= rollConditions(this.opts.weather); // the rounds' time of day / weather, shown as a forecast
     this.cfg = cfg; this.inTraining = cfg.mode === 'train';
     this.show('vs');
     this.showcase.vs(cfg.chars);
@@ -378,7 +387,8 @@ export class Menu {
     return `<div class="vsscreen"><div class="vsn l"><b>${ROSTER[c.chars[0]].name}</b><span>${who(0)}</span><small>${pal(0)}</small></div>
       <div class="vsbig">VS</div>
       <div class="vsn r"><b>${ROSTER[c.chars[1]].name}</b><span>${who(1)}</span><small>${pal(1)}</small></div>
-      <div class="vsstage">${esc(stage)}${stage ? ' · ' : ''}${c.mode === 'train' ? 'TRAINING' : `BEST OF ${c.bestOf || c.log?.bestOf || 3}`}</div></div>`;
+      <div class="vsstage">${esc(stage)}${stage ? ' · ' : ''}${c.mode === 'train' ? 'TRAINING' : `BEST OF ${c.bestOf || c.log?.bestOf || 3}`}</div>
+      <div class="vsfore">${c.conds.slice(0, c.mode === 'train' ? 1 : Math.min(3, c.bestOf || c.log?.bestOf || 3)).map((k, i) => `<span><i>${CONDITIONS[k].icon}</i>${c.mode === 'train' ? '' : `R${i + 1} · `}${CONDITIONS[k].label}</span>`).join('<b>›</b>')}</div></div>`;
   }
 
   // ------------------------------------------------------------------ input

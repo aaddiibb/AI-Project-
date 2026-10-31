@@ -72,7 +72,7 @@ export class TouchControls {
     // browsers require a user gesture for fullscreen: silently grab it on the first tap (title screen)
     document.addEventListener('pointerdown', () => {
       if (this.fsTried) return; this.fsTried = true;
-      const p = document.documentElement.requestFullscreen?.(); p && p.catch?.(() => {});
+      this.enterFullscreen();
     }, { once: true });
     // the game is landscape-only: report portrait so the main loop can hold the fight
     this.mqPortrait = matchMedia('(orientation: portrait)');
@@ -82,7 +82,12 @@ export class TouchControls {
 
   toggleFullscreen() {
     if (document.fullscreenElement) document.exitFullscreen?.();
-    else { const p = document.documentElement.requestFullscreen?.(); p && p.catch?.(() => {}); }
+    else this.enterFullscreen();
+  }
+  /** fullscreen + landscape lock (Android Chrome honours the lock only in fullscreen; elsewhere it quietly fails) */
+  enterFullscreen() {
+    const p = document.documentElement.requestFullscreen?.();
+    p?.then?.(() => screen.orientation?.lock?.('landscape').catch(() => {})).catch?.(() => {});
   }
 
   /** short buzz on press; silently ignored where the browser has no vibration API (iOS Safari) */

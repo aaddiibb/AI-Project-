@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="300 200 4600 1100" width="4600" height="1100"><defs><linearGradient id="nshade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="0.6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#7a6a50" stop-opacity="0.3"/></linearGradient></defs><rect x="551" y="290" width="18" height="960" fill="#3a2a22" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/><circle cx="560" cy="286" r="14" fill="#e2b857" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="560" y="330" width="138" height="10" fill="#3a2a22"/>
+      <path d="M570,336 h118 v640 l-29.5,-24 l-29.5,24 l-29.5,-24 l-29.5,24 Z" fill="#f6f0e0" stroke="#2b2a3a" stroke-opacity=".45" stroke-width="4"/>
+      <rect x="570" y="336" width="118" height="70" fill="#d1503b"/><rect x="570" y="880" width="118" height="22" fill="#d1503b" fill-opacity=".85"/>
+      <path d="M570,336 v640" stroke="#a73a2c" stroke-width="8"/>
+      <circle cx="570" cy="370" r="6" fill="#3a2a22"/><circle cx="570" cy="436" r="6" fill="#3a2a22"/><circle cx="570" cy="502" r="6" fill="#3a2a22"/><circle cx="570" cy="568" r="6" fill="#3a2a22"/><circle cx="570" cy="634" r="6" fill="#3a2a22"/><circle cx="570" cy="700" r="6" fill="#3a2a22"/><circle cx="570" cy="766" r="6" fill="#3a2a22"/><circle cx="570" cy="832" r="6" fill="#3a2a22"/><circle cx="570" cy="898" r="6" fill="#3a2a22"/>
+      <text x="629" y="660" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">武</text>
+      <text x="629" y="780" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">道</text>
+      <rect x="570" y="336" width="118" height="640" fill="url(#nshade)"/>
+      <ellipse cx="560" cy="1252" rx="40" ry="10" fill="#3a2a1c" fill-opacity=".3"/><rect x="771" y="290" width="18" height="960" fill="#3a2a22" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/><circle cx="780" cy="286" r="14" fill="#e2b857" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="780" y="330" width="138" height="10" fill="#3a2a22"/>
+      <path d="M790,336 h118 v640 l-29.5,-24 l-29.5,24 l-29.5,-24 l-29.5,24 Z" fill="#f6f0e0" stroke="#2b2a3a" stroke-opacity=".45" stroke-width="4"/>
+      <rect x="790" y="336" width="118" height="70" fill="#d1503b"/><rect x="790" y="880" width="118" height="22" fill="#d1503b" fill-opacity=".85"/>
+      <path d="M790,336 v640" stroke="#a73a2c" stroke-width="8"/>
+      <circle cx="790" cy="370" r="6" fill="#3a2a22"/><circle cx="790" cy="436" r="6" fill="#3a2a22"/><circle cx="790" cy="502" r="6" fill="#3a2a22"/><circle cx="790" cy="568" r="6" fill="#3a2a22"/><circle cx="790" cy="634" r="6" fill="#3a2a22"/><circle cx="790" cy="700" r="6" fill="#3a2a22"/><circle cx="790" cy="766" r="6" fill="#3a2a22"/><circle cx="790" cy="832" r="6" fill="#3a2a22"/><circle cx="790" cy="898" r="6" fill="#3a2a22"/>
+      <text x="849" y="660" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">剣</text>
+      <text x="849" y="780" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">心</text>
+      <rect x="790" y="336" width="118" height="640" fill="url(#nshade)"/>
+      <ellipse cx="780" cy="1252" rx="40" ry="10" fill="#3a2a1c" fill-opacity=".3"/><rect x="4411" y="290" width="18" height="960" fill="#3a2a22" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/><circle cx="4420" cy="286" r="14" fill="#e2b857" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="4282" y="330" width="138" height="10" fill="#3a2a22"/>
+      <path d="M4292,336 h118 v640 l-29.5,-24 l-29.5,24 l-29.5,-24 l-29.5,24 Z" fill="#f6f0e0" stroke="#2b2a3a" stroke-opacity=".45" stroke-width="4"/>
+      <rect x="4292" y="336" width="118" height="70" fill="#d1503b"/><rect x="4292" y="880" width="118" height="22" fill="#d1503b" fill-opacity=".85"/>
+      <path d="M4410,336 v640" stroke="#a73a2c" stroke-width="8"/>
+      <circle cx="4410" cy="370" r="6" fill="#3a2a22"/><circle cx="4410" cy="436" r="6" fill="#3a2a22"/><circle cx="4410" cy="502" r="6" fill="#3a2a22"/><circle cx="4410" cy="568" r="6" fill="#3a2a22"/><circle cx="4410" cy="634" r="6" fill="#3a2a22"/><circle cx="4410" cy="700" r="6" fill="#3a2a22"/><circle cx="4410" cy="766" r="6" fill="#3a2a22"/><circle cx="4410" cy="832" r="6" fill="#3a2a22"/><circle cx="4410" cy="898" r="6" fill="#3a2a22"/>
+      <text x="4351" y="660" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">必</text>
+      <text x="4351" y="780" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">勝</text>
+      <rect x="4292" y="336" width="118" height="640" fill="url(#nshade)"/>
+      <ellipse cx="4420" cy="1252" rx="40" ry="10" fill="#3a2a1c" fill-opacity=".3"/><rect x="4631" y="290" width="18" height="960" fill="#3a2a22" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/><circle cx="4640" cy="286" r="14" fill="#e2b857" stroke="#2b2a3a" stroke-opacity=".5" stroke-width="3"/>
+      <rect x="4502" y="330" width="138" height="10" fill="#3a2a22"/>
+      <path d="M4512,336 h118 v640 l-29.5,-24 l-29.5,24 l-29.5,-24 l-29.5,24 Z" fill="#f6f0e0" stroke="#2b2a3a" stroke-opacity=".45" stroke-width="4"/>
+      <rect x="4512" y="336" width="118" height="70" fill="#d1503b"/><rect x="4512" y="880" width="118" height="22" fill="#d1503b" fill-opacity=".85"/>
+      <path d="M4630,336 v640" stroke="#a73a2c" stroke-width="8"/>
+      <circle cx="4630" cy="370" r="6" fill="#3a2a22"/><circle cx="4630" cy="436" r="6" fill="#3a2a22"/><circle cx="4630" cy="502" r="6" fill="#3a2a22"/><circle cx="4630" cy="568" r="6" fill="#3a2a22"/><circle cx="4630" cy="634" r="6" fill="#3a2a22"/><circle cx="4630" cy="700" r="6" fill="#3a2a22"/><circle cx="4630" cy="766" r="6" fill="#3a2a22"/><circle cx="4630" cy="832" r="6" fill="#3a2a22"/><circle cx="4630" cy="898" r="6" fill="#3a2a22"/>
+      <text x="4571" y="660" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">祭</text>
+      <text x="4571" y="780" font-family="Yu Mincho, MS Mincho, Noto Serif JP, serif" font-weight="900" font-size="96" text-anchor="middle" fill="#2b2a3a">礼</text>
+      <rect x="4512" y="336" width="118" height="640" fill="url(#nshade)"/>
+      <ellipse cx="4640" cy="1252" rx="40" ry="10" fill="#3a2a1c" fill-opacity=".3"/></svg>

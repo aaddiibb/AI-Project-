@@ -8,7 +8,7 @@
 //                            brush stroke (frames = cine.slashes / land / x).
 // main.js calls: view(sim, f, i) per fighter (pose / position override), step(sim) once per sim step, camera(cam)
 // (optional override) and screen(world) in the frame loop (bars, fades, flashes; the screen split).
-import { Puppet } from './render.js';
+import { Puppet, VIEW } from './render.js';
 
 const GROUND = 1300;
 const BASE = { vx: 0, vy: 0, flash: 0, walkDist: 0, runDist: 0, hp: 1000, meter: 0, combo: 0, chainCount: 0, crouchGuard: false, hitCrouch: false, state: 'attack', move: null };
@@ -415,17 +415,17 @@ export class UltFx {
   /** screen-space layer (VIEW coords): fades, bars, white flash, glints; then the screen split. true = bars handled */
   screen(world) {
     const g = this.scr; g.clear();
-    const st = this.screenState;
-    if (this.white > 0.01) { g.rect(0, 0, 1920, 1080).fill({ color: 0xffffff, alpha: this.white }); this.white *= 0.82; }
+    const st = this.screenState, x0 = -VIEW.ex, sw = 1920 + 2 * VIEW.ex, y0 = -VIEW.ey, sh = 1080 + 2 * VIEW.ey; // (cover the extended view too)
+    if (this.white > 0.01) { g.rect(x0, y0, sw, sh).fill({ color: 0xffffff, alpha: this.white }); this.white *= 0.82; }
     if (st) {
-      if (st.bars > 0) g.rect(0, 0, 1920, st.bars).fill(0x07060c).rect(0, 1080 - st.bars, 1920, st.bars).fill(0x07060c);
+      if (st.bars > 0) g.rect(x0, y0, sw, st.bars).fill(0x07060c).rect(x0, y0 + sh - st.bars, sw, st.bars).fill(0x07060c);
       for (const gl of st.glints || []) {
         if (!gl.a || gl.k <= 0) continue;
         const q = g.toLocal(world.toGlobal({ x: gl.a[0], y: gl.a[1] })), L = 120 * gl.k * gl.s;
         g.moveTo(q.x - L, q.y).lineTo(q.x + L, q.y).moveTo(q.x, q.y - L * 0.6).lineTo(q.x, q.y + L * 0.6).stroke({ width: 4, color: 0xffffff, alpha: gl.k });
         g.circle(q.x, q.y, 10 * gl.k * gl.s).fill({ color: 0xffffff, alpha: gl.k });
       }
-      if (st.black > 0) g.rect(0, 0, 1920, 1080).fill({ color: 0x000000, alpha: st.black });
+      if (st.black > 0) g.rect(x0, y0, sw, sh).fill({ color: 0x000000, alpha: st.black });
     }
     // the split: render the finished frame (minus this layer) to a texture, show it as two halves sliding along the cut
     const sp = this.splitState, { app } = this.L;

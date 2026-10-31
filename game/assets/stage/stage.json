@@ -75,6 +75,16 @@
    "scale": 0.4
   },
   {
+   "name": "nobori",
+   "file": "nobori.svg",
+   "factor": 0.95,
+   "x": 300,
+   "y": 200,
+   "w": 4600,
+   "h": 1100,
+   "scale": 0.4
+  },
+  {
    "name": "floor",
    "file": "floor.svg",
    "factor": 1,
@@ -93,6 +103,130 @@
    "w": 5200,
    "h": 880,
    "scale": 0.5
+  }
+ ],
+ "lights": [
+  {
+   "layer": "hall",
+   "kind": "point",
+   "x": 1600,
+   "y": 616,
+   "r": 230,
+   "color": "#ff8a4a",
+   "flicker": 1
+  },
+  {
+   "layer": "hall",
+   "kind": "point",
+   "x": 2100,
+   "y": 616,
+   "r": 230,
+   "color": "#ff8a4a",
+   "flicker": 1
+  },
+  {
+   "layer": "hall",
+   "kind": "point",
+   "x": 3100,
+   "y": 616,
+   "r": 230,
+   "color": "#ff8a4a",
+   "flicker": 1
+  },
+  {
+   "layer": "hall",
+   "kind": "point",
+   "x": 3600,
+   "y": 616,
+   "r": 230,
+   "color": "#ff8a4a",
+   "flicker": 1
+  },
+  {
+   "layer": "hall",
+   "kind": "rect",
+   "x": 1862,
+   "y": 488,
+   "w": 464,
+   "h": 518,
+   "color": "#ffb85a",
+   "a": 0.8
+  },
+  {
+   "layer": "hall",
+   "kind": "rect",
+   "x": 2362,
+   "y": 488,
+   "w": 464,
+   "h": 518,
+   "color": "#ffc964",
+   "a": 1
+  },
+  {
+   "layer": "hall",
+   "kind": "rect",
+   "x": 2862,
+   "y": 488,
+   "w": 464,
+   "h": 518,
+   "color": "#ffb85a",
+   "a": 0.8
+  },
+  {
+   "layer": "hall",
+   "kind": "rect",
+   "x": 1450,
+   "y": 538,
+   "w": 300,
+   "h": 260,
+   "color": "#ffb85a",
+   "a": 0.7
+  },
+  {
+   "layer": "hall",
+   "kind": "rect",
+   "x": 3450,
+   "y": 538,
+   "w": 300,
+   "h": 260,
+   "color": "#ffb85a",
+   "a": 0.7
+  },
+  {
+   "layer": "lanterns",
+   "kind": "point",
+   "x": 250,
+   "y": 893,
+   "r": 260,
+   "color": "#ffb347",
+   "flicker": 1
+  },
+  {
+   "layer": "lanterns",
+   "kind": "point",
+   "x": 4950,
+   "y": 893,
+   "r": 260,
+   "color": "#ffb347",
+   "flicker": 1
+  },
+  {
+   "layer": "hills",
+   "kind": "point",
+   "x": 1150,
+   "y": 990,
+   "r": 90,
+   "color": "#ffb347",
+   "a": 0.6
+  },
+  {
+   "layer": "castle",
+   "kind": "point",
+   "x": 4450,
+   "y": 800,
+   "r": 120,
+   "color": "#ffc46a",
+   "a": 0.5
   }
  ]
 }

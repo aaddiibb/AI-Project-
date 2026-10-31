@@ -1,0 +1,25 @@
+# Upload only what the live game loads: game/ (page, code, assets, replays) and the character rigs under art/.
+# Everything else (docs, references, the old AI_Project/ copy, dev tools, renders, node_modules) stays local.
+/*
+!/game
+!/art
+!/vercel.json
+
+/game/tools
+/game/renders
+/game/assets/voice_src
+/game/node_modules
+/game/package.json
+/game/package-lock.json
+/game/*.md
+
+/art/cyborg
+/art/faces
+/art/*/node_modules
+/art/*/tools
+/art/*/src
+/art/*/*.md
+/art/*/*.svg
+/art/*/*.html
+/art/*/renders/*
+!/art/*/renders/parts

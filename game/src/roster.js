@@ -16,7 +16,7 @@ export const ROSTER = {
   },
   shinobi: {
     name: 'SHINOBI', title: 'ASSASSIN · FRONTLINE FIGHTER', kanji: '忍',
-    face: 'assets/ui/shinobi_face.png', full: 'assets/ui/shinobi_full.png',
+    face: 'assets/ui/shinobi_portrait.png', full: 'assets/ui/shinobi_full.png',
     blurb: 'Fast and slippery. Jumps, runs, throws kunai and swaps places with a log. Shadow-clone ultimate.',
     style: [['POWER', 2], ['SPEED', 5], ['REACH', 2], ['MOBILITY', 5]],
     palettes: [

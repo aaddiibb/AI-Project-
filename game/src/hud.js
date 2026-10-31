@@ -3,6 +3,7 @@
 // frame-data table and the key hints come from each fighter's character.
 import { BTN } from './sim.js';
 import { touchStrip } from './touch.js'; // mobile controls reserve horizontal strips outside the game view
+import { fitView, VIEW } from './render.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -17,9 +18,13 @@ export class Hud {
   /** the HUD is authored at 1920x1080 and scaled/letterboxed exactly like the canvas */
   fit() {
     const [l, r] = touchStrip();
-    const w = Math.max(0, innerWidth - l - r), s = Math.min(w / 1920, innerHeight / 1080);
+    const f = fitView(Math.max(0, innerWidth - l - r), innerHeight), s = f.s, ey = VIEW.ey;
     const box = $('hudbox');
-    box.style.transform = `translate(${l + (w - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+    box.style.transform = `translate(${l + f.x}px, ${f.y}px) scale(${s})`;
+    box.style.setProperty('--ey', `${ey}px`); // tall screens: the fight HUD moves to the real top / bottom edges
+    // the touch overlay (screen px) parks its menu / fullscreen chips under the timer plaque: it needs the HUD transform
+    document.documentElement.style.setProperty('--hudS', s);
+    document.documentElement.style.setProperty('--hudY', `${f.y - ey * s}px`);
   }
 
   /** names, frame table, key hints for the fighters of a new game */
@@ -81,5 +86,10 @@ export class Hud {
     $('readout').innerHTML = `<b>${p.state.toUpperCase()}</b>${mv ? ' · ' + mv : ''} <span class="sm">frame ${Math.max(0, p.t)}</span><br><span class="sm">${info}</span>`;
   }
 
-  banner(text, ms = 1300) { const b = $('banner'); b.textContent = text; b.classList.toggle('on', !!text); clearTimeout(this._bt); if (text) this._bt = setTimeout(() => b.classList.remove('on'), ms); }
+  /** big centre banner; `sub` = a small caption under it (the round's time of day / weather) */
+  banner(text, ms = 1300, sub = '') {
+    const b = $('banner'); b.textContent = text; b.classList.toggle('on', !!text);
+    if (sub) { const c = document.createElement('small'); c.textContent = sub; b.appendChild(c); }
+    clearTimeout(this._bt); if (text) this._bt = setTimeout(() => b.classList.remove('on'), ms);
+  }
 }
