@@ -150,8 +150,12 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
     $('hotTraining').classList.toggle('hide', cfg.mode !== 'train'); $('hotMatch').classList.toggle('hide', cfg.mode === 'train');
     $('panelTitle').textContent = { train: 'TRAINING', hva: 'HUMAN vs AI', ava: 'AI vs AI', replay: 'REPLAY' }[cfg.mode];
     $('helpSamurai').classList.toggle('hide', chars[0].id !== 'samurai'); $('helpShinobi').classList.toggle('hide', chars[0].id === 'samurai');
-    $('help').classList.toggle('hide', cfg.mode === 'ava' || cfg.mode === 'replay');
-    if (cfg.mode !== 'ava' && cfg.mode !== 'replay') { clearTimeout(G.helpT); G.helpT = setTimeout(() => $('help').classList.add('hide'), 12000); }
+    // move list: a few seconds at the start of a human fight (OPTIONS → MOVE LIST AT START); side panel per OPTIONS → SIDE PANEL
+    $('helpChar').textContent = chars[0].name;
+    showHelp((cfg.mode === 'hva' || cfg.mode === 'train') && menu.opts.moveList !== false, 10);
+    const pp = menu.opts.panel || 'auto';
+    $('panel').classList.toggle('gone', pp === 'off');
+    $('panel').classList.toggle('min', pp === 'collapsed' || (pp === 'auto' && cfg.mode !== 'train'));
     G.phase = G.match ? G.match.phase : 'fight'; G.lastPhase = null; G.round = -1;
     S.paused = false; S.rotPaused = false; S.first = true; S.flash = [0, 0]; S.prevT = [0, 0]; camera.cx = 2600;
     sound.newGame(); sound.setPaused(false);
@@ -162,7 +166,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
   /** back to the front end: drop the running game (agents, puppets, sim) so the menus show a clean stage */
   function endGame() {
     touch.setVisible(false); touch.setGameActive(false); // back to the menus: hide the clusters and the chip row
-    $('thinkBtn').classList.add('hide');
+    $('thinkBtn').classList.add('hide'); showHelp(false);
     for (const a of G.agents) a?.dispose?.();
     for (const p of G.puppets) p?.destroy();
     G.agents = [null, null]; G.puppets = [null, null]; G.sim = null; G.match = null; G.cfg = null; G.game = (G.game || 0) + 1;
@@ -206,7 +210,14 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
   $('mute').onchange = (e) => { sound.set('muted', e.target.checked); e.target.blur(); };
   sound.onChange = syncSound; syncSound(sound.settings);
   $('meter').onchange = (e) => { S.infMeter = e.target.value === 'inf'; e.target.blur(); };
-  $('toggle').onclick = () => { $('panel').classList.toggle('min'); $('toggle').textContent = $('panel').classList.contains('min') ? '[ show ]' : '[ hide ]'; };
+  $('toggle').onclick = () => $('panel').classList.toggle('min');
+  /** the move-list card: on / off; secs > 0 = hide again after that long (a countdown bar runs along its bottom) */
+  function showHelp(on, secs = 0) {
+    const h = $('help'); clearTimeout(G.helpT);
+    h.classList.toggle('off', !on); h.classList.remove('timed');
+    if (on && secs) { void h.offsetWidth; h.style.setProperty('--helpT', `${secs}s`); h.classList.add('timed'); G.helpT = setTimeout(() => h.classList.add('off'), secs * 1000); }
+  }
+  $('helpClose').onclick = () => showHelp(false);
   const setDummy = (id) => { S.dummy = id; $('dummy').value = id; };
   touch.onPause = () => kb.onHotkey?.({ code: 'Escape', repeat: false, preventDefault() {}, stopPropagation() {} }); // the ☰ touch chip reuses the Esc path
   kb.onHotkey = (e) => {
@@ -221,7 +232,7 @@ const rnd32 = () => crypto.getRandomValues(new Uint32Array(1))[0];
       case 'KeyG': S.debug = !S.debug; break;
       case 'KeyP': S.paused = !S.paused; sound.setPaused(S.paused); hud.banner(S.paused ? 'PAUSED' : '', S.paused ? 1e9 : 0); break;
       case 'KeyN': S.paused = true; S.stepOnce = true; sound.setPaused(true); break;
-      case 'F1': e.preventDefault(); $('help').classList.toggle('hide'); break;
+      case 'F1': e.preventDefault(); showHelp($('help').classList.contains('off')); break;
       case 'Tab': if (train) { e.preventDefault(); const i = DUMMY_MODES.findIndex((m) => m.id === S.dummy); setDummy(DUMMY_MODES[(i + 1) % DUMMY_MODES.length].id); } break;
       default: if (train && /^Digit[1-6]$/.test(e.code)) setDummy(DUMMY_MODES[+e.code.slice(5) - 1].id);
     }

@@ -51,7 +51,7 @@
   @keyframes shine { from { background-position: 0 0; } to { background-position: 200% 0; } }
   .hpnum { position: absolute; top: 124px; font-size: 18px; letter-spacing: 2px; opacity: .85; text-shadow: 0 2px 4px #000a; }
   .p1h { left: 90px; } .p2h { right: 90px; }
-  #plaque { position: absolute; left: 50%; top: 36px; transform: translateX(-50%); width: 200px; text-align: center; background: rgba(27, 26, 34, .9); border: 3px solid var(--gold); padding: 6px 0 4px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+  #plaque { position: absolute; left: 50%; top: 36px; transform: translateX(-50%); min-width: 200px; padding-left: 16px !important; padding-right: 8px !important; white-space: nowrap; text-align: center; background: rgba(27, 26, 34, .9); border: 3px solid var(--gold); padding: 6px 0 4px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
   #plaque b { display: block; font-size: 26px; letter-spacing: 8px; color: var(--gold); }
   #plaque span { font-size: 13px; letter-spacing: 3px; opacity: .8; }
 
@@ -76,25 +76,56 @@
   #readout b { color: var(--gold); font-weight: 700; }
   #readout .sm { font-size: 14px; opacity: .8; }
 
-  /* training panel */
-  #panel { position: absolute; right: 40px; bottom: 36px; width: 360px; padding: 14px 16px 12px; background: rgba(27, 26, 34, .86); border: 2px solid var(--line); border-radius: 6px; font-size: 15px; pointer-events: auto; }
-  #panel h3 { margin: 0 0 8px; font-size: 16px; letter-spacing: 4px; color: var(--gold); font-weight: 700; }
-  #panel label { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; gap: 10px; }
-  #panel input[type=range] { width: 170px; accent-color: var(--gold); }
-  #panel select { background: #26242f; color: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; font: inherit; max-width: 200px; }
-  #panel .hot { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); opacity: .85; line-height: 1.55; font-size: 13.5px; }
-  #panel kbd { background: #3a3745; border-radius: 4px; padding: 1px 6px; font: 600 12.5px ui-monospace, Consolas, monospace; }
-  #panel table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; }
-  #panel td, #panel th { padding: 2px 4px; text-align: right; border-bottom: 1px solid rgba(246, 240, 224, .12); }
-  #panel td:first-child, #panel th:first-child { text-align: left; }
-  #panel th { color: var(--gold); font-weight: 600; }
-  #panel.min { width: auto; } #panel.min .body { display: none; }
-  #toggle { float: right; cursor: pointer; opacity: .8; letter-spacing: 1px; font-size: 13px; }
+  /* side panel (training / match tools): a glass card bottom-right; collapses to a pill (OPTIONS → SIDE PANEL) */
+  #panel { position: absolute; right: calc(30px - var(--ex, 0px)); bottom: 30px; width: 380px; color: var(--paper); font-size: 15px; pointer-events: auto;
+    background: linear-gradient(180deg, rgba(22, 18, 32, .9), rgba(12, 10, 18, .84)); border: 1px solid rgba(246,240,224,.14); border-top: 3px solid var(--gold);
+    border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); overflow: hidden; }
+  #panel.gone { display: none; }
+  #panel .ph { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; user-select: none; }
+  #panel .ph:hover { background: rgba(246,240,224,.05); }
+  #panel h3 { margin: 0; font-size: 15px; letter-spacing: 4px; color: var(--gold); font-weight: 700; }
+  #panel .ph i { margin-left: auto; font: 700 12px ui-monospace, Consolas, monospace; letter-spacing: 2px; opacity: .7; }
+  #panel .ph i::after { content: 'HIDE ▾'; } #panel.min .ph i::after { content: 'SHOW ▴'; }
+  #panel .body { padding: 2px 16px 12px; border-top: 1px solid rgba(246,240,224,.1); }
+  #panel.min { width: auto; border-radius: 999px; border-top-width: 1px; border-color: rgba(226,184,87,.55); }
+  #panel.min .body { display: none; } #panel.min .ph { padding: 7px 18px; }
+  #panel .psec { margin: 10px 0 4px; font: 700 11px ui-monospace, Consolas, monospace; letter-spacing: 3px; color: var(--gold); opacity: .8; }
+  #panel label { display: grid; grid-template-columns: 110px 1fr; align-items: center; margin: 6px 0; gap: 12px; font-size: 14px; letter-spacing: 1px; }
+  #panel label.chk { grid-template-columns: 110px auto; }
+  #panel input[type=range] { width: 100%; accent-color: var(--gold); height: 4px; }
+  #panel input[type=checkbox] { accent-color: var(--gold); width: 18px; height: 18px; }
+  #panel select { width: 100%; background: rgba(246,240,224,.06); color: var(--paper); border: 1px solid rgba(246,240,224,.2); border-radius: 6px; padding: 5px 8px; font: inherit; font-size: 14px; }
+  #panel select option { background: #1c1826; }
+  #panel .hot { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(246,240,224,.1); opacity: .8; line-height: 1.9; font-size: 13px; }
+  #panel kbd, #help kbd { display: inline-block; min-width: 22px; padding: 1px 6px; margin: 0 1px; text-align: center; border-radius: 5px; font: 700 12px ui-monospace, Consolas, monospace;
+    color: var(--paper); background: rgba(246,240,224,.08); border: 1px solid rgba(246,240,224,.3); border-bottom-width: 2px; }
+  #panel table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 6px; font-family: ui-monospace, Consolas, monospace; }
+  #panel td, #panel th { padding: 3px 4px; text-align: right; border-bottom: 1px solid rgba(246, 240, 224, .08); }
+  #panel tr:nth-child(even) td { background: rgba(246,240,224,.03); }
+  #panel td:first-child, #panel th:first-child { text-align: left; font-family: Georgia, serif; }
+  #panel th { color: var(--gold); font-weight: 600; letter-spacing: 1px; }
 
-  #help { position: absolute; left: 60px; top: 330px; width: 400px; padding: 16px 20px; background: rgba(27, 26, 34, .88); border: 2px solid var(--line); border-radius: 6px; font-size: 15px; line-height: 1.7; transition: opacity .5s; }
-  #help h3 { margin: 0 0 6px; font-size: 16px; letter-spacing: 4px; color: var(--gold); }
-  #help kbd { background: #3a3745; border-radius: 4px; padding: 1px 7px; font: 600 13px ui-monospace, Consolas, monospace; }
-  #help.hide { opacity: 0; }
+  /* move list: shown for a few seconds when a human fight starts (OPTIONS → MOVE LIST AT START), F1 any time */
+  #help { position: absolute; left: calc(30px - var(--ex, 0px)); top: 196px; width: 540px; padding: 0 0 4px; color: var(--paper); pointer-events: auto;
+    background: linear-gradient(180deg, rgba(22, 18, 32, .9), rgba(12, 10, 18, .84)); border: 1px solid rgba(246,240,224,.14); border-top: 3px solid var(--gold);
+    border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); overflow: hidden;
+    translate: 0 calc(-1 * var(--ey, 0px)); transition: opacity .35s, transform .35s; }
+  #help.off { opacity: 0; transform: translateX(-24px); pointer-events: none; }
+  #help .hh { display: flex; align-items: baseline; gap: 12px; padding: 10px 16px 8px; border-bottom: 1px solid rgba(246,240,224,.1); }
+  #help .hh b { font-size: 16px; letter-spacing: 5px; color: var(--gold); }
+  #help .hh span { font-size: 13px; letter-spacing: 3px; opacity: .7; }
+  #help .hh i { margin-left: auto; font-style: normal; cursor: pointer; opacity: .6; font-size: 16px; padding: 0 4px; } #help .hh i:hover { opacity: 1; }
+  #help .hgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; padding: 6px 16px 4px; }
+  #help .hsec { grid-column: 1 / -1; margin-top: 6px; font: 700 11px ui-monospace, Consolas, monospace; letter-spacing: 3px; color: var(--gold); opacity: .8; }
+  #help .hr { font-size: 14px; line-height: 1.7; }
+  #help .hr > span:first-child { display: inline-block; min-width: 84px; }
+  #help .hr.wide { grid-column: 1 / -1; }
+  #help .hr em { font-style: normal; color: var(--gold); }
+  #help .hnote { padding: 6px 16px 4px; font-size: 12.5px; line-height: 1.5; opacity: .7; border-top: 1px solid rgba(246,240,224,.08); margin-top: 6px; }
+  #help .hfoot { padding: 2px 16px 6px; font-size: 12px; opacity: .6; letter-spacing: 1px; }
+  #help .htime { height: 3px; background: var(--gold); opacity: .6; transform-origin: left; }
+  #help.timed .htime { animation: helptime var(--helpT, 10s) linear forwards; } #help:not(.timed) .htime { display: none; }
+  @keyframes helptime { from { transform: scaleX(1); } to { transform: scaleX(0); } }
   #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #14121c; font-size: 28px; letter-spacing: 10px; color: var(--gold); transition: opacity .6s; z-index: 5; }
   #loading.done { opacity: 0; pointer-events: none; }
   #banner { position: absolute; left: 50%; top: 300px; transform: translateX(-50%); font-size: 150px; font-weight: 900; letter-spacing: 12px; color: #fff; -webkit-text-stroke: 6px var(--ink); paint-order: stroke fill; text-shadow: 0 8px 0 #0008; opacity: 0; transition: opacity .2s; }
@@ -126,8 +157,8 @@
   .tpanel .stat { margin-left: auto; font: 13px ui-monospace, Consolas, monospace; opacity: .75; white-space: nowrap; }
   .tpanel .pick { display: flex; align-items: baseline; gap: 10px; margin: 2px 0 8px; }
   .tpanel .pick i { font-style: normal; color: var(--gold); font-size: 26px; min-width: 26px; text-align: center; }
-  .tpanel .pick b { font-size: 28px; font-weight: 900; font-style: italic; letter-spacing: 3px; text-transform: uppercase; color: #fff; }
-  .tpanel .pick .conf { margin-left: auto; font: 700 16px ui-monospace, Consolas, monospace; color: var(--gold); }
+  .tpanel .pick b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 28px; font-weight: 900; font-style: italic; letter-spacing: 3px; text-transform: uppercase; color: #fff; }
+  .tpanel .pick .conf { flex: none; margin-left: auto; font: 700 16px ui-monospace, Consolas, monospace; color: var(--gold); }
   .tpanel .mist { font-size: 13px; color: #ff6a5b; font-weight: 700; letter-spacing: 1px; }
   .tpanel .tcap { font-size: 12px; letter-spacing: 1px; opacity: .6; margin: 6px 0 2px; }
   .tpanel .more { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(246,240,224,.1); }
@@ -432,21 +463,48 @@
   <div id="thinkBtn" class="hide" title="show / hide the AI thinking overlay (H)"></div>
   <div id="think"><div class="tpanel off" id="think0"></div><div class="tpanel off" id="think1"></div><div class="intent" id="intent0"></div><div class="intent" id="intent1"></div></div>
 
-  <div id="help" class="hide">
-    <h3>CONTROLS</h3><div style="opacity:.85;margin-bottom:4px"><b>Ultimate bar</b> fills when you attack <i>and</i> when you get hit or block: the harder you are hit, the more you gain. <b>Guard gauge</b> (thin bar below): blocked hits fill it, it drains when you stop blocking; full = GUARD BREAK (long stun).</div><div id="helpSamurai" class="hide"><b>SAMURAI</b> (P1): <kbd>A</kbd> <kbd>D</kbd> walk · <kbd>Shift</kbd> dash (+back = grounded back-dash, also double-tap back)<br>
-    <kbd>J</kbd> iai cut (mid) · <kbd>K</kbd> stepping thrust (gap closer) · <kbd>L</kbd> overhead cleave (chip, knockdown) · <kbd>U</kbd> Crimson Tempest (full meter) · <kbd>Space</kbd> block (standing only)<br>
-    <b>Repel:</b> hold <kbd>Space</kbd> + tap <kbd>J</kbd> — ANYTIME (even knocked down or in a combo): a blade shockwave shoves her away. 25 meter, short cooldown.<br>
-    <b>Parry:</b> tap <kbd>Space</kbd> just as a kunai arrives to deflect it (no damage), then <kbd>K</kbd> to thrust in. Chains: iai cut → thrust → cleave.<br>
-    <b>Crimson Tempest:</b> three waves (high, low, tall). A clean hit starts the punishment cinematic. Ultimates that meet cancel each other.<br>
-    He cannot jump, crouch, run or throw: those keys do nothing.<br></div><div id="helpShinobi">
-    <kbd>A</kbd> <kbd>D</kbd> walk / <b>double-tap forward</b> run / <b>double-tap back</b> hop back<br>
-    <kbd>W</kbd> jump (tap = light, hold = high) · <kbd>S</kbd> crouch<br>
-    <kbd>J</kbd> light sword · <kbd>K</kbd> kick · <kbd>L</kbd> heavy slash · <kbd>I</kbd> kunai throw · <kbd>U</kbd> ultimate (full meter)<br>
-    <kbd>Space</kbd> block (hold) · <kbd>Shift</kbd> dash (+back = hop)<br>
-    <b>Kawarimi:</b> hold <kbd>Space</kbd> + tap <kbd>J</kbd> — if a sword hits the seal she leaves a log and strikes from behind. Costs 25 meter; whiff = open; short cooldown; melee only. <b>Escape:</b> the same input while being hit, blocking, knocked down or getting up = instant substitution that puts distance between you (25 meter).<br>
-    <kbd>S</kbd>+<kbd>J</kbd> crouch light sword · <kbd>S</kbd>+<kbd>K</kbd> sweep · in the air: <kbd>J</kbd> dive stab, <kbd>K</kbd> flying kick<br>
-    Normals chain upward after they connect: <b>light sword → kick → slash → kunai</b>. Meter fills when your attacks connect.<br>
-    </div><span style="opacity:.7">Arrow keys also work. <kbd>Esc</kbd> menu · <kbd>H</kbd> AI thinking overlay · <kbd>G</kbd> hit boxes · <kbd>F1</kbd> show/hide this.</span>
+  <div id="help" class="off">
+    <div class="hh"><b>MOVE LIST</b><span id="helpChar"></span><i id="helpClose" title="hide (F1)">✕</i></div>
+    <div id="helpShinobi" class="hgrid">
+      <div class="hsec">MOVE</div>
+      <div class="hr"><span><kbd>A</kbd><kbd>D</kbd></span>walk</div>
+      <div class="hr"><span><kbd>W</kbd></span>jump <em>(hold = high)</em></div>
+      <div class="hr"><span>▶▶</span>double-tap: run</div>
+      <div class="hr"><span><kbd>S</kbd></span>crouch</div>
+      <div class="hr"><span>◀◀</span>double-tap: hop back</div>
+      <div class="hr"><span><kbd>Shift</kbd></span>dash <em>(+back = hop)</em></div>
+      <div class="hsec">ATTACK</div>
+      <div class="hr"><span><kbd>J</kbd></span>light sword</div>
+      <div class="hr"><span><kbd>K</kbd></span>kick</div>
+      <div class="hr"><span><kbd>L</kbd></span>heavy slash</div>
+      <div class="hr"><span><kbd>I</kbd></span>kunai throw</div>
+      <div class="hr"><span><kbd>S</kbd>+<kbd>J</kbd></span>low stab</div>
+      <div class="hr"><span><kbd>S</kbd>+<kbd>K</kbd></span>sweep</div>
+      <div class="hr wide"><span>in the air</span><kbd>J</kbd> dive stab · <kbd>K</kbd> flying kick · chain on hit: <em>sword → kick → slash → kunai</em></div>
+      <div class="hsec">DEFEND &amp; SPECIAL</div>
+      <div class="hr"><span><kbd>Space</kbd></span>block (hold)</div>
+      <div class="hr"><span><kbd>U</kbd></span>ultimate <em>(full bar)</em></div>
+      <div class="hr wide"><span><kbd>Space</kbd>+<kbd>J</kbd></span>Kawarimi: a sword hits the seal → log swap, strike from behind; also an escape (25 meter)</div>
+    </div>
+    <div id="helpSamurai" class="hgrid hide">
+      <div class="hsec">MOVE</div>
+      <div class="hr"><span><kbd>A</kbd><kbd>D</kbd></span>walk</div>
+      <div class="hr"><span><kbd>Shift</kbd></span>dash <em>(+back = back-dash)</em></div>
+      <div class="hr wide"><span>note</span>he cannot jump, crouch or run: his weapon is spacing</div>
+      <div class="hsec">ATTACK</div>
+      <div class="hr"><span><kbd>J</kbd></span>iai cut <em>(long mid)</em></div>
+      <div class="hr"><span><kbd>K</kbd></span>stepping thrust</div>
+      <div class="hr"><span><kbd>L</kbd></span>overhead cleave</div>
+      <div class="hr"><span><kbd>U</kbd></span>Crimson Tempest <em>(full bar)</em></div>
+      <div class="hr wide"><span>chain</span>on hit: <em>iai cut → thrust → cleave</em></div>
+      <div class="hsec">DEFEND &amp; SPECIAL</div>
+      <div class="hr"><span><kbd>Space</kbd></span>block <em>(standing)</em></div>
+      <div class="hr"><span>tap <kbd>Space</kbd></span>parry a kunai, then <kbd>K</kbd></div>
+      <div class="hr wide"><span><kbd>Space</kbd>+<kbd>J</kbd></span>Repel: a blade shockwave that shoves her away, any time, even mid-combo (25 meter)</div>
+    </div>
+    <div class="hnote">The <b>ultimate bar</b> fills when you hit <i>and</i> when you get hit. The thin <b>guard gauge</b> fills as you block; full = guard break.</div>
+    <div class="hfoot"><kbd>F1</kbd> move list · <kbd>Esc</kbd> menu · <kbd>H</kbd> AI thinking · <kbd>G</kbd> hit boxes · arrows work too</div>
+    <div class="htime"></div>
   </div>
 
   <div id="inputs">
@@ -464,16 +522,18 @@
   <div id="readout"></div>
 
   <div id="panel">
-    <span id="toggle">[ hide ]</span>
-    <h3 id="panelTitle">TRAINING</h3>
+    <div class="ph" id="toggle"><h3 id="panelTitle">TRAINING</h3><i></i></div>
     <div class="body">
+      <div class="psec">PRACTICE</div>
       <label id="dummyRow">Dummy <select id="dummy"></select></label>
       <label>Stepped look <select id="step"><option value="1" selected>off (smooth)</option><option value="2">on 2s</option><option value="3">on 3s</option></select></label>
       <label id="meterRow">Meter <select id="meter"><option value="normal">normal</option><option value="inf">always full</option></select></label>
+      <div class="psec">SOUND</div>
       <label>Volume <input type="range" id="vol_master" min="0" max="100"></label>
       <label>Music <input type="range" id="vol_music" min="0" max="100"></label>
       <label>Effects <input type="range" id="vol_sfx" min="0" max="100"></label>
-      <label>Mute (M) <input type="checkbox" id="mute"></label>
+      <label class="chk">Mute (M) <input type="checkbox" id="mute"></label>
+      <div class="psec">PLAYBACK</div>
       <label>Speed <select id="speed"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1× (normal)</option><option value="2">2×</option><option value="4">4×</option></select></label>
       <div class="hot" id="hotTraining">
         <kbd>R</kbd> reset positions · <kbd>T</kbd> refill health + meter<br>

@@ -42,6 +42,8 @@ const NAV = {
   Enter: 'ok', NumpadEnter: 'ok', KeyJ: 'ok', Space: 'ok', Escape: 'back', KeyK: 'back', Backspace: 'back',
 };
 const wrap = (i, n) => ((i % n) + n) % n;
+const PANELS = ['auto', 'open', 'collapsed', 'off'];
+const PANEL_LABEL = { auto: 'AUTO', open: 'OPEN', collapsed: 'COLLAPSED', off: 'OFF' };
 const HPS = [1, 2, 5]; // HP setter tiers: stock 1000, 2000, 5000
 const touchHpLabel = (m) => `${1000 * (m || 1)} HP`;
 
@@ -51,7 +53,7 @@ export class Menu {
   constructor(hooks) {
     Object.assign(this, hooks);
     this.screen = null; this.focus = 0; this.log = null; this.mode = 'hva'; this.inTraining = false;
-    this.opts = { think: 'auto', bestOf: 3, roundSecs: 99, weather: 'dynamic' };
+    this.opts = { think: 'auto', bestOf: 3, roundSecs: 99, weather: 'dynamic', moveList: true, panel: 'auto' };
     this.sel = { side: 0, row: 0, sides: [this.defSide('samurai', 0, 'minimax'), this.defSide('shinobi', 0, 'mcts')] };
     this.stageIx = 0;
     // the touch editor's DONE chip refreshes this screen (only when OPTIONS is showing)
@@ -143,6 +145,11 @@ export class Menu {
             id: 'weather', label: 'TIME & WEATHER', value: weatherLabel(this.opts.weather),
             desc: 'Dynamic: the day turns as the match goes on (day, then dusk or night, then a storm, rain or snow). Random, or one fixed sky. Looks only: the fight plays the same.',
           },
+          // keyboard-only HUD cards (a phone has its own on-screen controls and never shows them)
+          ...(touchInst() ? [] : [
+            { id: 'moveList', label: 'MOVE LIST AT START', value: this.opts.moveList ? 'ON' : 'OFF', desc: 'Show your fighter’s move list for 10 seconds when a fight starts. F1 shows or hides it any time.' },
+            { id: 'panel', label: 'SIDE PANEL', value: PANEL_LABEL[this.opts.panel] || 'AUTO', desc: 'The tools card in the bottom-right corner (sound, speed, frame data). Auto: open in Training, a small pill in matches. Click its title to open or close it.' },
+          ]),
           // HP works on PC and phone; the button editor only exists when the touch overlay is mounted
           ...(touchInst() ? [{
             id: 'moveBtns', label: 'MOVE BUTTONS', value: touchInst().edit ? 'EDITING' : 'OFF',
@@ -219,6 +226,8 @@ export class Menu {
         if (id === 'think') this.opts.think = THINK_MODES[wrap(THINK_MODES.indexOf(this.opts.think) + step, THINK_MODES.length)];
         if (id === 'bestOf') { const o = [1, 3, 5]; this.opts.bestOf = o[wrap(o.indexOf(this.opts.bestOf) + step, 3)]; }
         if (id === 'roundSecs') { const o = [45, 60, 99]; this.opts.roundSecs = o[wrap(o.indexOf(this.opts.roundSecs) + step, 3)]; }
+        if (id === 'moveList') this.opts.moveList = !this.opts.moveList;
+        if (id === 'panel') this.opts.panel = PANELS[wrap(PANELS.indexOf(this.opts.panel) + step, PANELS.length)];
         if (id === 'weather') this.opts.weather = WEATHER_MODES[wrap(WEATHER_MODES.indexOf(this.opts.weather) + step, WEATHER_MODES.length)];
         const t = touchInst();
         if (id === 'moveBtns' && t) { // toggle the drag editor (begin Edit shows the clusters over this menu)
