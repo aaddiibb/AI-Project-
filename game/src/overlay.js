@@ -120,7 +120,8 @@ export class Overlay {
     } else {
       more = `<div class="rule">${esc(t.rule || 'uniform over legal macros: ' + (t.legal || []).map(nm).join(', '))}</div>`;
     }
-    if (t.worker) more += `<div class="tcap">searched in a Web Worker${t.waited ? `, reply after ${t.waited} frame(s)` : ''}</div>`;
+    if (t.worker) more += `<div class="tcap">MASTER · searched one move ahead in a Web Worker${t.ms !== undefined ? ` (${t.ms.toFixed(0)} ms)` : ''}</div>`;
+    if (t.fallback) more += `<div class="tcap">MASTER · the opponent changed plans: instant re-decision on the main thread</div>`;
     const mist = t.mistake ? `<span class="mist">slip → ${esc(nm(t.mistake))}</span>` : '';
     el.innerHTML = `<div class="thd"><span class="badge">${badge}</span><span class="who">${esc(this.labels[i])}</span><span class="stat">${esc(stat)}</span></div>`
       + `<div class="pick"><i>${esc(icon)}</i><b>${esc(chosen)}</b>${conf ? `<span class="conf">${esc(conf)}</span>` : ''}${mist}</div>`

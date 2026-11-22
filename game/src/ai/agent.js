@@ -72,7 +72,7 @@ export class Agent {
       const key = op.move + ':' + (view.frame - op.t); // one interrupt per attack (keyed by its start frame)
       if (op.state === 'attack' && op.t <= 2 && key !== this.lastSeenAttack && FREE_STATES.has(me.state) && me.h === 0) { this.lastSeenAttack = key; this.prog = null; }
     }
-    if (this.prog && !programDone(this.prog)) bits = emit(this.prog);
+    if (this.prog && !programDone(this.prog)) { this.onTick?.(view, age); bits = emit(this.prog); } // (Master: refresh the look-ahead)
     else {
       const cur = this.extrapolate(view, Math.min(age, this.sent.length));
       if (atDecision(cur, this.side, this.prog)) {
@@ -81,6 +81,7 @@ export class Agent {
         const dt = now() - t0;
         if (m.kind !== 'think' && this.mistakeRate > 0 && this.rng.next() < this.mistakeRate) { m = this.rng.pick(legalMacros(cur, this.side)); this.stats.mistakes++; if (this._think) this._think.mistake = m.id; }
         this.prog = startProgram(m, cur.f[this.side].facing);
+        if (m.kind !== 'think') this.onDecided?.(cur, this.prog); // Master: start thinking about the next decision (speculate.js)
         if (m.kind !== 'think') { // a WorkerAgent's placeholder while the worker is still searching
           this.stats.decisions++; this.stats.ms.push(dt); this.stats.work.push(this.lastWork || 0);
           this.intent = { text: this.intentText(m, cur), frame, macro: m.id };

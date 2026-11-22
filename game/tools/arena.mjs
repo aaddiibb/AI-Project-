@@ -9,6 +9,10 @@
 //   --budget <spec>        applies to both agents where it fits: nodes:N -> Minimax, rollouts:N -> MCTS, ms:N -> both
 //   --b1 / --b2 <spec>     budget for agent A / agent B only;  default Minimax nodes:120, MCTS rollouts:60 (≈10-15 ms each)
 //   --level easy|normal|hard|master    reaction delay + mistakes (+ budget converted to nodes, unless --budget is given)
+//   --l1 / --l2 <level>    level for agent A / agent B only (e.g. --l1 master --l2 hard)
+//   --lat1 / --lat2 N      emulate the browser's Master (a Web Worker that answers N frames after it is asked, ~3 at 50 ms)
+//                          exactly as remote.js runs it: speculative search of the next decision point (speculate.js),
+//                          answer used if the prediction held and it has arrived, else a Hard-budget decision at once
 //   --react N              reaction delay in frames for both (default 0: pure algorithm comparison)
 //   --weights file.json    eval weights for agent name "minimax_ga" (default game/tools/out/ga_best.json)
 //   --o1 / --o2 k=v,k=v    extra constructor options for agent A / B (e.g. --o2 rolloutFrames=60,c=1)
@@ -29,6 +33,8 @@ import { Match, AgentController } from '../src/ai/match.js';
 import { makeAgent, parseBudget } from '../src/ai/registry.js';
 import { subSeed } from '../src/ai/rng.js';
 import { DEFAULT_WEIGHTS } from '../src/ai/eval.js';
+import { predictAll, snapshot, stillValid, whyStale } from '../src/ai/speculate.js';
+import { levelOptions } from '../src/ai/difficulty.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -60,25 +66,63 @@ function budgetFor(name, o, which) {
       if (b.rollouts !== undefined && base === 'mcts') return b;
     }
   }
-  if (o.level) return null; // level converts its time budget to nodes
+  if (o.level || o[which === 'b1' ? 'l1' : 'l2']) return null; // level converts its time budget to nodes
   return base === 'minimax' ? { nodes: 120 } : base === 'mcts' ? { rollouts: 60 } : null;
+}
+
+// ------------------------------------------------------------------ browser Master (worker) emulation
+/** the browser's Master in Node: `agent` (Master budget) is the worker, searching the predicted next decision point the
+ *  moment a macro starts; its answer counts only `frames` later and only if the prediction held. Otherwise `fb` (a
+ *  Hard-budget copy) decides on the spot, like remote.js does on the main thread. */
+const REFRESH = 6;
+function withSpeculation(agent, frames, fb) {
+  const search = agent.decide.bind(agent), act = agent.act.bind(agent);
+  let frame = 0, spec = null;
+  agent.stats.spec = { hit: 0, miss: 0, why: {} };
+  agent.act = (...a) => { frame++; return act(...a); };
+  // the worker searches predictions one after another: the k-th answer of a request exists `frames` * (k + 1) frames later
+  const ask = (cur, prog, max) => predictAll(cur, agent.side, prog, max).map((p, k) => ({ snap: p.snap, macro: search(p.sim), ready: frame + frames * (k + 1), think: agent._think, work: agent.lastWork }));
+  let lastAsk = 0;
+  agent.onDecided = (cur, prog) => { spec = ask(cur, prog); lastAsk = frame; };
+  // every REFRESH frames while the macro plays out, a fresh prediction from the newest view (newest answers first)
+  agent.onTick = (view, age) => {
+    if (frame - lastAsk < REFRESH) return;
+    lastAsk = frame;
+    const cur = agent.extrapolate(view, Math.min(age, agent.sent.length));
+    spec = [...ask(cur, agent.prog, 2), ...(spec || [])].slice(0, 12);
+  };
+  agent.decide = (sim) => {
+    const list = spec || []; spec = null;
+    const now = snapshot(sim, agent.side), s = list.find((x) => frame >= x.ready && stillValid(x.snap, now));
+    if (s) { agent.stats.spec.hit++; agent._think = s.think; agent.lastWork = s.work; return s.macro; }
+    agent.stats.spec.miss++;
+    const w = !list.length ? 'none' : list.some((x) => stillValid(x.snap, now)) ? 'late' : whyStale(list[0].snap, now); agent.stats.spec.why[w] = (agent.stats.spec.why[w] || 0) + 1;
+    const m = fb.decide(sim); agent._think = fb.thinking(); agent.lastWork = fb.lastWork; return m;
+  };
+  return agent;
 }
 
 // ------------------------------------------------------------------ one match
 export function playMatch(job) {
-  const { a, b, id, seed, chars, budgets, level, react, weights, record, extra = [{}, {}] } = job;
+  const { a, b, id, seed, chars, budgets, level, levels, lats, react, weights, record, extra = [{}, {}] } = job;
   const ms = subSeed(seed, id);
   const swap = id % 2 === 1;                      // odd ids: agent A plays P2
   const names = swap ? [b, a] : [a, b];
   const bud = swap ? [budgets[1], budgets[0]] : budgets;
   const ext = swap ? [extra[1], extra[0]] : extra;
+  const lvs = levels ? (swap ? [levels[1], levels[0]] : levels) : [level, level];
+  const lat = lats ? (swap ? [lats[1], lats[0]] : lats) : [0, 0];
   const agents = names.map((n, side) => {
     const opts = { ...ext[side], side, seed: subSeed(ms, side + 1), mode: 'nodes' };
-    if (level) opts.level = level;
+    if (lvs[side]) opts.level = lvs[side];
     if (bud[side]) opts.budget = bud[side];
-    if (!level) { opts.reactionFrames ??= react; opts.mistakeRate ??= 0; } // explicit per-agent options (--o1 / --o2) win
+    if (!lvs[side]) { opts.reactionFrames ??= react; opts.mistakeRate ??= 0; } // explicit per-agent options (--o1 / --o2) win
     if (n === 'minimax_ga') opts.weights = { ...DEFAULT_WEIGHTS, ...weights };
-    return makeAgent(n, opts);
+    const ag = makeAgent(n, opts);
+    if (!(lat[side] > 0)) return ag;
+    const base = n.startsWith('minimax') ? 'minimax' : n;
+    const fb = makeAgent(n, { ...opts, budget: levelOptions(base, 'hard', 'nodes').budget }); // = remote.js's main-thread fallback
+    return withSpeculation(ag, lat[side], fb);
   });
   const ctrls = agents.map((ag) => new AgentController(ag));
   const t0 = performance.now();
@@ -90,7 +134,7 @@ export function playMatch(job) {
     const mean = arr.length ? arr.reduce((x, y) => x + y, 0) / arr.length : 0;
     const p95 = arr.length ? arr[Math.min(arr.length - 1, Math.floor(arr.length * 0.95))] : 0;
     const work = ag.stats.work.length ? ag.stats.work.reduce((x, y) => x + y, 0) / ag.stats.work.length : 0;
-    return { ...m.stats[s], decisions: ag.stats.decisions, msMean: mean, msP95: p95, work, mistakes: ag.stats.mistakes };
+    return { ...m.stats[s], decisions: ag.stats.decisions, msMean: mean, msP95: p95, work, mistakes: ag.stats.mistakes, spec: ag.stats.spec || null };
   };
   const hpm = m.rounds.map((r) => (r.hp[A] - r.hp[B]) / 1000);
   const res = {
@@ -176,7 +220,9 @@ export function makeJobs(a, b, o, weights) {
   const seed = o.pairSeed ?? o.seed;
   const kv = (x) => (x && x !== true ? Object.fromEntries(String(x).split(',').map((p) => { const [k, v] = p.split('='); return [k, isNaN(+v) ? v : +v]; })) : {});
   const extra = [kv(o.o1), kv(o.o2)];
-  return Array.from({ length: o.matches }, (_, id) => ({ a, b, id, seed, chars: o.chars, budgets, level: o.level || null, react: o.react, weights, extra }));
+  const levels = o.l1 || o.l2 ? [o.l1 || o.level || null, o.l2 || o.level || null] : null;
+  const lats = [+(o.lat1 || 0), +(o.lat2 || 0)];
+  return Array.from({ length: o.matches }, (_, id) => ({ a, b, id, seed, chars: o.chars, budgets, level: o.level || null, levels, lats, react: o.react, weights, extra }));
 }
 
 async function main() {

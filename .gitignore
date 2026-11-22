@@ -38,3 +38,6 @@ art/cyborg/
 # ---- OS files
 Thumbs.db
 desktop.ini
+
+# ---- Stale copy of the first commit (kept locally, not part of the repo)
+/AI_Project/

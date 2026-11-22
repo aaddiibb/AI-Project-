@@ -39,6 +39,14 @@ export class MinimaxAgent extends Agent {
     this.weights = o.weights || null;
     this.cap = o.cap ?? 40;
     this.readRisk = o.readRisk ?? 0.3;  // probability the opponent's read (kawarimi) is right (see search)
+    // IMPATIENCE (Hurwicz criterion at the root): pure maximin never attacks a careful opponent (every attack's worst case is
+    // worse than waiting's), so two Minimax fighters used to stare at each other until time-out. When no damage has landed
+    // for `stallFrames`, the root values each of my macros as (1 - λ) · worst reply + λ · average reply, λ ramping up to
+    // `impatienceMax`: a duelist who has waited long enough commits to his best-on-average move. Below the root the search
+    // stays exact maximin with alpha-beta; with no stalemate (λ = 0) nothing changes.
+    this.stallFrames = o.stallFrames ?? 120;
+    this.impatienceMax = o.impatienceMax ?? 0.5;
+    this.impatience = 0; this.stallFrom = 0; this.lastHp = -1; this.lastFrame = -1;
     this.prevBest = null;
   }
 
@@ -114,20 +122,27 @@ export class MinimaxAgent extends Agent {
     const Bread = legalB.filter((m) => m.kind === 'counter');
     const alpha0 = alpha;
     let best = -Infinity, bestA = null, bestB = null;
+    const hurwicz = ply === 0 && this.impatience > 0 && B.length > 1; // root under impatience: every reply valued exactly
     for (const a of A) {
-      let row = Infinity, rowB = null, cut = false;
+      let row = Infinity, rowB = null, cut = false, sum = 0;
       for (const b of B) {
-        const lo = this.alphaBeta ? Math.max(alpha, best) : -Infinity, hi = this.alphaBeta ? Math.min(beta, row) : Infinity;
+        const ab = this.alphaBeta && !hurwicz;
+        const lo = ab ? Math.max(alpha, best) : -Infinity, hi = ab ? Math.min(beta, row) : Infinity;
         const v = this.search(this.child(node, a, b), depth - 1, lo, hi, ply + 1);
+        sum += v;
         if (v < row) { row = v; rowB = b; }
-        if (this.alphaBeta && row <= Math.max(alpha, best)) { cut = B.length > 1 && b !== B[B.length - 1]; if (cut) this.cutoffs++; break; }
+        if (ab && row <= Math.max(alpha, best)) { cut = B.length > 1 && b !== B[B.length - 1]; if (cut) this.cutoffs++; break; }
       }
+      if (hurwicz) row = (1 - this.impatience) * row + this.impatience * (sum / B.length);
       if (Bread.length && !cut) { // the read risk
         let rv = row;
         for (const b of Bread) { const v = this.search(this.child(node, a, b), depth - 1, -Infinity, Infinity, ply + 1); if (v < rv) rv = v; }
         row = (1 - this.readRisk) * row + this.readRisk * rv;
       }
       if (ply === 0) this.rootRows.push({ id: a.id, v: row, bound: cut || (this.alphaBeta && row <= best), reply: rowB?.id ?? null });
+      // impatient root: near-equal rows (within 12 HP-equivalents) are a seeded coin flip, so two identical searchers in a
+      // mirror stop making mirror-image moves (which only ever traded evenly into a draw)
+      if (hurwicz && bestA && Math.abs(row - best) <= 12) { if (this.rng.next() < 0.5) { best = row; bestA = a; bestB = rowB; } continue; }
       if (row > best) { best = row; bestA = a; bestB = rowB; }
       if (this.alphaBeta && best >= beta) { this.cutoffs++; break; }
     }
@@ -148,6 +163,11 @@ export class MinimaxAgent extends Agent {
   }
 
   decide(sim) {
+    // stalemate clock: frames since the last HP change this round (a new round restarts it)
+    const hp = sim.f[0].hp + sim.f[1].hp;
+    if (hp !== this.lastHp || sim.frame < this.lastFrame) { this.lastHp = hp; this.stallFrom = sim.frame; }
+    this.lastFrame = sim.frame;
+    this.impatience = Math.min(this.impatienceMax, Math.max(0, (sim.frame - this.stallFrom - this.stallFrames) / 360));
     this.startBudget();
     this.tt = new Map(); this.nodes = 0; this.leaves = 0; this.cutoffs = 0; this.ttHits = 0;
     const root = { sim, progs: [null, null] };
@@ -180,7 +200,7 @@ export class MinimaxAgent extends Agent {
     } catch { /* PV is cosmetic */ }
     this.nodes -= 0;
     this._think = { algo: 'minimax', depth: depthDone, nodes: this.lastWork, leaves: this.leaves, cutoffs: this.cutoffs, ttHits: this.ttHits,
-      chosen: result.best.id, value: result.v, rows: result.rows.sort((x, y) => y.v - x.v), pv };
+      chosen: result.best.id, value: result.v, rows: result.rows.sort((x, y) => y.v - x.v), pv, impatience: this.impatience };
     return result.best;
   }
 }

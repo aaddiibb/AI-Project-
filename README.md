@@ -8,6 +8,8 @@
 
 **[▶ PLAY IT NOW: algo-fighter.vercel.app](https://algo-fighter.vercel.app)**
 
+📄 [Project report (PDF)](paper/Algo_Fighter_Report.pdf) · 🎞 [Presentation (PDF)](paper/Algo_Fighter_Presentation.pdf) · [slides with animations (.pptx)](paper/Algo_Fighter_Presentation.pptx)
+
 Runs in any modern browser · desktop, phone and tablet · no install, no build step
 
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES_modules-f7df1e?logo=javascript&logoColor=black)
@@ -59,11 +61,12 @@ shows **what each algorithm is thinking**: the moves it considered, their values
 - [Fuzzy logic and the genetic algorithm](#-the-other-minds-fuzzy-logic--a-genetic-algorithm)
 - [Reading the AI-thinking overlay](#-reading-the-ai-thinking-overlay)
 - [Benchmarks](#-benchmarks)
-- [Difficulty levels](#-difficulty-levels)
+- [Difficulty levels](#-difficulty-levels) · [The Master level](#-the-master-level-thinking-one-move-ahead)
 - [Controls](#-controls)
 - [Playing on a phone](#-playing-on-a-phone)
 - [Architecture](#-architecture)
 - [Run it locally](#-run-it-locally) · [Tests](#-tests) · [Deploy](#-deploy)
+- [Report & presentation](#-report--presentation) · [References](#-references)
 
 ---
 
@@ -299,6 +302,18 @@ Minimax **never gambles on a read**. In benchmarks it whiffs a heavy attack 0.01
 Samurai at zero mistakes **never attack each other** (100 % equal-HP time-outs), because for each one *any* attack has a
 worse worst case than waiting.
 
+**The fix: impatience (the Hurwicz criterion).** When no damage has landed for about 2 seconds, the root stops valuing a
+move by its worst reply alone and blends in its average reply,
+
+$$
+V_\lambda(a) \;=\; (1-\lambda)\,\min_b V(a,b) \;+\; \lambda \cdot \operatorname{mean}_b V(a,b),
+$$
+
+with $\lambda$ ramping from 0 to 0.5 the longer the standoff lasts (near-equal moves become a seeded coin flip, so two
+identical searchers stop mirroring each other). Below the root the search stays exact maximin with alpha-beta, and with
+no stalemate ($\lambda = 0$) nothing changes. Result: the Master Minimax mirror went from **0 hits and 100 % time-outs**
+to about **40 hits per match, decided by K.O.**
+
 ---
 
 ## 🎲 How MCTS plays the Shinobi
@@ -459,6 +474,34 @@ A *mistake* replaces the chosen macro with a random legal one; the overlay marks
 
 ---
 
+## 🧠 The Master level: thinking one move ahead
+
+Master searches about **3× longer than Hard** (50 ms per decision), and a 50 ms search on the main thread would drop
+frames, so it runs in a **Web Worker**. The naive version, asking the worker at the decision point and waiting for the
+answer, left the fighter standing still for ~3 frames on *every* decision: in the benchmark that version **lost 0 / 4
+to Hard**, while the same search without the delay won 8 / 8. So Master now pipelines its thinking
+(`game/src/ai/speculate.js`, `remote.js`, `worker.js`):
+
+1. The moment a move starts, Master **predicts the position at its next decision point**, playing its own move to the
+   end under several opponent behaviours (keeps doing what it does, stops, guards, walks in, backs off, crouches).
+2. The worker **searches those predicted positions**, most likely first, while the move plays out, and every 6 frames
+   it gets a **fresh prediction** from the newest view of the opponent.
+3. At the decision point, if a prediction came true (same states, no hit landed, positions within a few units), its
+   answer is used **instantly**: a Master-quality move with zero delay.
+4. If the opponent did something new, a Hard-strength search decides on the spot, so Master is never slower and never
+   weaker than Hard.
+
+About **75–85 %** of Master's moves come straight from the look-ahead search. Benchmarked in Node with the browser's
+worker delay emulated exactly (`arena.mjs --l1 master --l2 hard --lat1 3`), same character, same algorithm, 12 matches
+per pairing with sides swapped:
+
+| Master vs Hard | Minimax | MCTS |
+|---|---|---|
+| Samurai mirror | **11–1** (+23 % HP per round) | **11–1** (+40 %) |
+| Shinobi mirror | **11–1** (+48 %) | **11–1** (+42 %) |
+
+---
+
 ## 🎮 Controls
 
 | | Keyboard |
@@ -525,7 +568,8 @@ algo-fighter/
 │   │   ├── main.js           boot, 60 Hz loop, game modes
 │   │   ├── sim.js            deterministic fighting-game simulation
 │   │   ├── characters/       Shinobi + Samurai frame data
-│   │   ├── ai/               minimax · mcts · fuzzy · baselines · macros · eval · difficulty · worker
+│   │   ├── ai/               minimax · mcts · fuzzy · baselines · macros · eval · difficulty
+│   │   │                     · speculate + remote + worker (Master's look-ahead in a Web Worker)
 │   │   ├── atmosphere.js     time of day + weather
 │   │   ├── stage.js          parallax stages
 │   │   ├── render.js         puppets + camera (animator.js: pose blending)
@@ -536,6 +580,7 @@ algo-fighter/
 │   ├── replays/              recorded matches (verified on playback)
 │   └── tools/                arena, GA, tests, asset builders
 ├── art/                      character rigs (SVG parts, poses, palettes, faces)
+├── paper/                    project report + presentation (PDF, and the slides with animations)
 ├── readme/                   the images in this README
 ├── vercel.json               static deploy config
 └── .vercelignore             upload only what the game loads
@@ -545,19 +590,21 @@ algo-fighter/
 
 ## 💻 Run it locally
 
-No build step: serve the **repository root** with any static server and open `/game/`.
+No build step. On Windows, double-click **`Play Algo Fighter.bat`**; anywhere else, from the repository root:
 
 ```bash
-python -m http.server 8766
+python play.py
 ```
 
-Then open <http://localhost:8766/game/>.
+It serves the game, opens <http://localhost:8766/game/> and prints an address a phone on the same Wi-Fi can open. (Any
+static server works too, as long as it serves the **repository root**: `python -m http.server 8766`.)
 
 **Handy URL presets** (skip the menus):
 
 | URL | What it does |
 |---|---|
 | `game/index.html?mode=ava&p1=samurai&p2=shinobi&a1=minimax&a2=mcts&l1=hard&l2=hard&autostart=1` | CPU vs CPU, Minimax vs MCTS |
+| `game/index.html?mode=ava&p1=samurai&p2=shinobi&a1=minimax&a2=mcts&l1=master&l2=master&autostart=1` | Master vs Master |
 | `game/index.html?mode=replay&replay=replays/demo_samurai_vs_shinobi.json&autostart=1` | watch the demo replay (both ultimates) |
 | `…&weather=night` (or `dusk`, `storm`, `snow`, `rain`, `dawn`, `day`, `random`) | force the time of day / weather |
 | `…&touch=1` | show the touch controls on a desktop |
@@ -592,6 +639,33 @@ repository: `vercel.json` sends `/` to `/game/`, and `.vercelignore` uploads onl
 (about 24 MB). Import the repo on Vercel with the **Other** preset, no build command and output directory `.`. Every push
 to `main` redeploys. Before deploying new art, run `python game/tools/optimize_web.py` to shrink the face and menu
 images.
+
+---
+
+## 📄 Report & presentation
+
+- **[Project report (PDF)](paper/Algo_Fighter_Report.pdf)**: the formal write-up: game rules as a search problem, the
+  Minimax and MCTS formulations with worked traces from real matches, difficulty presets and benchmarks.
+- **[Presentation (PDF)](paper/Algo_Fighter_Presentation.pdf)**: the final presentation, 36 slides, step by step
+  through how each algorithm decides. The **[.pptx version](paper/Algo_Fighter_Presentation.pptx)** keeps the
+  gameplay animations and videos.
+
+---
+
+## 📚 References
+
+1. D. Churchill, A. Saffidine, and M. Buro, "Fast Heuristic Search for RTS Game Combat Scenarios," in *Proceedings of the
+   Eighth AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment (AIIDE)*, 2012, pp. 112–117.
+   [Paper](https://doi.org/10.1609/aiide.v8i1.12527)
+2. M. J. W. Tak, M. Lanctot, and M. H. M. Winands, "Monte Carlo Tree Search Variants for Simultaneous Move Games," in
+   *Proceedings of the IEEE Conference on Computational Intelligence and Games (CIG)*, 2014, pp. 1–8.
+   [Paper](https://mlanctot.info/files/papers/cig14-smmctsggp.pdf)
+3. M. Lanctot, C. Wittlinger, M. H. M. Winands, and N. G. P. Den Teuling, "Monte Carlo Tree Search for Simultaneous Move
+   Games: A Case Study in the Game of Tron," in *Proceedings of the 25th Benelux Conference on Artificial Intelligence
+   (BNAIC)*, 2013. [Paper](https://dke.maastrichtuniversity.nl/m.winands/documents/sm-tron-bnaic2013.pdf)
+
+Simultaneous-move search follows these works: maximin over joint moves for real-time combat [1], and decoupled UCT for
+simultaneous-move MCTS [2, 3].
 
 ---
 
